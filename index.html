@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prime & Composite Channel Theorems - Interactive Visualization</title>
+    <title>Composite Channel Projection Corollary - Advanced</title>
     <style>
         * {
             margin: 0;
@@ -12,91 +12,135 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Arial', sans-serif;
+            background: #000000;
             color: #ffffff;
             overflow-x: hidden;
         }
         
         .container {
-            max-width: 1920px;
+            max-width: 2560px;
             margin: 0 auto;
             padding: 20px;
         }
         
         header {
             text-align: center;
-            padding: 20px 0;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 15px 0;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
         }
         
         h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        
-        .subtitle {
-            font-size: 1.2em;
-            opacity: 0.9;
+            font-size: 2em;
+            margin-bottom: 5px;
+            color: #ffffff;
         }
         
         .controls {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            background: #111111;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+        }
+        
+        .control-section {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .control-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #00ffff;
+        }
+        
+        .control-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
         }
         
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 5px;
         }
         
         label {
             font-weight: 600;
-            font-size: 0.95em;
+            font-size: 0.9em;
+            color: #cccccc;
         }
         
         input[type="number"], select {
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-            font-size: 1em;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background: #222222;
+            color: #ffffff;
+            font-size: 0.95em;
         }
         
         input[type="range"] {
             width: 100%;
+            height: 6px;
+            background: #333;
+            outline: none;
+            border-radius: 3px;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #00ffff;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #00ffff;
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
         }
         
         .button-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
         
         button {
-            padding: 10px 20px;
+            padding: 10px 18px;
             border: none;
-            border-radius: 5px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-size: 1em;
+            border-radius: 4px;
+            background: linear-gradient(135deg, #00ffff 0%, #0088ff 100%);
+            color: #000;
+            font-size: 0.95em;
+            font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
         }
         
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
         }
         
         button:active {
@@ -104,184 +148,235 @@
         }
         
         .canvas-container {
-            background: rgba(0, 0, 0, 0.3);
+            background: #000000;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+            position: relative;
         }
         
         canvas {
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            background: white;
+            border: 2px solid #333333;
+            border-radius: 4px;
+            background: #000000;
             cursor: crosshair;
         }
         
         .info-panel {
-            background: rgba(0, 0, 0, 0.4);
+            background: #111111;
             padding: 20px;
-            border-radius: 10px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
-        .info-box {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
             border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border: 1px solid #333;
         }
         
-        .info-box h3 {
-            margin-bottom: 10px;
-            color: #ffd700;
-        }
-        
-        .info-box p {
-            margin: 5px 0;
-            font-size: 0.95em;
-            line-height: 1.5;
-        }
-        
-        .stats {
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 10px;
-            margin-top: 10px;
+            margin-bottom: 15px;
         }
         
-        .stat-item {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #4ade80;
+        .stat-box {
+            background: #1a1a1a;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #333;
         }
         
         .stat-label {
             font-size: 0.85em;
-            opacity: 0.8;
-            margin-top: 5px;
+            color: #888;
+            margin-bottom: 4px;
         }
         
-        .legend {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid white;
-        }
-        
-        .tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            pointer-events: none;
-            z-index: 1000;
-            display: none;
-            max-width: 300px;
-            font-size: 0.9em;
-            line-height: 1.4;
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #00ffff;
         }
         
         .checkbox-group {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             cursor: pointer;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+            max-width: 350px;
+            font-size: 0.9em;
+            line-height: 1.5;
+            border: 1px solid #00ffff;
+        }
+        
+        .selected-info {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border: 1px solid #00ffff;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 10px;
+            background: #1a1a1a;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9em;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid white;
+        }
+        
+        .slider-value {
+            display: inline-block;
+            min-width: 40px;
+            text-align: center;
+            color: #00ffff;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Prime & Composite Channel Theorems</h1>
-            <div class="subtitle">Interactive Visualization of Getachew Theorems 1 & 2</div>
+            <h1>Composite Channel Projection Corollary</h1>
         </header>
         
         <div class="controls">
-            <div class="control-group">
-                <label for="modulus">Modulus (M):</label>
-                <input type="number" id="modulus" min="2" max="200" value="30">
+            <div class="control-section">
+                <div class="section-title">Basic Configuration</div>
+                <div class="control-grid">
+                    <div class="control-group">
+                        <label for="modulus">Modulus (M):</label>
+                        <input type="number" id="modulus" min="2" max="500" value="30">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="displayMode">Display Mode:</label>
+                        <select id="displayMode">
+                            <option value="projection">Projection Lines</option>
+                            <option value="all">All Points Only</option>
+                            <option value="reducible">Reducible Only</option>
+                            <option value="irreducible">Irreducible Only</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="colorScheme">Color Scheme:</label>
+                        <select id="colorScheme">
+                            <option value="channel">By Channel Type</option>
+                            <option value="gcd">By GCD Value</option>
+                            <option value="denominator">By Denominator</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             
-            <div class="control-group">
-                <label for="viewMode">View Mode:</label>
-                <select id="viewMode">
-                    <option value="circular">Circular (Unit Circle)</option>
-                    <option value="grid">Grid Layout</option>
-                    <option value="farey">Farey Diagram</option>
-                </select>
+            <div class="control-section">
+                <div class="section-title">Visual Controls</div>
+                <div class="control-grid">
+                    <div class="control-group">
+                        <label>Point Size: <span class="slider-value" id="pointSizeValue">8</span></label>
+                        <input type="range" id="pointSize" min="3" max="20" value="8">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Zoom: <span class="slider-value" id="zoomValue">100%</span></label>
+                        <input type="range" id="zoom" min="50" max="300" value="100">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Ring Spacing: <span class="slider-value" id="spacingValue">1.0</span></label>
+                        <input type="range" id="spacing" min="50" max="200" value="100">
+                    </div>
+                    
+                    <div class="control-group checkbox-group">
+                        <input type="checkbox" id="showLabels" checked>
+                        <label for="showLabels">Show r Labels</label>
+                    </div>
+                    
+                    <div class="control-group checkbox-group">
+                        <input type="checkbox" id="showGcdLabels" checked>
+                        <label for="showGcdLabels">Show GCD Labels</label>
+                    </div>
+                    
+                    <div class="control-group checkbox-group">
+                        <input type="checkbox" id="showModLabels">
+                        <label for="showModLabels">Show M' Labels</label>
+                    </div>
+                </div>
             </div>
             
-            <div class="control-group">
-                <label for="displayMode">Display Mode:</label>
-                <select id="displayMode">
-                    <option value="all">All Points</option>
-                    <option value="prime">Prime Moduli Only</option>
-                    <option value="composite">Composite Moduli Only</option>
-                    <option value="reducible">Reducible Only</option>
-                    <option value="irreducible">Irreducible Only</option>
-                </select>
+            <div class="control-section">
+                <div class="section-title">Animation Controls</div>
+                <div class="control-grid">
+                    <div class="control-group checkbox-group">
+                        <input type="checkbox" id="animateRotation">
+                        <label for="animateRotation">Enable Rotation</label>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="rotationMode">Rotation Mode:</label>
+                        <select id="rotationMode">
+                            <option value="uniform">Uniform</option>
+                            <option value="innerToOuter">Inner → Outer</option>
+                            <option value="outerToInner">Outer → Inner</option>
+                            <option value="individual">Individual Mods</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Speed: <span class="slider-value" id="speedValue">1.0</span></label>
+                        <input type="range" id="rotationSpeed" min="10" max="200" value="100">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="trackPoint">Track Point (r):</label>
+                        <input type="number" id="trackPoint" min="0" max="500" value="" placeholder="None">
+                    </div>
+                </div>
             </div>
             
-            <div class="control-group">
-                <label for="pointSize">Point Size: <span id="pointSizeValue">6</span></label>
-                <input type="range" id="pointSize" min="2" max="15" value="6">
-            </div>
-            
-            <div class="control-group">
-                <label for="showConnections">Connection Mode:</label>
-                <select id="showConnections">
-                    <option value="none">No Connections</option>
-                    <option value="channels">Channel Flows</option>
-                    <option value="gcd">GCD Groups</option>
-                    <option value="denominators">By Denominator</option>
-                </select>
-            </div>
-            
-            <div class="control-group checkbox-group">
-                <input type="checkbox" id="showLabels" checked>
-                <label for="showLabels">Show Labels</label>
-            </div>
-            
-            <div class="control-group checkbox-group">
-                <input type="checkbox" id="animateMode">
-                <label for="animateMode">Animate</label>
-            </div>
-            
-            <div class="control-group button-group">
-                <button onclick="updateVisualization()">Update</button>
-                <button onclick="exportCanvas()">Export PNG</button>
-                <button onclick="randomModulus()">Random M</button>
+            <div class="control-section">
+                <div class="section-title">Export & Actions</div>
+                <div class="button-group">
+                    <button onclick="updateVisualization()">Update</button>
+                    <button onclick="exportPNG()">Export PNG (1080p)</button>
+                    <button onclick="exportPNG4K()">Export PNG (4K)</button>
+                    <button onclick="exportCSV()">Export CSV Data</button>
+                    <button onclick="randomModulus()">Random M</button>
+                </div>
             </div>
         </div>
         
@@ -290,67 +385,50 @@
         </div>
         
         <div class="info-panel">
-            <div class="info-box">
-                <h3>Current Modulus: M = <span id="currentM">30</span></h3>
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-value" id="totalPoints">0</div>
-                        <div class="stat-label">Total Residues</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="irreducibleCount">0</div>
-                        <div class="stat-label">Irreducible (φ(M))</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="reducibleCount">0</div>
-                        <div class="stat-label">Reducible</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="channelCount">0</div>
-                        <div class="stat-label">Unique Channels</div>
-                    </div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Modulus M</div>
+                    <div class="stat-value" id="currentM">30</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Prime Factorization</div>
+                    <div class="stat-value" id="factorization">2×3×5</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">φ(M) - Irreducible</div>
+                    <div class="stat-value" id="phiM">8</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Reducible Residues</div>
+                    <div class="stat-value" id="reducibleCount">22</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Reducibility Ratio</div>
+                    <div class="stat-value" id="reducibilityRatio">73.3%</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Farey Channels</div>
+                    <div class="stat-value" id="channelCount">7</div>
                 </div>
             </div>
             
-            <div class="info-box">
-                <h3>Legend</h3>
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #00ffff;"></div>
-                        <span>Cyan: Prime Irreducible</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #ff0000;"></div>
-                        <span>Red: Composite Reducible</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #ffd700;"></div>
-                        <span>Gold: Farey Channels</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #00ff00;"></div>
-                        <span>Green: Coprime to M</span>
-                    </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #00ffff;"></div>
+                    <span>Cyan = Irreducible (gcd=1)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff0066;"></div>
+                    <span>Red = Reducible (gcd>1)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ffd700;"></div>
+                    <span>Gold = Farey Channels</span>
                 </div>
             </div>
             
-            <div class="info-box">
-                <h3>Theorem 1: Prime Channel Avoidance</h3>
-                <p>For prime modulus p, all residues 1, 2, ..., p-1 are coprime to p.</p>
-                <p>No fraction r/p reduces to simpler form 1/N (N > 1).</p>
-                <p><strong>Geometric Interpretation:</strong> Prime moduli form isolated coprime manifolds in the modular lattice, avoiding all Farey flow lines.</p>
-            </div>
-            
-            <div class="info-box">
-                <h3>Theorem 2: Composite Channel Projection</h3>
-                <p>For composite M, each residue r reduces to r'/M' where d = gcd(r,M), M' = M/d, r' = r/d.</p>
-                <p>Reducible residues populate Farey channels (1/N and rational multiples).</p>
-                <p><strong>Channel Denominators:</strong> Exactly the proper divisors of M.</p>
-            </div>
-            
-            <div class="info-box">
-                <h3>Click on Points</h3>
-                <p id="selectedPoint">Click any point to see detailed information about its reduction path and channel membership.</p>
+            <div class="selected-info" id="selectedInfo" style="display:none;">
+                <div id="selectedContent"></div>
             </div>
         </div>
     </div>
@@ -364,7 +442,8 @@
         
         let currentData = null;
         let animationFrame = null;
-        let animationTime = 0;
+        let rotationAngle = 0;
+        let trackedPoint = null;
         
         function gcd(a, b) {
             while (b !== 0) {
@@ -376,15 +455,32 @@
         function eulerPhi(n) {
             let result = n;
             let p = 2;
-            while (p * p <= n) {
-                if (n % p === 0) {
-                    while (n % p === 0) n /= p;
+            let temp = n;
+            while (p * p <= temp) {
+                if (temp % p === 0) {
+                    while (temp % p === 0) temp /= p;
                     result -= result / p;
                 }
                 p++;
             }
-            if (n > 1) result -= result / n;
+            if (temp > 1) result -= result / temp;
             return Math.floor(result);
+        }
+        
+        function primeFactorization(n) {
+            const factors = {};
+            let temp = n;
+            for (let i = 2; i * i <= temp; i++) {
+                while (temp % i === 0) {
+                    factors[i] = (factors[i] || 0) + 1;
+                    temp /= i;
+                }
+            }
+            if (temp > 1) factors[temp] = 1;
+            
+            return Object.entries(factors)
+                .map(([p, e]) => e > 1 ? `${p}^${e}` : p)
+                .join('×') || n.toString();
         }
         
         function lowestTerms(r, m) {
@@ -408,8 +504,10 @@
                 M: M,
                 isPrime: isPrime(M),
                 phi: eulerPhi(M),
+                factorization: primeFactorization(M),
                 residues: [],
                 channels: new Map(),
+                gcdGroups: new Map(),
                 irreducible: [],
                 reducible: []
             };
@@ -425,7 +523,8 @@
                     mRed: mRed,
                     d: d,
                     isIrreducible: isIrreducible,
-                    channel: `${rRed}/${mRed}`
+                    channel: `${rRed}/${mRed}`,
+                    theta: (2 * Math.PI * r) / M
                 };
                 
                 data.residues.push(point);
@@ -441,114 +540,165 @@
                     data.channels.set(channelKey, []);
                 }
                 data.channels.get(channelKey).push(point);
+                
+                if (!data.gcdGroups.has(d)) {
+                    data.gcdGroups.set(d, []);
+                }
+                data.gcdGroups.get(d).push(point);
             }
             
             return data;
         }
         
-        function drawCircular(data) {
+        function getColorForPoint(pt, colorScheme, data) {
+            if (colorScheme === 'channel') {
+                return pt.isIrreducible ? '#00ffff' : '#ff0066';
+            } else if (colorScheme === 'gcd') {
+                const gcdColors = ['#00ffff', '#ff0066', '#00ff00', '#ffff00', '#ff00ff', '#ff8800', '#0088ff', '#88ff00'];
+                return gcdColors[pt.d % gcdColors.length];
+            } else if (colorScheme === 'denominator') {
+                const hue = (pt.mRed * 137.5) % 360;
+                return `hsl(${hue}, 100%, 50%)`;
+            }
+            return '#00ffff';
+        }
+        
+        function drawVisualization() {
+            if (!currentData) return;
+            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
-            const radius = Math.min(canvas.width, canvas.height) * 0.35;
+            const zoom = parseFloat(document.getElementById('zoom').value) / 100;
+            const spacing = parseFloat(document.getElementById('spacing').value) / 100;
+            const baseRadius = Math.min(canvas.width, canvas.height) * 0.35 * zoom;
             
-            const M = data.M;
+            const M = currentData.M;
             const pointSize = parseFloat(document.getElementById('pointSize').value);
             const showLabels = document.getElementById('showLabels').checked;
+            const showGcdLabels = document.getElementById('showGcdLabels').checked;
+            const showModLabels = document.getElementById('showModLabels').checked;
             const displayMode = document.getElementById('displayMode').value;
-            const connectionMode = document.getElementById('showConnections').value;
-            const animate = document.getElementById('animateMode').checked;
+            const colorScheme = document.getElementById('colorScheme').value;
+            const animateRotation = document.getElementById('animateRotation').checked;
+            const rotationMode = document.getElementById('rotationMode').value;
+            const trackPointValue = parseInt(document.getElementById('trackPoint').value);
             
-            // Draw circle
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-            ctx.stroke();
+            // Get unique divisors for ring layout
+            const divisors = new Set();
+            currentData.residues.forEach(pt => divisors.add(pt.mRed));
+            const sortedDivisors = Array.from(divisors).sort((a, b) => b - a);
+            const divisorToRadius = new Map();
+            sortedDivisors.forEach((d, idx) => {
+                divisorToRadius.set(d, baseRadius * (1 - idx * 0.08 * spacing));
+            });
             
-            // Draw connections first
-            if (connectionMode !== 'none') {
+            // Draw projection lines
+            if (displayMode === 'projection') {
                 ctx.globalAlpha = 0.3;
-                
-                if (connectionMode === 'channels') {
-                    data.channels.forEach((points, channel) => {
-                        if (points.length > 1 && channel !== '0/1') {
-                            ctx.strokeStyle = '#ffd700';
-                            ctx.lineWidth = 1;
-                            ctx.beginPath();
-                            points.forEach((pt, idx) => {
-                                const angle = (2 * Math.PI * pt.r) / M - Math.PI / 2;
-                                const x = centerX + radius * Math.cos(angle);
-                                const y = centerY + radius * Math.sin(angle);
-                                if (idx === 0) ctx.moveTo(x, y);
-                                else ctx.lineTo(x, y);
-                            });
-                            ctx.stroke();
-                        }
-                    });
-                } else if (connectionMode === 'gcd') {
-                    const gcdGroups = new Map();
-                    data.residues.forEach(pt => {
-                        if (!gcdGroups.has(pt.d)) gcdGroups.set(pt.d, []);
-                        gcdGroups.get(pt.d).push(pt);
-                    });
-                    
-                    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
-                    let colorIdx = 0;
-                    
-                    gcdGroups.forEach((points, d) => {
-                        if (d > 1 && points.length > 1) {
-                            ctx.strokeStyle = colors[colorIdx % colors.length];
-                            colorIdx++;
-                            ctx.lineWidth = 1;
-                            ctx.beginPath();
-                            points.forEach((pt, idx) => {
-                                const angle = (2 * Math.PI * pt.r) / M - Math.PI / 2;
-                                const x = centerX + radius * Math.cos(angle);
-                                const y = centerY + radius * Math.sin(angle);
-                                if (idx === 0) ctx.moveTo(x, y);
-                                else ctx.lineTo(x, y);
-                            });
-                            ctx.stroke();
-                        }
-                    });
-                }
-                
+                currentData.channels.forEach((points, channel) => {
+                    if (points.length > 1 && channel !== '0/1') {
+                        const firstPt = points[0];
+                        const radius = divisorToRadius.get(firstPt.mRed);
+                        
+                        ctx.strokeStyle = '#ffd700';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        
+                        points.forEach((pt, idx) => {
+                            let angle = pt.theta;
+                            if (animateRotation) {
+                                if (rotationMode === 'individual') {
+                                    angle += rotationAngle / pt.mRed;
+                                } else if (rotationMode === 'innerToOuter') {
+                                    angle += rotationAngle * (1 / pt.mRed);
+                                } else if (rotationMode === 'outerToInner') {
+                                    angle += rotationAngle * pt.mRed;
+                                } else {
+                                    angle += rotationAngle;
+                                }
+                            }
+                            angle -= Math.PI / 2;
+                            
+                            const x = centerX + radius * Math.cos(angle);
+                            const y = centerY + radius * Math.sin(angle);
+                            
+                            if (idx === 0) {
+                                ctx.moveTo(centerX, centerY);
+                            }
+                            ctx.lineTo(x, y);
+                        });
+                        ctx.stroke();
+                    }
+                });
                 ctx.globalAlpha = 1.0;
             }
             
-            // Draw points
-            data.residues.forEach(pt => {
-                const angle = (2 * Math.PI * pt.r) / M - Math.PI / 2;
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
+            // Draw rings for each divisor
+            sortedDivisors.forEach(d => {
+                if (d === 1) return;
+                const radius = divisorToRadius.get(d);
+                ctx.strokeStyle = 'rgba(255, 215, 0, 0.2)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.stroke();
                 
+                if (showModLabels) {
+                    ctx.fillStyle = '#ffd700';
+                    ctx.font = 'bold 11px monospace';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(`M'=${d}`, centerX + radius + 5, centerY);
+                }
+            });
+            
+            // Draw outer circle
+            const outerRadius = divisorToRadius.get(M) || baseRadius;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, outerRadius, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Draw points
+            currentData.residues.forEach(pt => {
                 let shouldDraw = true;
-                if (displayMode === 'prime' && !data.isPrime) shouldDraw = false;
-                if (displayMode === 'composite' && data.isPrime) shouldDraw = false;
                 if (displayMode === 'reducible' && pt.isIrreducible) shouldDraw = false;
                 if (displayMode === 'irreducible' && !pt.isIrreducible) shouldDraw = false;
                 
                 if (!shouldDraw) return;
                 
-                // Determine color
-                let color;
-                if (data.isPrime) {
-                    color = pt.isIrreducible ? '#00ffff' : '#888888';
-                } else {
-                    if (pt.isIrreducible) {
-                        color = '#00ff00';
+                const radius = divisorToRadius.get(pt.mRed) || outerRadius;
+                let angle = pt.theta;
+                
+                if (animateRotation) {
+                    if (rotationMode === 'individual') {
+                        angle += rotationAngle / pt.mRed;
+                    } else if (rotationMode === 'innerToOuter') {
+                        angle += rotationAngle * (1 / pt.mRed);
+                    } else if (rotationMode === 'outerToInner') {
+                        angle += rotationAngle * pt.mRed;
                     } else {
-                        color = '#ff0000';
+                        angle += rotationAngle;
                     }
                 }
+                angle -= Math.PI / 2;
                 
-                // Animation pulse
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                const color = getColorForPoint(pt, colorScheme, currentData);
+                
+                // Highlight tracked point
                 let size = pointSize;
-                if (animate) {
-                    const pulse = Math.sin(animationTime * 0.05 + pt.r * 0.1) * 0.3 + 1;
-                    size *= pulse;
+                if (!isNaN(trackPointValue) && pt.r === trackPointValue) {
+                    size *= 1.8;
+                    ctx.strokeStyle = '#ffff00';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(x, y, size + 4, 0, 2 * Math.PI);
+                    ctx.stroke();
                 }
                 
                 ctx.fillStyle = color;
@@ -556,259 +706,208 @@
                 ctx.arc(x, y, size, 0, 2 * Math.PI);
                 ctx.fill();
                 
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
                 ctx.lineWidth = 1;
                 ctx.stroke();
                 
-                // Label
-                if (showLabels && M <= 60) {
+                // Labels
+                if (showLabels && M <= 100) {
                     ctx.fillStyle = 'white';
-                    ctx.font = '10px monospace';
+                    ctx.font = '9px monospace';
                     ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    const labelRadius = radius + 20;
+                    const labelRadius = radius + 15;
                     const labelX = centerX + labelRadius * Math.cos(angle);
                     const labelY = centerY + labelRadius * Math.sin(angle);
                     ctx.fillText(`${pt.r}`, labelX, labelY);
+                }
+                
+                if (showGcdLabels && !pt.isIrreducible && M <= 80) {
+                    ctx.fillStyle = '#ff0066';
+                    ctx.font = 'bold 8px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`d=${pt.d}`, x, y - size - 6);
                 }
             });
             
             // Center info
             ctx.fillStyle = 'white';
-            ctx.font = 'bold 24px sans-serif';
+            ctx.font = 'bold 20px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(`M = ${M}`, centerX, centerY);
+            ctx.fillText(`M = ${M}`, centerX, centerY - 20);
             
-            ctx.font = '16px sans-serif';
-            ctx.fillText(data.isPrime ? 'PRIME' : 'COMPOSITE', centerX, centerY + 30);
-            ctx.fillText(`φ(${M}) = ${data.phi}`, centerX, centerY + 50);
-        }
-        
-        function drawGrid(data) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const M = data.M;
-            const cols = Math.ceil(Math.sqrt(M));
-            const rows = Math.ceil(M / cols);
-            const cellWidth = (canvas.width - 100) / cols;
-            const cellHeight = (canvas.height - 100) / rows;
-            const pointSize = parseFloat(document.getElementById('pointSize').value);
-            const showLabels = document.getElementById('showLabels').checked;
-            const displayMode = document.getElementById('displayMode').value;
-            
-            data.residues.forEach(pt => {
-                const col = pt.r % cols;
-                const row = Math.floor(pt.r / cols);
-                const x = 50 + col * cellWidth + cellWidth / 2;
-                const y = 50 + row * cellHeight + cellHeight / 2;
-                
-                let shouldDraw = true;
-                if (displayMode === 'prime' && !data.isPrime) shouldDraw = false;
-                if (displayMode === 'composite' && data.isPrime) shouldDraw = false;
-                if (displayMode === 'reducible' && pt.isIrreducible) shouldDraw = false;
-                if (displayMode === 'irreducible' && !pt.isIrreducible) shouldDraw = false;
-                
-                if (!shouldDraw) return;
-                
-                let color;
-                if (data.isPrime) {
-                    color = pt.isIrreducible ? '#00ffff' : '#888888';
-                } else {
-                    color = pt.isIrreducible ? '#00ff00' : '#ff0000';
-                }
-                
-                ctx.fillStyle = color;
-                ctx.beginPath();
-                ctx.arc(x, y, pointSize, 0, 2 * Math.PI);
-                ctx.fill();
-                
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-                ctx.lineWidth = 1;
-                ctx.stroke();
-                
-                if (showLabels && M <= 100) {
-                    ctx.fillStyle = 'white';
-                    ctx.font = '10px monospace';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText(`${pt.r}`, x, y - pointSize - 8);
-                }
-            });
-        }
-        
-        function drawFarey(data) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const M = data.M;
-            const width = canvas.width - 100;
-            const height = canvas.height - 100;
-            const xOffset = 50;
-            const yOffset = 50;
-            const pointSize = parseFloat(document.getElementById('pointSize').value);
-            const showLabels = document.getElementById('showLabels').checked;
-            const displayMode = document.getElementById('displayMode').value;
-            
-            // Draw axes
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(xOffset, yOffset + height);
-            ctx.lineTo(xOffset + width, yOffset + height);
-            ctx.moveTo(xOffset, yOffset);
-            ctx.lineTo(xOffset, yOffset + height);
-            ctx.stroke();
-            
-            // Plot points by their reduced fraction
-            const maxDenom = Math.max(...data.residues.map(pt => pt.mRed));
-            
-            data.residues.forEach(pt => {
-                if (pt.mRed === 0) return;
-                
-                const x = xOffset + (pt.rRed / pt.mRed) * width;
-                const y = yOffset + height - (pt.mRed / maxDenom) * height * 0.9;
-                
-                let shouldDraw = true;
-                if (displayMode === 'prime' && !data.isPrime) shouldDraw = false;
-                if (displayMode === 'composite' && data.isPrime) shouldDraw = false;
-                if (displayMode === 'reducible' && pt.isIrreducible) shouldDraw = false;
-                if (displayMode === 'irreducible' && !pt.isIrreducible) shouldDraw = false;
-                
-                if (!shouldDraw) return;
-                
-                let color;
-                if (data.isPrime) {
-                    color = pt.isIrreducible ? '#00ffff' : '#888888';
-                } else {
-                    color = pt.isIrreducible ? '#00ff00' : '#ff0000';
-                }
-                
-                ctx.fillStyle = color;
-                ctx.beginPath();
-                ctx.arc(x, y, pointSize, 0, 2 * Math.PI);
-                ctx.fill();
-                
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-                ctx.lineWidth = 1;
-                ctx.stroke();
-                
-                if (showLabels && M <= 60) {
-                    ctx.fillStyle = 'white';
-                    ctx.font = '9px monospace';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(`${pt.rRed}/${pt.mRed}`, x, y - pointSize - 5);
-                }
-            });
-            
-            // Labels
-            ctx.fillStyle = 'white';
             ctx.font = '14px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('r\'/M\' (Numerator/Denominator)', xOffset + width / 2, yOffset + height + 35);
-            
-            ctx.save();
-            ctx.translate(xOffset - 35, yOffset + height / 2);
-            ctx.rotate(-Math.PI / 2);
-            ctx.fillText('M\' (Reduced Denominator)', 0, 0);
-            ctx.restore();
+            ctx.fillText(`φ(M) = ${currentData.phi}`, centerX, centerY + 5);
+            ctx.fillText(currentData.isPrime ? 'PRIME' : 'COMPOSITE', centerX, centerY + 25);
         }
         
         function updateVisualization() {
             const M = parseInt(document.getElementById('modulus').value);
-            const viewMode = document.getElementById('viewMode').value;
-            
             currentData = computeModulusData(M);
             
             // Update stats
             document.getElementById('currentM').textContent = M;
-            document.getElementById('totalPoints').textContent = M;
-            document.getElementById('irreducibleCount').textContent = currentData.phi;
+            document.getElementById('factorization').textContent = currentData.factorization;
+            document.getElementById('phiM').textContent = currentData.phi;
             document.getElementById('reducibleCount').textContent = M - currentData.phi;
-            document.getElementById('channelCount').textContent = currentData.channels.size;
+            document.getElementById('reducibilityRatio').textContent = 
+                ((M - currentData.phi) / M * 100).toFixed(1) + '%';
+            document.getElementById('channelCount').textContent = currentData.channels.size - 1; // exclude 0/1
             
-            // Draw
-            if (viewMode === 'circular') {
-                drawCircular(currentData);
-            } else if (viewMode === 'grid') {
-                drawGrid(currentData);
-            } else if (viewMode === 'farey') {
-                drawFarey(currentData);
-            }
+            // Update track point max
+            document.getElementById('trackPoint').max = M - 1;
+            
+            drawVisualization();
         }
         
         function animate() {
-            if (document.getElementById('animateMode').checked) {
-                animationTime++;
-                updateVisualization();
+            if (document.getElementById('animateRotation').checked) {
+                const speed = parseFloat(document.getElementById('rotationSpeed').value) / 1000;
+                rotationAngle += speed;
+                drawVisualization();
                 animationFrame = requestAnimationFrame(animate);
             }
         }
         
-        function exportCanvas() {
+        function exportPNG() {
+            exportCanvas(1920, 1080, '1080p');
+        }
+        
+        function exportPNG4K() {
+            exportCanvas(3840, 2160, '4K');
+        }
+        
+        function exportCanvas(width, height, label) {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            const scale = width / canvas.width;
+            tempCtx.scale(scale, scale);
+            tempCtx.drawImage(canvas, 0, 0);
+            
+            // Add title
+            tempCtx.setTransform(1, 0, 0, 1, 0, 0);
+            tempCtx.fillStyle = 'white';
+            tempCtx.font = 'bold 40px Arial';
+            tempCtx.textAlign = 'center';
+            tempCtx.fillText('Composite Channel Projection Corollary', width / 2, 50);
+            
+            tempCtx.font = '24px Arial';
+            tempCtx.fillText(`M = ${currentData.M} | φ(M) = ${currentData.phi} | Generated: ${new Date().toLocaleString()}`, 
+                width / 2, 90);
+            
             const link = document.createElement('a');
-            link.download = `prime_composite_channels_M${currentData.M}.png`;
-            link.href = canvas.toDataURL();
+            link.download = `composite_projection_M${currentData.M}_${label}_${Date.now()}.png`;
+            link.href = tempCanvas.toDataURL();
             link.click();
         }
         
+        function exportCSV() {
+            if (!currentData) return;
+            
+            let csv = 'r,theta,rRed,mRed,d,channel,isIrreducible\n';
+            currentData.residues.forEach(pt => {
+                csv += `${pt.r},${pt.theta.toFixed(6)},${pt.rRed},${pt.mRed},${pt.d},"${pt.channel}",${pt.isIrreducible}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `composite_channel_data_M${currentData.M}.csv`;
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
         function randomModulus() {
-            const M = Math.floor(Math.random() * 199) + 2;
+            const M = Math.floor(Math.random() * 499) + 2;
             document.getElementById('modulus').value = M;
             updateVisualization();
         }
         
         // Event listeners
         document.getElementById('modulus').addEventListener('input', updateVisualization);
-        document.getElementById('viewMode').addEventListener('change', updateVisualization);
-        document.getElementById('displayMode').addEventListener('change', updateVisualization);
-        document.getElementById('showConnections').addEventListener('change', updateVisualization);
-        document.getElementById('showLabels').addEventListener('change', updateVisualization);
+        document.getElementById('displayMode').addEventListener('change', drawVisualization);
+        document.getElementById('colorScheme').addEventListener('change', drawVisualization);
+        document.getElementById('showLabels').addEventListener('change', drawVisualization);
+        document.getElementById('showGcdLabels').addEventListener('change', drawVisualization);
+        document.getElementById('showModLabels').addEventListener('change', drawVisualization);
+        document.getElementById('trackPoint').addEventListener('input', drawVisualization);
+        
         document.getElementById('pointSize').addEventListener('input', (e) => {
             document.getElementById('pointSizeValue').textContent = e.target.value;
-            updateVisualization();
+            drawVisualization();
         });
         
-        document.getElementById('animateMode').addEventListener('change', (e) => {
+        document.getElementById('zoom').addEventListener('input', (e) => {
+            document.getElementById('zoomValue').textContent = e.target.value + '%';
+            drawVisualization();
+        });
+        
+        document.getElementById('spacing').addEventListener('input', (e) => {
+            document.getElementById('spacingValue').textContent = (e.target.value / 100).toFixed(1);
+            drawVisualization();
+        });
+        
+        document.getElementById('rotationSpeed').addEventListener('input', (e) => {
+            document.getElementById('speedValue').textContent = (e.target.value / 100).toFixed(1);
+        });
+        
+        document.getElementById('animateRotation').addEventListener('change', (e) => {
             if (e.target.checked) {
-                animationTime = 0;
+                rotationAngle = 0;
                 animate();
             } else {
                 if (animationFrame) {
                     cancelAnimationFrame(animationFrame);
                     animationFrame = null;
                 }
-                updateVisualization();
+                drawVisualization();
             }
         });
         
-        // Mouse events for tooltip
+        document.getElementById('rotationMode').addEventListener('change', drawVisualization);
+        
+        // Mouse events
         canvas.addEventListener('mousemove', (e) => {
             if (!currentData) return;
             
             const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
             
-            const viewMode = document.getElementById('viewMode').value;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const zoom = parseFloat(document.getElementById('zoom').value) / 100;
+            const baseRadius = Math.min(canvas.width, canvas.height) * 0.35 * zoom;
+            
             let hoveredPoint = null;
+            let minDist = Infinity;
             
-            if (viewMode === 'circular') {
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                const radius = Math.min(canvas.width, canvas.height) * 0.35;
+            currentData.residues.forEach(pt => {
+                const divisors = new Set();
+                currentData.residues.forEach(p => divisors.add(p.mRed));
+                const sortedDivisors = Array.from(divisors).sort((a, b) => b - a);
+                const spacing = parseFloat(document.getElementById('spacing').value) / 100;
                 
-                for (const pt of currentData.residues) {
-                    const angle = (2 * Math.PI * pt.r) / currentData.M - Math.PI / 2;
-                    const x = centerX + radius * Math.cos(angle);
-                    const y = centerY + radius * Math.sin(angle);
-                    
-                    const dist = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
-                    if (dist < 10) {
-                        hoveredPoint = pt;
-                        break;
-                    }
+                let radius = baseRadius;
+                const idx = sortedDivisors.indexOf(pt.mRed);
+                if (idx >= 0) {
+                    radius = baseRadius * (1 - idx * 0.08 * spacing);
                 }
-            }
+                
+                let angle = pt.theta - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                const dist = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+                if (dist < minDist && dist < 15) {
+                    minDist = dist;
+                    hoveredPoint = pt;
+                }
+            });
             
             if (hoveredPoint) {
                 tooltip.style.display = 'block';
@@ -816,10 +915,11 @@
                 tooltip.style.top = (e.clientY + 15) + 'px';
                 tooltip.innerHTML = `
                     <strong>r = ${hoveredPoint.r}</strong><br>
+                    θ = ${hoveredPoint.theta.toFixed(4)} rad<br>
                     Fraction: ${hoveredPoint.r}/${currentData.M}<br>
-                    Reduces to: ${hoveredPoint.rRed}/${hoveredPoint.mRed}<br>
+                    Reduces to: <strong>${hoveredPoint.rRed}/${hoveredPoint.mRed}</strong><br>
                     gcd(${hoveredPoint.r}, ${currentData.M}) = ${hoveredPoint.d}<br>
-                    Status: ${hoveredPoint.isIrreducible ? 'Irreducible' : 'Reducible'}<br>
+                    Status: ${hoveredPoint.isIrreducible ? '<span style="color:#00ffff">Irreducible</span>' : '<span style="color:#ff0066">Reducible</span>'}<br>
                     Channel: ${hoveredPoint.channel}
                 `;
             } else {
@@ -831,40 +931,54 @@
             if (!currentData) return;
             
             const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
             
-            const viewMode = document.getElementById('viewMode').value;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const zoom = parseFloat(document.getElementById('zoom').value) / 100;
+            const baseRadius = Math.min(canvas.width, canvas.height) * 0.35 * zoom;
+            
             let clickedPoint = null;
+            let minDist = Infinity;
             
-            if (viewMode === 'circular') {
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                const radius = Math.min(canvas.width, canvas.height) * 0.35;
+            currentData.residues.forEach(pt => {
+                const divisors = new Set();
+                currentData.residues.forEach(p => divisors.add(p.mRed));
+                const sortedDivisors = Array.from(divisors).sort((a, b) => b - a);
+                const spacing = parseFloat(document.getElementById('spacing').value) / 100;
                 
-                for (const pt of currentData.residues) {
-                    const angle = (2 * Math.PI * pt.r) / currentData.M - Math.PI / 2;
-                    const x = centerX + radius * Math.cos(angle);
-                    const y = centerY + radius * Math.sin(angle);
-                    
-                    const dist = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
-                    if (dist < 10) {
-                        clickedPoint = pt;
-                        break;
-                    }
+                let radius = baseRadius;
+                const idx = sortedDivisors.indexOf(pt.mRed);
+                if (idx >= 0) {
+                    radius = baseRadius * (1 - idx * 0.08 * spacing);
                 }
-            }
+                
+                let angle = pt.theta - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                const dist = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+                if (dist < minDist && dist < 15) {
+                    minDist = dist;
+                    clickedPoint = pt;
+                }
+            });
             
             if (clickedPoint) {
                 const channelPoints = currentData.channels.get(clickedPoint.channel);
                 const channelInfo = channelPoints.map(p => p.r).join(', ');
                 
-                document.getElementById('selectedPoint').innerHTML = `
-                    <strong>Selected: r = ${clickedPoint.r}</strong><br>
-                    Original: ${clickedPoint.r}/${currentData.M}<br>
-                    Reduced: ${clickedPoint.rRed}/${clickedPoint.mRed}<br>
-                    gcd = ${clickedPoint.d}, Status: ${clickedPoint.isIrreducible ? 'Irreducible' : 'Reducible'}<br>
-                    <strong>Channel ${clickedPoint.channel}</strong> contains ${channelPoints.length} point(s): {${channelInfo}}
+                document.getElementById('selectedInfo').style.display = 'block';
+                document.getElementById('selectedContent').innerHTML = `
+                    <h3 style="color:#00ffff; margin-bottom:10px">Selected Point: r = ${clickedPoint.r}</h3>
+                    <p><strong>Original Fraction:</strong> ${clickedPoint.r}/${currentData.M}</p>
+                    <p><strong>Reduced Fraction:</strong> ${clickedPoint.rRed}/${clickedPoint.mRed}</p>
+                    <p><strong>GCD:</strong> gcd(${clickedPoint.r}, ${currentData.M}) = ${clickedPoint.d}</p>
+                    <p><strong>Theta:</strong> ${clickedPoint.theta.toFixed(6)} radians</p>
+                    <p><strong>Status:</strong> ${clickedPoint.isIrreducible ? '<span style="color:#00ffff">Irreducible</span>' : '<span style="color:#ff0066">Reducible</span>'}</p>
+                    <p><strong>Channel ${clickedPoint.channel}:</strong> Contains ${channelPoints.length} point(s)</p>
+                    <p><strong>Channel Members:</strong> {${channelInfo}}</p>
                 `;
             }
         });
