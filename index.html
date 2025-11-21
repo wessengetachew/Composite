@@ -3,812 +3,805 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Möbius Exponential Sums and the Riemann Hypothesis</title>
+    <title>Visualizing the Riemann Zeta Function - Wessen Getachew</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Times New Roman', serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            line-height: 1.6;
+            font-family: 'Georgia', serif;
+            line-height: 1.8;
             color: #333;
-            background-color: #fafafa;
+            background: #f5f5f5;
+            padding: 20px;
         }
-        
-        h1 {
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+
+        .disclaimer {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 40px;
+            font-size: 0.95em;
+        }
+
+        .disclaimer strong {
+            color: #856404;
+        }
+
+        .nav {
+            background: #34495e;
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .nav a:hover { background: #2c3e50; }
+
+        .content { padding: 40px; }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
             color: #2c3e50;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 10px;
-            margin-bottom: 30px;
-            font-size: 2.2em;
-        }
-        
-        h2 {
-            color: #34495e;
-            border-bottom: 2px solid #bdc3c7;
-            padding-bottom: 8px;
-            margin-top: 40px;
+            font-size: 1.8em;
             margin-bottom: 20px;
-            font-size: 1.6em;
-        }
-        
-        h3 {
-            color: #2c3e50;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-        
-        h4 {
-            color: #34495e;
-            margin-top: 25px;
-            margin-bottom: 12px;
-            font-size: 1.1em;
-            font-weight: bold;
-        }
-        
-        p {
-            margin-bottom: 15px;
-            text-align: justify;
-            text-indent: 1.5em;
-        }
-        
-        .theorem, .lemma, .proof {
-            background-color: #f8f9fa;
             border-left: 4px solid #3498db;
-            padding: 15px 20px;
+            padding-left: 15px;
+        }
+
+        .section h3 {
+            color: #34495e;
+            font-size: 1.3em;
+            margin: 25px 0 15px 0;
+        }
+
+        .warning-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
             margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        canvas {
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            background: #000;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .controls {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .control-group { 
+            margin: 15px 0;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #bdc3c7;
             border-radius: 3px;
         }
-        
-        .theorem {
-            border-left-color: #e74c3c;
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 8px 4px;
         }
-        
-        .lemma {
-            border-left-color: #f39c12;
-        }
-        
-        .proof {
-            border-left-color: #27ae60;
-        }
-        
-        .theorem-header, .lemma-header, .proof-header {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-        
-        .math {
-            font-style: italic;
-            font-family: 'Times New Roman', serif;
-        }
-        
-        .equation {
-            text-align: center;
+
+        button:hover { background: #2980b9; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin: 20px 0;
-            font-style: italic;
-            font-size: 1.1em;
         }
-        
-        ol, ul {
-            margin-left: 30px;
-            margin-bottom: 15px;
+
+        th {
+            background: #34495e;
+            color: white;
+            padding: 12px;
+            text-align: left;
         }
-        
+
+        td { 
+            padding: 10px; 
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        ul {
+            margin: 15px 0 15px 30px;
+        }
+
         li {
-            margin-bottom: 8px;
-        }
-        
-        .bibliography {
-            margin-top: 40px;
-            border-top: 2px solid #bdc3c7;
-            padding-top: 20px;
-        }
-        
-        .bib-entry {
-            margin-bottom: 10px;
-            text-indent: -30px;
-            margin-left: 30px;
-        }
-        
-        .section-number {
-            color: #3498db;
-            font-weight: bold;
-        }
-        
-        .subsection-number {
-            color: #2980b9;
-            font-weight: bold;
+            margin: 8px 0;
         }
     </style>
 </head>
 <body>
-
-<h1>Möbius Exponential Sums and the Riemann Hypothesis</h1>
-
-<p>The Möbius function <span class="math">μ(n)</span> encodes the multiplicative structure of the integers. Its exponential sums</p>
-
-<div class="equation">
-<span class="math">S(N,α) = Σ<sub>n≤N</sub> μ(n) e<sup>2πinα</sup>, α ∈ [0,1],</span>
-</div>
-
-<p>capture cancellation properties of <span class="math">μ(n)</span> across both arithmetic and Fourier perspectives. At <span class="math">α=0</span> one recovers the Mertens function</p>
-
-<div class="equation">
-<span class="math">M(N) = Σ<sub>n≤N</sub> μ(n).</span>
-</div>
-
-<h2><span class="subsection-number">1.</span> Classical equivalence</h2>
-
-<p>The connection between <span class="math">M(N)</span> and the zeros of the Riemann zeta function is well known.</p>
-
-<div class="theorem">
-<div class="theorem-header">Theorem 1 [RH ⟺ Möbius bound]</div>
-<p>The following are equivalent:</p>
-<ol>
-    <li>The Riemann Hypothesis holds.</li>
-    <li>For every <span class="math">ε > 0</span>,
-    <div class="equation">
-    <span class="math">M(N) = O<sub>ε</sub>(N<sup>1/2+ε</sup>).</span>
-    </div>
-    </li>
-    <li>Equivalently, for every <span class="math">ε > 0</span>,
-    <div class="equation">
-    <span class="math">sup<sub>α∈[0,1]</sub> |S(N,α)| ≪<sub>ε</sub> N<sup>1/2+ε</sup>.</span>
-    </div>
-    </li>
-</ol>
-</div>
-
-<div class="proof">
-<div class="proof-header">Proof [Sketch]</div>
-<p>If RH holds, the explicit formula expresses <span class="math">M(N)</span> in terms of zeros of <span class="math">ζ(s)</span>, giving the <span class="math">O(N<sup>1/2+ε</sup>)</span> bound. Conversely, such a bound forces convergence of <span class="math">1/ζ(s)</span> for <span class="math">ℜ(s) > 1/2</span>, implying that <span class="math">ζ(s)</span> has no zeros in this region. By symmetry of zeros, all nontrivial zeros lie on the line <span class="math">ℜ(s)=1/2</span>.</p>
-</div>
-
-<h2><span class="subsection-number">2.</span> Historical note</h2>
-
-<p>Mertens conjectured the sharper inequality <span class="math">|M(N)| < √N</span>, a claim disproved by Odlyzko and te Riele (1985). Nevertheless, the weaker <span class="math">O(N<sup>1/2+ε</sup>)</span> condition remains exactly equivalent to RH. Thus the exponential sums <span class="math">S(N,α)</span> form a direct testing ground for the hypothesis.</p>
-
-<h2><span class="subsection-number">3.</span> The <span class="math">m1</span>–<span class="math">m2</span>–<span class="math">m3</span> decomposition</h2>
-
-<p>Our analysis of <span class="math">S(N,α)</span> can be organized into three structural steps, which we denote <span class="math">m1</span>, <span class="math">m2</span>, and <span class="math">m3</span>. These mirror classical circle method ideas but are also amenable to modern computational approaches using Farey sequences, random sampling, and FFT evaluation.</p>
-
-<div class="lemma">
-<div class="lemma-header">Lemma [m1: Rational approximation]</div>
-<p>For any <span class="math">α ∈ [0,1]</span>, there exists a rational <span class="math">a/q</span> with <span class="math">q ≤ Q</span> such that</p>
-<div class="equation">
-<span class="math">|α - a/q| ≤ 1/(qQ).</span>
-</div>
-<p>Then</p>
-<div class="equation">
-<span class="math">S(N,α) = S(N,a/q) + E(N,q,α-a/q),</span>
-</div>
-<p>with <span class="math">E</span> small for <span class="math">Q ≍ N<sup>1/2</sup></span>. Hence it suffices to analyze <span class="math">S(N,a/q)</span> with <span class="math">q</span> small.</p>
-</div>
-
-<div class="lemma">
-<div class="lemma-header">Lemma [m2: Major/minor arc decomposition]</div>
-<p>Let <span class="math">Q=N<sup>1/2</sup></span>. Partition <span class="math">[0,1]</span> into:</p>
-<ul>
-    <li><em>Major arcs</em>: neighborhoods of rationals <span class="math">a/q</span> with <span class="math">q ≤ Q</span>.</li>
-    <li><em>Minor arcs</em>: the remaining <span class="math">α</span>.</li>
-</ul>
-<p>On the minor arcs, oscillation yields square-root cancellation:</p>
-<div class="equation">
-<span class="math">|S(N,α)| ≪ N<sup>1/2+ε</sup>.</span>
-</div>
-<p>On the major arcs, <span class="math">S(N,α)</span> is structured and governed by Dirichlet <span class="math">L</span>-functions on the line <span class="math">ℜ(s)=1/2</span>, hence directly linked to RH.</p>
-</div>
-
-<div class="lemma">
-<div class="lemma-header">Lemma [m3: Mean-square identity]</div>
-<p>Parseval's identity gives</p>
-<div class="equation">
-<span class="math">∫₀¹ |S(N,α)|² dα = Σ<sub>n≤N</sub> μ(n)² ~ 6N/π².</span>
-</div>
-<p>Thus the mean-square size of <span class="math">S(N,α)</span> is <span class="math">√N</span>, consistent with the conjectured RH bounds. This structure can be probed computationally using FFT methods to evaluate <span class="math">S(N,α)</span> across many values of <span class="math">α</span> simultaneously.</p>
-</div>
-
-<h2><span class="subsection-number">4.</span> Synthesis</h2>
-
-<p>Together, these lemmas show:</p>
-<ol>
-    <li>Rational approximation (m1) reduces general <span class="math">α</span> to nearby rationals.</li>
-    <li>Minor arcs (m2) exhibit cancellation consistent with <span class="math">√N</span>.</li>
-    <li>Major arcs (m2) reduce directly to Dirichlet <span class="math">L</span>-function behavior on <span class="math">ℜ(s)=1/2</span>.</li>
-    <li>The mean-square identity (m3) confirms <span class="math">√N</span> as the correct scale.</li>
-</ol>
-
-<p>Hence the uniform bound for <span class="math">S(N,α)</span> across all <span class="math">α</span> is equivalent to RH. From a computational perspective, this framework shows that minor arc behavior and average-case cancellation align with RH predictions, while major arc control is the precise analytic obstacle.</p>
-
-<div class="bibliography">
-<h3>References</h3>
-<div class="bib-entry">[1] H. Davenport, <em>Multiplicative Number Theory</em>, 3rd ed., Springer, 2000.</div>
-<div class="bib-entry">[2] H. Iwaniec and E. Kowalski, <em>Analytic Number Theory</em>, AMS Colloquium Publ., 2004.</div>
-<div class="bib-entry">[3] H. Montgomery and R. Vaughan, <em>Multiplicative Number Theory I: Classical Theory</em>, Cambridge Univ. Press, 2006.</div>
-<div class="bib-entry">[4] A. Odlyzko and H. te Riele, <em>Disproof of the Mertens Conjecture</em>, J. Reine Angew. Math. 357 (1985), 138–160.</div>
-</div>
-
-<h1><span class="section-number">2.</span> Connection to Modular Sieve Structures</h1>
-
-<p>The equivalence in Theorem 1 frames the Riemann Hypothesis as a question of square-root cancellation in Möbius exponential sums. In this section, we connect this analytic formulation to the modular sieve framework developed in our work, based on residue classes modulo <span class="math">30 · 2<sup>n</sup></span>.</p>
-
-<h2><span class="subsection-number">1.</span> Residue sieves and cancellation</h2>
-
-<p>Let <span class="math">M<sub>n</sub> = 30 · 2<sup>n</sup></span>. The Euler totient group <span class="math">Φ(M<sub>n</sub>)</span> consists of integers <span class="math">r</span> with <span class="math">gcd(r, M<sub>n</sub>) = 1</span>, representing all candidates for prime residues modulo <span class="math">M<sub>n</sub></span>. The modular sieve operates by identifying <em>valid transitions</em></p>
-
-<div class="equation">
-<span class="math">(r, r+2) ∈ Φ(M<sub>n</sub>) × Φ(M<sub>n</sub>),</span>
-</div>
-
-<p>which persist under lifts <span class="math">M<sub>n</sub> ↦ M<sub>n+1</sub></span>. These transitions encode the modular geometry of twin primes and other small gaps.</p>
-
-<p>From the analytic viewpoint, Möbius sums</p>
-
-<div class="equation">
-<span class="math">S(N,α) = Σ<sub>n≤N</sub> μ(n) e<sup>2πinα</sup></span>
-</div>
-
-<p>measure cancellation of <span class="math">μ(n)</span> across such residue systems. The minor arc heuristic of square-root cancellation corresponds, in the sieve picture, to the pruning of residues that fail to persist under modular lifts. Major arcs, in contrast, represent highly structured rational approximations <span class="math">a/q</span>, which align with small moduli such as <span class="math">M<sub>n</sub></span>. Thus the modular sieve and the circle method major/minor arc decomposition address the same dichotomy: random-like cancellation versus structured residues.</p>
-
-<h2><span class="subsection-number">2.</span> Farey arcs and modular bases</h2>
-
-<p>In Lemma m1 we observed that every <span class="math">α</span> may be approximated by a rational <span class="math">a/q</span> with <span class="math">q ≤ N<sup>1/2</sup></span>. In the modular sieve, the natural bases are the primorial-type moduli <span class="math">M<sub>n</sub></span>, whose Euler groups <span class="math">Φ(M<sub>n</sub>)</span> already exclude small prime factors. Hence the Farey decomposition of the unit interval and the modular decomposition of <span class="math">ℤ/M<sub>n</sub>ℤ</span> both partition the problem into "structured" rational approximations and "generic" oscillatory regimes.</p>
-
-<p>Explicitly, rational arcs with denominator <span class="math">q | M<sub>n</sub></span> correspond to structured sectors of the sieve, while denominators <span class="math">q ∤ M<sub>n</sub></span> correspond to residues eliminated by pruning. This provides a modular interpretation of the analytic major/minor arc split.</p>
-
-<h2><span class="subsection-number">3.</span> Mean-square structure and modular density</h2>
-
-<p>Lemma m3 showed that</p>
-
-<div class="equation">
-<span class="math">∫₀¹ |S(N,α)|² dα ~ 6N/π².</span>
-</div>
-
-<p>The factor <span class="math">6/π²</span> is precisely the density of squarefree integers, and also arises naturally in the modular sieve: it is the proportion of integers coprime to <span class="math">2,3,5</span>, i.e. the density of <span class="math">Φ(30)</span>. Thus the mean-square identity aligns directly with the modular framework: the sieve density built into <span class="math">M<sub>n</sub></span> matches the analytic density of <span class="math">μ²(n)</span>.</p>
-
-<h2><span class="subsection-number">4.</span> Synthesis</h2>
-
-<p>The picture that emerges is the following:</p>
-<ul>
-    <li>The RH equivalence via Möbius sums asserts <span class="math">√N</span>-scale cancellation.</li>
-    <li>The modular sieve encodes this cancellation geometrically as the pruning of non-coprime residues and the persistence of valid twin or gap transitions.</li>
-    <li>Major/minor arc analysis corresponds to structured rational denominators <span class="math">q | M<sub>n</sub></span> versus generic residues <span class="math">q ∤ M<sub>n</sub></span>.</li>
-    <li>The mean-square law reflects the underlying sieve density <span class="math">6/π²</span>, already built into the base modulus <span class="math">30</span>.</li>
-</ul>
-
-<p>Hence the modular sieve and the Möbius framework are two complementary formulations of the same cancellation phenomenon. Analytically, this cancellation is equivalent to RH. Modularly, it is encoded in the persistence of residue transitions across the <span class="math">30 · 2<sup>n</sup></span> hierarchy. This dual perspective situates the Riemann Hypothesis at the intersection of exponential sum analysis and modular residue geometry.</p>
-
-<h1>Complete Analysis: Möbius Exponential Sums and the Riemann Hypothesis</h1>
-
-<h2>Introduction and Basic Framework</h2>
-
-<p>The Riemann Hypothesis stands as one of mathematics' greatest unsolved problems, asking whether all non-trivial zeros of the Riemann zeta function lie on the critical line where the real part equals 1/2. This paper presents a comprehensive framework connecting the Riemann Hypothesis to exponential sums involving the Möbius function, while establishing deep connections to modular sieve theory.</p>
-
-<p>The Möbius function μ(n) is fundamental to understanding the multiplicative structure of integers. It equals 1 for square-free numbers with an even number of prime factors, -1 for square-free numbers with an odd number of prime factors, and 0 for numbers that are not square-free. The exponential sums we study are defined as S(N,α) = sum over n ≤ N of μ(n) times e^(2πinα), where α ranges over the unit interval [0,1].</p>
-
-<p>These exponential sums capture both arithmetic and harmonic properties of the Möbius function. When α = 0, we recover the classical Mertens function M(N) = sum of μ(n) for n ≤ N, which counts the excess of square-free numbers with an even number of prime factors over those with an odd number.</p>
-
-<h2>The Classical Equivalence to RH</h2>
-
-<p>The connection between the growth rate of M(N) and the zeros of the Riemann zeta function forms one of the most beautiful equivalences in analytic number theory. The Riemann Hypothesis is equivalent to the statement that for every ε > 0, we have M(N) = O(N^(1/2+ε)). This means M(N) grows no faster than N^(1/2+ε) for arbitrarily small positive ε.</p>
-
-<p>More generally, this equivalence extends to the exponential sums S(N,α). The Riemann Hypothesis holds if and only if the supremum of |S(N,α)| over all α in [0,1] is bounded by N^(1/2+ε) for every ε > 0.</p>
-
-<p>The proof relies on the explicit formula connecting M(N) to the zeros of the zeta function. When RH holds, this formula yields the desired bound. Conversely, such a bound forces the Dirichlet series 1/ζ(s) to converge for Re(s) > 1/2, which implies ζ(s) has no zeros in this half-plane. Combined with the functional equation's symmetry, all non-trivial zeros must lie on Re(s) = 1/2.</p>
-
-<h2>Historical Context</h2>
-
-<p>Mertens originally conjectured the much stronger inequality |M(N)| < √N for all N, which would have implied RH. However, Odlyzko and te Riele disproved this conjecture in 1985 using sophisticated computational methods. Nevertheless, the weaker condition M(N) = O(N^(1/2+ε)) remains exactly equivalent to RH, making exponential sums S(N,α) a direct testing ground for the hypothesis.</p>
-
-<h2>The Three-Step Decomposition Method</h2>
-
-<p>Our analysis employs a systematic three-step approach, which we label m1, m2, and m3. This framework adapts classical circle method techniques while remaining amenable to modern computational approaches using Farey sequences, random sampling, and Fast Fourier Transform evaluation.</p>
-
-<h3>Step m1: Rational Approximation</h3>
-
-<p>The first step exploits Dirichlet's approximation theorem. For any real number α in [0,1], we can find a rational number a/q with q ≤ Q such that |α - a/q| ≤ 1/(qQ). This allows us to write S(N,α) = S(N,a/q) + E(N,q,α-a/q), where the error term E becomes small when Q is approximately N^(1/2).</p>
-
-<p>This reduction is crucial because it transforms the analysis of S(N,α) for arbitrary irrational α into the study of S(N,a/q) for rational arguments with small denominators. The rational case is more tractable because it connects directly to character sums and L-functions.</p>
-
-<h3>Step m2: Major and Minor Arc Decomposition</h3>
-
-<p>With Q = N^(1/2), we partition the unit interval [0,1] into two types of regions. Major arcs are small neighborhoods around rational numbers a/q with q ≤ Q. Minor arcs constitute the remaining portions of [0,1].</p>
-
-<p>On minor arcs, the exponential oscillation in S(N,α) produces square-root cancellation, yielding |S(N,α)| much less than N^(1/2+ε). This cancellation occurs because α is far from all rationals with small denominators, creating rapid oscillation that causes positive and negative contributions to cancel effectively.</p>
-
-<p>On major arcs, S(N,α) exhibits structured behavior governed by Dirichlet L-functions evaluated on the critical line Re(s) = 1/2. This connection directly links the behavior of S(N,α) to the Riemann Hypothesis, as the major arc contributions are controlled precisely when L-functions have no zeros with real part greater than 1/2.</p>
-
-<h3>Step m3: Mean-Square Identity and Global Structure</h3>
-
-<p>Parseval's identity provides a global constraint on the exponential sums. The integral of |S(N,α)|² over α from 0 to 1 equals the sum of μ(n)² for n ≤ N, which asymptotically equals (6/π²)N. This means the mean-square size of S(N,α) is √N, perfectly consistent with the conjectured RH bounds.</p>
-
-<p>The constant 6/π² is particularly significant as it represents the density of square-free integers, reflecting the deep connection between the Möbius function and square-free numbers. This identity can be exploited computationally using FFT methods to evaluate S(N,α) simultaneously across many values of α.</p>
-
-<h2>Synthesis of the Classical Approach</h2>
-
-<p>The three steps work together to provide a complete picture. Rational approximation reduces general α to nearby rationals, minor arcs exhibit the expected √N cancellation, major arcs reduce directly to L-function behavior on the critical line, and the mean-square identity confirms √N as the correct scale.</p>
-
-<p>Therefore, establishing uniform bounds for S(N,α) across all α is equivalent to proving RH. From a computational perspective, minor arc behavior and average-case cancellation align with RH predictions, while controlling major arcs presents the primary analytic challenge.</p>
-
-<h2>Connection to Modular Sieve Structures</h2>
-
-<p>The framework extends naturally to connect with modular sieve theory through a hierarchy of moduli of the form M_n = 30 · 2^n. This connection provides a geometric interpretation of the analytic cancellation phenomena central to the Riemann Hypothesis.</p>
-
-<h3>Residue Sieves and Cancellation Patterns</h3>
-
-<p>The Euler totient group Φ(M_n) consists of integers r with gcd(r, M_n) = 1, representing candidates for prime residues modulo M_n. The modular sieve identifies valid transitions (r, r+2) in Φ(M_n) × Φ(M_n) that persist under lifts from M_n to M_{n+1}. These transitions encode the modular geometry underlying twin primes and other small prime gaps.</p>
-
-<p>From the analytic viewpoint, Möbius sums S(N,α) measure cancellation across such residue systems. The minor arc square-root cancellation corresponds to pruning residues that fail to persist under modular lifts. Major arcs represent structured rational approximations a/q aligned with small moduli such as M_n.</p>
-
-<p>This establishes that the modular sieve and circle method major/minor arc decomposition address the same fundamental dichotomy between random-like cancellation and structured residues.</p>
-
-<h3>Farey Arcs and Modular Bases</h3>
-
-<p>Every α can be approximated by rationals a/q with q ≤ N^(1/2). In the modular sieve, natural bases are primorial-type moduli M_n whose Euler groups already exclude small prime factors. The Farey decomposition of [0,1] and modular decomposition of Z/M_nZ both partition the analysis into structured rational approximations and generic oscillatory regimes.</p>
-
-<p>Rational arcs with denominators q dividing M_n correspond to structured sieve sectors, while denominators q not dividing M_n correspond to residues eliminated by pruning. This provides a modular interpretation of the analytic major/minor arc division.</p>
-
-<h3>Mean-Square Structure and Modular Density</h3>
-
-<p>The mean-square identity integral of |S(N,α)|² dα ~ (6/π²)N has deep modular significance. The factor 6/π² represents both the density of square-free integers and the proportion of integers coprime to 2, 3, and 5, which is precisely the density of Φ(30). Thus the mean-square identity aligns directly with the modular framework, as the sieve density built into M_n matches the analytic density of μ²(n).</p>
-
-<h2>Unified Perspective and Implications</h2>
-
-<p>The emerging picture reveals that the RH equivalence via Möbius sums asserts √N-scale cancellation that is encoded geometrically in the modular sieve as pruning of non-coprime residues and persistence of valid gap transitions. Major/minor arc analysis corresponds to structured rational denominators q dividing M_n versus generic residues q not dividing M_n. The mean-square law reflects the underlying sieve density 6/π² already built into the base modulus 30.</p>
-
-<p>This establishes that modular sieve and Möbius frameworks are complementary formulations of the same cancellation phenomenon. Analytically, this cancellation is equivalent to RH. Modularly, it is encoded in the persistence of residue transitions across the 30 · 2^n hierarchy.</p>
-
-<h2>Computational and Theoretical Implications</h2>
-
-<p>This dual perspective situates the Riemann Hypothesis at the intersection of exponential sum analysis and modular residue geometry. It suggests new computational approaches for testing RH by examining both the analytic behavior of S(N,α) and the geometric structure of modular sieves.</p>
-
-<p>The framework also opens theoretical avenues by connecting the deep analytic content of L-function zeros to the combinatorial geometry of residue classes. This may lead to new approaches for understanding why the critical line Re(s) = 1/2 should contain all non-trivial zeros, framing this question in terms of optimal cancellation in modular arithmetic progressions.</p>
-
-<p>The equivalence between RH and Möbius exponential sum bounds, combined with the modular sieve interpretation, provides both a testing ground for the hypothesis and a geometric framework for understanding why such profound cancellation should occur. This represents a significant advance in connecting the analytic and algebraic aspects of one of mathematics' most important unsolved problems.</p>
-
-<h1>Interactive Möbius Function Explorer</h1>
-
-<div style="background-color: #f8f9fa; border: 2px solid #3498db; border-radius: 10px; padding: 30px; margin: 30px 0;">
-    <h2>Explore Möbius Exponential Sums S(N,α)</h2>
-    
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
-        <div>
-            <label for="nValue" style="display: block; margin-bottom: 10px; font-weight: bold;">N (sum limit):</label>
-            <input type="range" id="nValue" min="10" max="1000" value="100" style="width: 100%; margin-bottom: 10px;">
-            <span id="nDisplay" style="font-weight: bold; color: #2c3e50;">100</span>
+    <div class="container">
+        <div class="header">
+            <h1>Visualizing the Riemann Zeta Function:<br>A Modular-Cayley Coordinate Exploration</h1>
+            <div style="margin-top: 10px;">Wessen Getachew • October 2025</div>
+            <div style="margin-top: 5px; font-size: 0.9em; opacity: 0.9;">Exploratory Visualization Study</div>
         </div>
-        
-        <div>
-            <label for="alphaValue" style="display: block; margin-bottom: 10px; font-weight: bold;">α (frequency parameter):</label>
-            <input type="range" id="alphaValue" min="0" max="100" value="0" style="width: 100%; margin-bottom: 10px;">
-            <span id="alphaDisplay" style="font-weight: bold; color: #2c3e50;">0.000</span>
+
+        <div class="disclaimer">
+            <strong>Important Disclaimer:</strong> This is a visualization and computational study only. It makes <strong>no claims</strong> about proving the Riemann Hypothesis or discovering new mathematical structure. The patterns observed are artifacts of the chosen construction and have pedagogical value but do not constitute mathematical insight into the distribution of zeta zeros.
         </div>
-    </div>
-    
-    <div style="margin-bottom: 30px;">
-        <button id="calculateBtn" style="background-color: #3498db; color: white; border: none; padding: 12px 24px; border-radius: 5px; font-size: 16px; cursor: pointer; margin-right: 15px;">Calculate S(N,α)</button>
-        <button id="animateBtn" style="background-color: #27ae60; color: white; border: none; padding: 12px 24px; border-radius: 5px; font-size: 16px; cursor: pointer; margin-right: 15px;">Animate α sweep</button>
-        <button id="mertensBtn" style="background-color: #e74c3c; color: white; border: none; padding: 12px 24px; border-radius: 5px; font-size: 16px; cursor: pointer;">Show M(N)</button>
-    </div>
-    
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-        <div>
-            <h3>Results</h3>
-            <div id="results" style="background-color: white; padding: 20px; border-radius: 5px; border: 1px solid #ddd; min-height: 150px; font-family: monospace;">
-                Click "Calculate S(N,α)" to see results
-            </div>
-        </div>
-        
-        <div>
-            <h3>Visualization</h3>
-            <canvas id="plotCanvas" width="400" height="300" style="border: 1px solid #ddd; background-color: white;"></canvas>
-        </div>
-    </div>
-    
-    <div style="margin-top: 20px;">
-        <h3>Möbius Function Values μ(n) for n = 1 to <span id="mobiusRangeDisplay">20</span></h3>
-        <div id="mobiusValues" style="background-color: white; padding: 15px; border-radius: 5px; border: 1px solid #ddd; font-family: monospace; word-wrap: break-word;">
-            Loading...
-        </div>
-    </div>
-    
-    <div style="margin-top: 20px; padding: 15px; background-color: #e8f4f8; border-radius: 5px; border-left: 4px solid #3498db;">
-        <h4>Key Observations:</h4>
-        <ul style="margin: 10px 0;">
-            <li><strong>α = 0:</strong> Gives the Mertens function M(N) = Σμ(n)</li>
-            <li><strong>RH Prediction:</strong> |S(N,α)| should be O(√N) for all α</li>
-            <li><strong>Mean-square:</strong> Average of |S(N,α)|² over α should be ~ (6/π²)N</li>
-            <li><strong>Cancellation:</strong> Watch how oscillation creates cancellation as α increases</li>
-        </ul>
-    </div>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="#scope">Scope</a></li>
+                <li><a href="#framework">Framework</a></li>
+                <li><a href="#viz">Visualization</a></li>
+                <li><a href="#observations">Observations</a></li>
+                <li><a href="#limitations">Limitations</a></li>
+                <li><a href="#code">Code</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <section id="scope" class="section">
+                <h2>Scope and Purpose</h2>
+                
+                <div class="success-box">
+                    <h3>What This Work IS:</h3>
+                    <ul>
+                        <li>A visualization study combining known mathematical concepts</li>
+                        <li>An exploration of the Cayley transform applied to the critical line</li>
+                        <li>A pedagogical tool for understanding modular arithmetic patterns</li>
+                        <li>A computational implementation exercise</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <h3>What This Work IS NOT:</h3>
+                    <ul>
+                        <li>A proof attempt of the Riemann Hypothesis</li>
+                        <li>A claim of discovering new mathematical structure</li>
+                        <li>A proposal for a viable RH proof strategy</li>
+                        <li>Evidence that modular arithmetic determines zeta zero locations</li>
+                    </ul>
+                </div>
+
+                <p>The Cayley transform Γ(s) = (s - 1/2)/(s + 1/2) is simply a <strong>coordinate change</strong>. Saying "RH is true iff all zeros satisfy |Γ(ρ)| = 1" is a tautology—it's true by construction but doesn't reduce the problem's difficulty.</p>
+            </section>
+
+            <section id="framework" class="section">
+                <h2>Mathematical Framework</h2>
+                
+                <h3>The Cayley Transform</h3>
+                <p>For s ∈ ℂ, we define Γ(s) = (s - 1/2)/(s + 1/2). This Möbius transformation maps:</p>
+                <ul>
+                    <li>The critical line Re(s) = 1/2 → unit circle |Γ| = 1</li>
+                    <li>Right half-plane Re(s) > 1/2 → disk interior |Γ| < 1</li>
+                    <li>Left half-plane Re(s) < 1/2 → exterior |Γ| > 1</li>
+                </ul>
+
+                <div class="info-box">
+                    <strong>Connection to Smith Chart:</strong> RF engineers use an identical transform for impedance matching. This is a mathematical coincidence—both contexts use the same Möbius transformation, but there's no known physical connection between impedance and zeta zeros.
+                </div>
+
+                <h3>Modular Arithmetic Overlay</h3>
+                <p>For visualization purposes, we overlay modular structure:</p>
+                <div class="code-block">
+For modulus M and residue r:
+    θ = 2πr/M           (angular position)
+    t = c·θ              (scaling by arbitrary constant c)
+    s = 1/2 + it        (on critical line)
+    Γ = it/(1 + it)     (Cayley coordinate)
 </div>
 
-<script>
-// Möbius function calculation
-function mobius(n) {
-    if (n === 1) return 1;
-    
-    let factors = {};
-    let temp = n;
-    
-    // Check for factor 2
-    if (temp % 2 === 0) {
-        factors[2] = 0;
-        while (temp % 2 === 0) {
-            factors[2]++;
-            temp /= 2;
-        }
-    }
-    
-    // Check for odd factors
-    for (let i = 3; i * i <= temp; i += 2) {
-        if (temp % i === 0) {
-            factors[i] = 0;
-            while (temp % i === 0) {
-                factors[i]++;
-                temp /= i;
+                <p>We filter for coprime residues where gcd(r,M) = 1 and compute density ρ(M) = φ(M)/M.</p>
+
+                <div class="warning-box">
+                    <strong>Critical Disclaimer:</strong> This overlay is chosen for <em>visualization</em>. There is <strong>no established mathematical connection</strong> between residue classes mod M and zeta zero locations. Patterns we observe come from our construction choices, not from intrinsic properties of ζ(s).
+                </div>
+            </section>
+
+            <section id="viz" class="section">
+                <h2>Interactive Visualization</h2>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Maximum Modulus M: <span id="m-val">500</span></label>
+                        <input type="range" id="m-slider" min="20" max="2000" value="500">
+                        <small>Note: Values >1000 may slow rendering. Reveals finer structure.</small>
+                    </div>
+                    <div class="control-group">
+                        <label>Scaling Factor: <span id="scale-val">10</span></label>
+                        <input type="range" id="scale-slider" min="1" max="50" value="10" step="0.5">
+                        <small>Note: Higher values map to larger imaginary parts</small>
+                    </div>
+                    <div class="control-group">
+                        <label>Point Size: <span id="size-val">2</span>px</label>
+                        <input type="range" id="size-slider" min="1" max="5" value="2">
+                        <small>Adjust for high-density visualizations</small>
+                    </div>
+                    <div class="control-group">
+                        <label>Opacity: <span id="opacity-val">0.3</span></label>
+                        <input type="range" id="opacity-slider" min="0.1" max="1" value="0.3" step="0.1">
+                        <small>Lower opacity better for overlapping points</small>
+                    </div>
+                    <div class="control-group">
+                        <label><input type="checkbox" id="coprime" checked> Coprime only (gcd=1)</label>
+                    </div>
+                    <div class="control-group">
+                        <label><input type="checkbox" id="zeros" checked> Show known zeros</label>
+                    </div>
+                    <div class="control-group">
+                        <label><input type="checkbox" id="density-color" checked> Color by density ρ(M)</label>
+                    </div>
+                    <div class="control-group">
+                        <label><input type="checkbox" id="radial-lines"> Show radial structure</label>
+                    </div>
+                    <button onclick="draw()">Regenerate</button>
+                    <button onclick="exportImg()">Export PNG</button>
+                    <button onclick="analyze()">Deep Analysis</button>
+                </div>
+
+                <canvas id="canvas" width="800" height="800"></canvas>
+                
+                <div id="stats" style="background:#ecf0f1; padding:15px; border-radius:5px; margin-top:15px;">
+                    <h3>Visualization Statistics</h3>
+                    <p id="stats-text">Click Regenerate to compute...</p>
+                </div>
+            </section>
+
+            <section id="observations" class="section">
+                <h2>Observations and Interpretation</h2>
+                
+                <h3>What We See</h3>
+                <p>The visualization shows:</p>
+                <ul>
+                    <li>Concentration of points near |Γ| = 1 (the unit circle)</li>
+                    <li>Density variation: ρ(M) ranges from ~0.2 to ~1.0</li>
+                    <li>Rotational symmetry (expected from angular mapping)</li>
+                    <li>Prime moduli create denser rings than composite moduli</li>
+                </ul>
+
+                <h3>What These Patterns Mean</h3>
+                <div class="success-box">
+                    <strong>Legitimate observations:</strong>
+                    <ul>
+                        <li>The Cayley transform successfully maps the critical line to a circle</li>
+                        <li>Coprime residues mod M create predictable density patterns</li>
+                        <li>Prime moduli have higher ρ(M) than highly composite moduli</li>
+                        <li>The visualization has aesthetic and pedagogical value</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <strong>What we CANNOT claim:</strong>
+                    <ul>
+                        <li>These patterns "explain" why zeros lie on the critical line</li>
+                        <li>Modular arithmetic "constrains" zero locations</li>
+                        <li>This reveals "emergent structure" relevant to RH</li>
+                        <li>This suggests a proof strategy</li>
+                    </ul>
+                    <p style="margin-top:10px;">The concentration near |Γ| = 1 is largely an artifact of our scaling choices and the Cayley transform's properties.</p>
+                </div>
+
+                <h3>Known Zeros</h3>
+                <p>The red points show known zeta zeros from established tables. They lie exactly on |Γ| = 1 because they lie on Re(s) = 1/2. This confirms our implementation is correct but provides zero new information about the zeros themselves.</p>
+            </section>
+
+            <section id="limitations" class="section">
+                <h2>Limitations and Missing Elements</h2>
+                
+                <h3>What's Missing: The Critical Gaps</h3>
+                <div class="warning-box">
+                    <strong>1. No Connection to Actual Zeta Function</strong>
+                    <p>This visualization doesn't compute ζ(s) at all! It only:</p>
+                    <ul>
+                        <li>Generates modular points artificially</li>
+                        <li>Maps them through Cayley transform</li>
+                        <li>Shows known zeros from pre-existing tables</li>
+                    </ul>
+                    <p><strong>Missing:</strong> Computing ζ(1/2 + it) to see where it actually approaches zero</p>
+                </div>
+
+                <div class="warning-box">
+                    <strong>2. No Functional Equation Integration</strong>
+                    <p>The functional equation ζ(s) = 2^s π^(s-1) sin(πs/2) Γ(1-s) ζ(1-s) is completely ignored.</p>
+                    <p><strong>Missing:</strong> Showing how this symmetry constrains zero locations</p>
+                </div>
+
+                <div class="warning-box">
+                    <strong>3. No Prime Number Connection</strong>
+                    <p>RH is important because of the Euler product: ζ(s) = ∏(1 - p^(-s))^(-1)</p>
+                    <p><strong>Missing:</strong> Visualization of how prime distribution relates to zeros</p>
+                </div>
+
+                <div class="warning-box">
+                    <strong>4. No Rigorous Distance Metrics</strong>
+                    <p><strong>Missing:</strong> Quantitative analysis of:</p>
+                    <ul>
+                        <li>How close modular points come to actual zeros</li>
+                        <li>Statistical significance of apparent clustering</li>
+                        <li>Comparison with random point distributions</li>
+                        <li>Error bounds and confidence intervals</li>
+                    </ul>
+                </div>
+
+                <h3>Maximum Modulus: Computational Limits</h3>
+                <table>
+                    <tr>
+                        <th>M_max</th>
+                        <th>Total Points</th>
+                        <th>Coprime Points</th>
+                        <th>Render Time</th>
+                        <th>Practical?</th>
+                    </tr>
+                    <tr>
+                        <td>500</td>
+                        <td>~125,000</td>
+                        <td>~78,000</td>
+                        <td>&lt;1s</td>
+                        <td>✓ Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>1,000</td>
+                        <td>~500,000</td>
+                        <td>~304,000</td>
+                        <td>2-3s</td>
+                        <td>✓ Good</td>
+                    </tr>
+                    <tr>
+                        <td>2,000</td>
+                        <td>~2,000,000</td>
+                        <td>~1,216,000</td>
+                        <td>8-12s</td>
+                        <td>⚠ Slow</td>
+                    </tr>
+                    <tr>
+                        <td>5,000</td>
+                        <td>~12,500,000</td>
+                        <td>~7,600,000</td>
+                        <td>45-60s</td>
+                        <td>✗ Too slow</td>
+                    </tr>
+                </table>
+
+                <p><strong>Recommended maximum:</strong> M = 1000-2000 for browser-based rendering. Beyond this:</p>
+                <ul>
+                    <li>Canvas becomes oversaturated</li>
+                    <li>Individual points become indistinguishable</li>
+                    <li>No new mathematical insight gained</li>
+                    <li>Better to use heatmap/density visualization</li>
+                </ul>
+
+                <h3>Why Higher M Doesn't Help</h3>
+                <p>Increasing M reveals:</p>
+                <ul>
+                    <li><strong>Denser rings</strong> at predictable radii (by construction)</li>
+                    <li><strong>Finer angular structure</strong> (from more residue classes)</li>
+                    <li><strong>Same fundamental patterns</strong> (no new phenomena)</li>
+                </ul>
+                
+                <div class="info-box">
+                    <p><strong>Asymptotic density:</strong> As M → ∞, the proportion of coprime points approaches 6/π² ≈ 0.608. This is a known result (sum of 1/n² over coprimes), not a discovery about zeta zeros.</p>
+                </div>
+
+                <h3>Why RH Is Actually Hard</h3>
+                <p>The Riemann Hypothesis resists this approach because:</p>
+                <ul>
+                    <li>The <strong>analytic continuation</strong> of ζ(s) is subtle</li>
+                    <li>The <strong>functional equation</strong> creates complex constraints not visible here</li>
+                    <li>The <strong>distribution of primes</strong> connects to zeros in non-obvious ways</li>
+                    <li>Modular arithmetic has no known direct connection to zero locations</li>
+                </ul>
+
+                <h3>What Would Make This Meaningful?</h3>
+                <ol>
+                    <li><strong>Compute actual ζ(1/2 + it)</strong> values and plot |ζ| approaching zero</li>
+                    <li><strong>Implement functional equation</strong> to show symmetry constraints</li>
+                    <li><strong>Statistical hypothesis testing</strong>: Do modular points cluster near zeros more than random points?</li>
+                    <li><strong>Connect to prime distribution</strong> via explicit formulas</li>
+                    <li><strong>Theoretical justification</strong> for why modular arithmetic would matter</li>
+                </ol>
+            </section>
+
+            <section id="code" class="section">
+                <h2>Implementation Code</h2>
+                
+                <div class="code-block">
+def euler_totient(n):
+    result = n
+    p = 2
+    while p * p <= n:
+        if n % p == 0:
+            while n % p == 0:
+                n //= p
+            result -= result // p
+        p += 1
+    if n > 1:
+        result -= result // n
+    return result
+
+def cayley_transform(sigma, t):
+    """Γ(s) = (s - 1/2)/(s + 1/2)"""
+    num_real = sigma - 0.5
+    num_imag = t
+    den_real = sigma + 0.5
+    den_imag = t
+    mag_sq = den_real**2 + den_imag**2
+    return (
+        (num_real * den_real + num_imag * den_imag) / mag_sq,
+        (num_imag * den_real - num_real * den_imag) / mag_sq
+    )
+
+# Generate points
+for M in range(1, M_max + 1):
+    phi_M = euler_totient(M)
+    density = phi_M / M
+    for r in range(M):
+        if gcd(r, M) != 1: continue
+        theta = 2 * pi * r / M
+        t = theta * scaling_factor  # Arbitrary choice
+        gamma = cayley_transform(0.5, t)
+        # Plot (gamma, density, M)
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Conclusions</h2>
+                
+                <p>We have presented a visualization technique combining the Cayley transform with modular arithmetic patterns. The resulting visualizations are aesthetically interesting and may have pedagogical value, but they <strong>do not constitute progress</strong> on the Riemann Hypothesis.</p>
+
+                <p>This work is best understood as:</p>
+                <ul>
+                    <li>An exercise in mathematical visualization</li>
+                    <li>A programming project connecting multiple concepts</li>
+                    <li>A reminder that pattern recognition ≠ mathematical insight</li>
+                </ul>
+
+                <div class="info-box">
+                    <strong>For anyone interested in actually working on RH:</strong>
+                    <ul>
+                        <li>Study existing literature deeply (Edwards, Titchmarsh, Ivić)</li>
+                        <li>Get formal training in complex analysis and analytic number theory</li>
+                        <li>Work with experienced mentors</li>
+                        <li>Build rigorous theoretical foundations</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <div class="footer">
+            <h3>Wessen Getachew • 2025</h3>
+            <p>Exploratory Visualization Study</p>
+            <p style="margin-top:10px; font-size:0.9em;">This work makes no claims about advancing the Riemann Hypothesis</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+        const cx = w/2, cy = h/2;
+        const scale = 160;
+
+        const zeros = [14.134725,21.022040,25.010858,30.424876,32.935062,
+                       37.586178,40.918719,43.327073,48.005151,49.773832];
+
+        function gcd(a,b) { return b===0 ? a : gcd(b, a%b); }
+
+        function phi(n) {
+            let res = n, temp = n;
+            for(let p=2; p*p<=temp; p++) {
+                if(temp%p===0) {
+                    while(temp%p===0) temp/=p;
+                    res -= res/p;
+                }
             }
+            if(temp>1) res -= res/temp;
+            return Math.floor(res);
         }
-    }
-    
-    // If temp > 1, it's a prime factor
-    if (temp > 1) {
-        factors[temp] = 1;
-    }
-    
-    // Check if any factor appears more than once (not square-free)
-    for (let prime in factors) {
-        if (factors[prime] > 1) {
-            return 0;
+
+        function cayley(sigma, t) {
+            const nr = sigma - 0.5, ni = t;
+            const dr = sigma + 0.5, di = t;
+            const mag = dr*dr + di*di;
+            return {
+                x: (nr*dr + ni*di)/mag,
+                y: (ni*dr - nr*di)/mag
+            };
         }
-    }
-    
-    // Count number of prime factors
-    let numFactors = Object.keys(factors).length;
-    return numFactors % 2 === 0 ? 1 : -1;
-}
 
-// Calculate S(N, alpha)
-function calculateMobiusSum(N, alpha) {
-    let realPart = 0;
-    let imagPart = 0;
-    
-    for (let n = 1; n <= N; n++) {
-        let mu = mobius(n);
-        let angle = 2 * Math.PI * n * alpha;
-        realPart += mu * Math.cos(angle);
-        imagPart += mu * Math.sin(angle);
-    }
-    
-    return {
-        real: realPart,
-        imag: imagPart,
-        magnitude: Math.sqrt(realPart * realPart + imagPart * imagPart)
-    };
-}
+        function draw() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0,0,w,h);
 
-// Calculate Mertens function M(N)
-function mertensFunction(N) {
-    let sum = 0;
-    for (let n = 1; n <= N; n++) {
-        sum += mobius(n);
-    }
-    return sum;
-}
+            const M = parseInt(document.getElementById('m-slider').value);
+            const scaleFactor = parseFloat(document.getElementById('scale-slider').value);
+            const pointSize = parseInt(document.getElementById('size-slider').value);
+            const opacity = parseFloat(document.getElementById('opacity-slider').value);
+            const coprimeOnly = document.getElementById('coprime').checked;
+            const showZeros = document.getElementById('zeros').checked;
+            const densityColor = document.getElementById('density-color').checked;
+            const radialLines = document.getElementById('radial-lines').checked;
 
-// Update displays
-function updateDisplays() {
-    const nValue = parseInt(document.getElementById('nValue').value);
-    const alphaValue = parseFloat(document.getElementById('alphaValue').value) / 100;
-    
-    document.getElementById('nDisplay').textContent = nValue;
-    document.getElementById('alphaDisplay').textContent = alphaValue.toFixed(3);
-    document.getElementById('mobiusRangeDisplay').textContent = Math.min(nValue, 50);
-    
-    // Update Möbius values display
-    updateMobiusDisplay(Math.min(nValue, 50));
-}
+            document.getElementById('m-val').textContent = M;
+            document.getElementById('scale-val').textContent = scaleFactor;
+            document.getElementById('size-val').textContent = pointSize;
+            document.getElementById('opacity-val').textContent = opacity;
 
-// Update Möbius function display
-function updateMobiusDisplay(maxN) {
-    const mobiusDiv = document.getElementById('mobiusValues');
-    let html = '';
-    
-    for (let n = 1; n <= maxN; n++) {
-        const mu = mobius(n);
-        let color = '#333';
-        if (mu === 1) color = '#27ae60';
-        else if (mu === -1) color = '#e74c3c';
-        else color = '#95a5a6';
-        
-        html += `<span style="color: ${color}; margin-right: 8px;">μ(${n})=${mu}</span>`;
-        if (n % 10 === 0) html += '<br>';
-    }
-    
-    mobiusDiv.innerHTML = html;
-}
+            let points = 0, coprimeCount = 0;
+            let minDist = Infinity, maxDist = 0;
+            const distToZeros = [];
 
-// Plot function
-function plotMobiusSum(N, currentAlpha = null) {
-    const canvas = document.getElementById('plotCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Setup
-    const width = canvas.width;
-    const height = canvas.height;
-    const margin = 40;
-    const plotWidth = width - 2 * margin;
-    const plotHeight = height - 2 * margin;
-    
-    // Calculate data points
-    const numPoints = 100;
-    const data = [];
-    let maxMag = 0;
-    
-    for (let i = 0; i <= numPoints; i++) {
-        const alpha = i / numPoints;
-        const result = calculateMobiusSum(N, alpha);
-        data.push({alpha, magnitude: result.magnitude});
-        maxMag = Math.max(maxMag, result.magnitude);
-    }
-    
-    // Draw axes
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(margin, margin);
-    ctx.lineTo(margin, height - margin);
-    ctx.lineTo(width - margin, height - margin);
-    ctx.stroke();
-    
-    // Draw grid
-    ctx.strokeStyle = '#eee';
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 10; i++) {
-        const x = margin + (i / 10) * plotWidth;
-        const y = margin + (i / 10) * plotHeight;
-        
-        ctx.beginPath();
-        ctx.moveTo(x, margin);
-        ctx.lineTo(x, height - margin);
-        ctx.stroke();
-        
-        ctx.beginPath();
-        ctx.moveTo(margin, y);
-        ctx.lineTo(width - margin, y);
-        ctx.stroke();
-    }
-    
-    // Draw data
-    ctx.strokeStyle = '#3498db';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    
-    for (let i = 0; i < data.length; i++) {
-        const x = margin + (data[i].alpha) * plotWidth;
-        const y = height - margin - (data[i].magnitude / maxMag) * plotHeight;
-        
-        if (i === 0) {
-            ctx.moveTo(x, y);
-        } else {
-            ctx.lineTo(x, y);
+            const startTime = performance.now();
+
+            // Radial structure
+            if(radialLines) {
+                ctx.strokeStyle = 'rgba(52,152,219,0.2)';
+                ctx.lineWidth = 0.5;
+                for(let angle=0; angle<Math.PI*2; angle+=Math.PI/12) {
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.lineTo(cx + Math.cos(angle)*scale, cy + Math.sin(angle)*scale);
+                    ctx.stroke();
+                }
+            }
+
+            for(let m=1; m<=M; m++) {
+                const phiM = phi(m);
+                const density = phiM/m;
+                
+                for(let r=0; r<m; r++) {
+                    if(coprimeOnly && gcd(r,m)!==1) continue;
+                    
+                    points++;
+                    if(gcd(r,m)===1) coprimeCount++;
+                    
+                    const theta = 2*Math.PI*r/m;
+                    const t = theta * scaleFactor;
+                    const g = cayley(0.5, t);
+                    
+                    const radius = Math.sqrt(g.x*g.x + g.y*g.y);
+                    const distFromCircle = Math.abs(radius - 1);
+                    minDist = Math.min(minDist, distFromCircle);
+                    maxDist = Math.max(maxDist, distFromCircle);
+                    
+                    const px = cx + g.x * scale;
+                    const py = cy - g.y * scale;
+                    
+                    let color;
+                    if(densityColor) {
+                        const hue = 60 + density*180;
+                        color = `hsla(${hue},70%,55%,${opacity})`;
+                    } else {
+                        const hue = (m/M)*360;
+                        color = `hsla(${hue},70%,55%,${opacity})`;
+                    }
+                    
+                    ctx.fillStyle = color;
+                    ctx.fillRect(px-pointSize/2, py-pointSize/2, pointSize, pointSize);
+                    
+                    // Track distance to nearest zero
+                    if(showZeros) {
+                        let minZeroDist = Infinity;
+                        zeros.forEach(zt => {
+                            const gz = cayley(0.5, zt);
+                            const d = Math.sqrt((g.x-gz.x)**2 + (g.y-gz.y)**2);
+                            minZeroDist = Math.min(minZeroDist, d);
+                        });
+                        distToZeros.push(minZeroDist);
+                    }
+                }
+            }
+
+            const renderTime = ((performance.now() - startTime)/1000).toFixed(2);
+
+            // Unit circle
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, scale, 0, 2*Math.PI);
+            ctx.stroke();
+
+            // Zeros
+            if(showZeros) {
+                ctx.fillStyle = '#e74c3c';
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 1;
+                zeros.forEach(t => {
+                    const g = cayley(0.5, t);
+                    const px = cx + g.x*scale;
+                    const py = cy - g.y*scale;
+                    ctx.beginPath();
+                    ctx.arc(px, py, 4, 0, 2*Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    const g2 = cayley(0.5, -t);
+                    const px2 = cx + g2.x*scale;
+                    const py2 = cy - g2.y*scale;
+                    ctx.beginPath();
+                    ctx.arc(px2, py2, 4, 0, 2*Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+                });
+            }
+
+            const avgDist = distToZeros.length > 0 ? 
+                (distToZeros.reduce((a,b)=>a+b,0)/distToZeros.length).toFixed(4) : 'N/A';
+
+            document.getElementById('stats-text').innerHTML = `
+                <strong>Computational Performance:</strong><br>
+                • Modulus range: 1 to ${M}<br>
+                • Render time: ${renderTime}s<br>
+                • Total points: ${points.toLocaleString()}<br>
+                • Coprime points: ${coprimeCount.toLocaleString()} (${(100*coprimeCount/points).toFixed(1)}%)<br>
+                • Asymptotic coprime density: ${(coprimeCount/points).toFixed(4)} (expect ~0.608 as M→∞)<br><br>
+                
+                <strong>Distance Analysis:</strong><br>
+                • Min distance from |Γ|=1: ${minDist.toFixed(6)}<br>
+                • Max distance from |Γ|=1: ${maxDist.toFixed(6)}<br>
+                • Avg distance to nearest zero: ${avgDist}<br><br>
+                
+                <strong>Parameters:</strong><br>
+                • Scaling factor: ${scaleFactor} (arbitrary, affects t-values)<br>
+                • Point size: ${pointSize}px<br>
+                • Opacity: ${opacity}<br>
+                • Known zeros: ${showZeros ? '20 shown' : 'Hidden'}
+            `;
         }
-    }
-    ctx.stroke();
-    
-    // Highlight current alpha if provided
-    if (currentAlpha !== null) {
-        const result = calculateMobiusSum(N, currentAlpha);
-        const x = margin + currentAlpha * plotWidth;
-        const y = height - margin - (result.magnitude / maxMag) * plotHeight;
-        
-        ctx.fillStyle = '#e74c3c';
-        ctx.beginPath();
-        ctx.arc(x, y, 5, 0, 2 * Math.PI);
-        ctx.fill();
-    }
-    
-    // Draw RH bound line (√N)
-    const rhBound = Math.sqrt(N);
-    if (rhBound <= maxMag) {
-        const y = height - margin - (rhBound / maxMag) * plotHeight;
-        ctx.strokeStyle = '#e74c3c';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]);
-        ctx.beginPath();
-        ctx.moveTo(margin, y);
-        ctx.lineTo(width - margin, y);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        
-        // Label
-        ctx.fillStyle = '#e74c3c';
-        ctx.font = '12px Arial';
-        ctx.fillText('√N (RH bound)', width - margin - 80, y - 5);
-    }
-    
-    // Labels
-    ctx.fillStyle = '#333';
-    ctx.font = '12px Arial';
-    ctx.fillText('α', width - margin - 10, height - margin + 15);
-    ctx.save();
-    ctx.translate(15, margin + plotHeight / 2);
-    ctx.rotate(-Math.PI / 2);
-    ctx.fillText('|S(N,α)|', 0, 0);
-    ctx.restore();
-}
 
-// Event handlers
-document.getElementById('nValue').addEventListener('input', updateDisplays);
-document.getElementById('alphaValue').addEventListener('input', updateDisplays);
-
-document.getElementById('calculateBtn').addEventListener('click', function() {
-    const N = parseInt(document.getElementById('nValue').value);
-    const alpha = parseFloat(document.getElementById('alphaValue').value) / 100;
-    
-    const result = calculateMobiusSum(N, alpha);
-    const mertens = mertensFunction(N);
-    const rhBound = Math.sqrt(N);
-    const meanSquareExpected = (6 / (Math.PI * Math.PI)) * N;
-    
-    document.getElementById('results').innerHTML = `
-        <strong>N = ${N}, α = ${alpha.toFixed(3)}</strong><br><br>
-        <strong>S(N,α):</strong><br>
-        Real part: ${result.real.toFixed(4)}<br>
-        Imaginary part: ${result.imag.toFixed(4)}<br>
-        Magnitude: ${result.magnitude.toFixed(4)}<br><br>
-        <strong>RH Analysis:</strong><br>
-        √N (RH bound): ${rhBound.toFixed(4)}<br>
-        Ratio |S|/√N: ${(result.magnitude/rhBound).toFixed(4)}<br><br>
-        <strong>Special case α=0:</strong><br>
-        M(N) = ${mertens}<br><br>
-        <strong>Mean-square prediction:</strong><br>
-        Expected ≈ ${Math.sqrt(meanSquareExpected).toFixed(2)}
-    `;
-    
-    plotMobiusSum(N, alpha);
-});
-
-document.getElementById('mertensBtn').addEventListener('click', function() {
-    const N = parseInt(document.getElementById('nValue').value);
-    
-    // Calculate M(n) for n = 1 to N
-    let mertensValues = [];
-    let sum = 0;
-    for (let n = 1; n <= N; n++) {
-        sum += mobius(n);
-        mertensValues.push(sum);
-    }
-    
-    // Plot Mertens function
-    const canvas = document.getElementById('plotCanvas');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    const width = canvas.width;
-    const height = canvas.height;
-    const margin = 40;
-    const plotWidth = width - 2 * margin;
-    const plotHeight = height - 2 * margin;
-    
-    const maxVal = Math.max(...mertensValues.map(Math.abs));
-    
-    // Draw axes
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(margin, height/2);
-    ctx.lineTo(width - margin, height/2);
-    ctx.moveTo(margin, margin);
-    ctx.lineTo(margin, height - margin);
-    ctx.stroke();
-    
-    // Plot Mertens function
-    ctx.strokeStyle = '#2c3e50';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    
-    for (let i = 0; i < mertensValues.length; i++) {
-        const x = margin + (i / (N-1)) * plotWidth;
-        const y = height/2 - (mertensValues[i] / maxVal) * (plotHeight/2 - 20);
-        
-        if (i === 0) {
-            ctx.moveTo(x, y);
-        } else {
-            ctx.lineTo(x, y);
+        function analyze() {
+            const M = parseInt(document.getElementById('m-slider').value);
+            let analysis = '<h3>Deep Analysis</h3>';
+            
+            // Density histogram
+            const densities = {};
+            for(let m=1; m<=Math.min(M, 100); m++) {
+                const d = (phi(m)/m).toFixed(2);
+                densities[d] = (densities[d] || 0) + 1;
+            }
+            
+            analysis += '<strong>Density Distribution (first 100 moduli):</strong><br>';
+            Object.keys(densities).sort().forEach(d => {
+                analysis += `ρ=${d}: ${densities[d]} moduli<br>`;
+            });
+            
+            analysis += '<br><strong>Prime Moduli Analysis:</strong><br>';
+            const primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47];
+            primes.forEach(p => {
+                if(p <= M) {
+                    analysis += `M=${p} (prime): ρ=${(phi(p)/p).toFixed(4)} = ${((p-1)/p).toFixed(4)}<br>`;
+                }
+            });
+            
+            analysis += '<br><strong>Highly Composite Examples:</strong><br>';
+            [12,24,30,60,120].forEach(n => {
+                if(n <= M) {
+                    analysis += `M=${n}: ρ=${(phi(n)/n).toFixed(4)}<br>`;
+                }
+            });
+            
+            analysis += '<br><em>Note: Higher ρ means more coprime residues, creating denser rings in visualization.</em>';
+            
+            document.getElementById('stats-text').innerHTML = analysis;
         }
-    }
-    ctx.stroke();
-    
-    // Draw ±√N bounds
-    const sqrtN = Math.sqrt(N);
-    if (sqrtN <= maxVal) {
-        ctx.strokeStyle = '#e74c3c';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([5, 5]);
-        
-        const yUpper = height/2 - (sqrtN / maxVal) * (plotHeight/2 - 20);
-        const yLower = height/2 + (sqrtN / maxVal) * (plotHeight/2 - 20);
-        
-        ctx.beginPath();
-        ctx.moveTo(margin, yUpper);
-        ctx.lineTo(width - margin, yUpper);
-        ctx.moveTo(margin, yLower);
-        ctx.lineTo(width - margin, yLower);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        
-        ctx.fillStyle = '#e74c3c';
-        ctx.font = '10px Arial';
-        ctx.fillText('±√N', width - margin - 25, yUpper - 5);
-    }
-    
-    document.getElementById('results').innerHTML = `
-        <strong>Mertens Function M(N)</strong><br><br>
-        Final value M(${N}) = ${mertensValues[N-1]}<br>
-        √N = ${Math.sqrt(N).toFixed(4)}<br>
-        |M(N)|/√N = ${Math.abs(mertensValues[N-1])/Math.sqrt(N).toFixed(4)}<br><br>
-        <strong>RH Equivalence:</strong><br>
-        RH ⟺ |M(N)| = O(N^(1/2+ε))<br>
-        Current ratio suggests ${Math.abs(mertensValues[N-1])/Math.sqrt(N) < 1 ? 'consistency' : 'potential violation'}<br>
-        with RH bounds for this N.
-    `;
-});
 
-let animationId = null;
-document.getElementById('animateBtn').addEventListener('click', function() {
-    const btn = document.getElementById('animateBtn');
-    
-    if (animationId) {
-        cancelAnimationFrame(animationId);
-        animationId = null;
-        btn.textContent = 'Animate α sweep';
-        btn.style.backgroundColor = '#27ae60';
-        return;
-    }
-    
-    btn.textContent = 'Stop animation';
-    btn.style.backgroundColor = '#e67e22';
-    
-    const N = parseInt(document.getElementById('nValue').value);
-    let alpha = 0;
-    const speed = 0.005;
-    
-    function animate() {
-        alpha += speed;
-        if (alpha > 1) alpha = 0;
-        
-        document.getElementById('alphaValue').value = Math.round(alpha * 100);
-        document.getElementById('alphaDisplay').textContent = alpha.toFixed(3);
-        
-        const result = calculateMobiusSum(N, alpha);
-        
-        document.getElementById('results').innerHTML = `
-            <strong>ANIMATION: N = ${N}, α = ${alpha.toFixed(3)}</strong><br><br>
-            <strong>S(N,α):</strong><br>
-            Real part: ${result.real.toFixed(4)}<br>
-            Imaginary part: ${result.imag.toFixed(4)}<br>
-            Magnitude: ${result.magnitude.toFixed(4)}<br><br>
-            <strong>RH bound √N:</strong> ${Math.sqrt(N).toFixed(4)}<br>
-            <strong>Ratio |S|/√N:</strong> ${(result.magnitude/Math.sqrt(N)).toFixed(4)}
-        `;
-        
-        plotMobiusSum(N, alpha);
-        animationId = requestAnimationFrame(animate);
-    }
-    
-    animate();
-});
+        function exportImg() {
+            const link = document.createElement('a');
+            link.download = 'cayley-modular-visualization.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
 
-// Initialize
-updateDisplays();
-plotMobiusSum(100);
-</script>
+        document.getElementById('m-slider').addEventListener('input', () => {
+            document.getElementById('m-val').textContent = document.getElementById('m-slider').value;
+        });
 
+        document.getElementById('scale-slider').addEventListener('input', () => {
+            document.getElementById('scale-val').textContent = document.getElementById('scale-slider').value;
+        });
+
+        document.getElementById('size-slider').addEventListener('input', () => {
+            document.getElementById('size-val').textContent = document.getElementById('size-slider').value;
+        });
+
+        document.getElementById('opacity-slider').addEventListener('input', () => {
+            document.getElementById('opacity-val').textContent = document.getElementById('opacity-slider').value;
+        });
+
+        draw();
+    </script>
 </body>
-    </html>
+</html>
