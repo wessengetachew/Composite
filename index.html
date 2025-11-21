@@ -42,6 +42,30 @@
         .subtitle {
             font-size: 1.1em;
             color: #aaa;
+            margin-bottom: 10px;
+        }
+        
+        .author {
+            font-size: 0.95em;
+            color: #00ffff;
+            margin-top: 10px;
+        }
+        
+        .repo-links {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 8px;
+        }
+        
+        .repo-links a {
+            color: #00aaff;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+        
+        .repo-links a:hover {
+            color: #00ffff;
+            text-decoration: underline;
         }
         
         .main-layout {
@@ -347,6 +371,15 @@
         <header>
             <h1>Composite Channel Projection Corollary</h1>
             <div class="subtitle">Every composite modulus has reducible residues projecting onto simpler Farey channels</div>
+            <div class="author">by Wessen Getachew</div>
+            <div class="repo-links">
+                For more projects: 
+                <a href="https://github.com/wessengetachew/Ethiopian" target="_blank">Ethiopian</a> |
+                <a href="https://github.com/wessengetachew/GCD" target="_blank">GCD</a> |
+                <a href="https://github.com/wessengetachew/Primes" target="_blank">Primes</a> |
+                <a href="https://github.com/wessengetachew/Farey" target="_blank">Farey</a> |
+                <a href="https://github.com/wessengetachew/PI" target="_blank">PI</a>
+            </div>
         </header>
         
         <div class="main-layout">
@@ -693,7 +726,7 @@
                     rRed: rRed,
                     mRed: mRed,
                     isIrreducible: isIrreducible,
-                    theta: (2 * Math.PI * r) / M - Math.PI / 2, // r=0 at top (12 o'clock), -π/2 offset
+                    theta: (2 * Math.PI * r) / M - Math.PI / 2, // r=0 at top (12 o'clock)
                     spf: smallestPrimeFactor(d),
                     lpf: largestPrimeFactor(d)
                 };
@@ -756,7 +789,7 @@
             const divisors = currentData.divisors.filter(d => d < currentData.M).reverse();
             const radiusMap = new Map();
             divisors.forEach((d, idx) => {
-                radiusMap.set(d, baseRadius * (1 - idx * 0.12));
+                radiusMap.set(d, baseRadius * (1 - (idx + 1) * 0.12));
             });
             
             const showFareyLines = document.getElementById('showFareyLines').checked;
@@ -1190,4 +1223,4 @@
         updateVisualization();
     </script>
 </body>
-    </html>
+</html>
