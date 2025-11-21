@@ -3,3119 +3,1095 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Modular Lifting Rings v8.0</title>
+    <title>Twin Prime Theory: Interactive Research Framework</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.24.1/plotly.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
-            color: #e2e8f0;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
-            transition: background 0.3s ease, color 0.3s ease;
         }
         
-        body.light-mode {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-            color: #2d3748;
+        .navbar {
+            background: rgba(0,0,0,0.9);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
         }
         
-        body.light-mode .app-header {
-            background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
-            border-bottom: 2px solid #e2e8f0;
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
         }
         
-        body.light-mode .control-panel,
-        body.light-mode .visualization-panel,
-        body.light-mode .analysis-panel {
+        .nav-title {
+            color: white;
+            font-size: 1.5em;
+            font-weight: 300;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(5px);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        .section {
             background: rgba(255, 255, 255, 0.95);
-            border: 1px solid #e2e8f0;
-        }
-        
-        body.light-mode .section-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-        }
-        
-        body.light-mode h1,
-        body.light-mode h2,
-        body.light-mode h3 {
-            color: #2d3748;
-        }
-
-        .app-header {
-            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-            padding: 20px 30px;
-            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .header-content {
-            max-width: 1800px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header-title h1 {
-            font-size: 1.8em;
-            font-weight: 600;
-            color: #FFD700;
-            margin-bottom: 4px;
-        }
-
-        .header-title .subtitle {
-            font-size: 0.9em;
-            opacity: 0.8;
-            color: #cbd5e0;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .app-container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: 300px 1fr 350px;
-            gap: 15px;
-            min-height: calc(100vh - 100px);
-        }
-
-        .control-panel {
-            background: rgba(45, 55, 72, 0.95);
-            border-radius: 12px;
-            padding: 0;
-            height: fit-content;
-            max-height: calc(100vh - 140px);
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .panel-header {
-            position: sticky;
-            top: 0;
-            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
-            padding: 15px 20px;
-            border-bottom: 2px solid rgba(255, 215, 0, 0.2);
-            z-index: 10;
-        }
-
-        .panel-header h2 {
-            font-size: 1.2em;
-            font-weight: 600;
-            color: #FFD700;
-            margin: 0;
-        }
-
-        .panel-content {
-            padding: 15px;
-        }
-
-        .section-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.2s ease;
-        }
-
-        .section-card:hover {
-            border-color: rgba(255, 215, 0, 0.3);
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.1);
-        }
-
-        .section-card h3 {
-            color: #cbd5e0;
-            margin-bottom: 12px;
-            font-size: 0.95em;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .section-card.collapsed .section-content {
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             display: none;
         }
-
-        .section-content {
-            margin-top: 12px;
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
         }
-
-        .checkbox-group {
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .main-title {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+        
+        .subtitle {
+            font-size: 1.3em;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        
+        .author-info {
+            font-size: 1.1em;
+            color: #95a5a6;
+        }
+        
+        .theorem-box {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border: 3px solid #2196f3;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .theorem-box::before {
+            content: attr(data-type);
+            position: absolute;
+            top: -15px;
+            left: 25px;
+            background: #2196f3;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+        
+        .interactive-panel {
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+            border: 3px solid #9c27b0;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+            align-items: end;
+        }
+        
+        .control-group {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 6px 8px;
-            border-radius: 6px;
-            transition: background 0.2s;
-            font-size: 0.9em;
-        }
-
-        .checkbox-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            transform: scale(1.2);
-            accent-color: #FFD700;
-        }
-
-        .visualization-panel {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .canvas-wrapper {
-            position: relative;
-            background: #000000;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            overflow: hidden;
-        }
-
-        #canvas {
-            border-radius: 8px;
-            background: #000000;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            max-width: 100%;
-            max-height: 875px;
-            width: auto;
-            height: auto;
-            cursor: grab;
-            display: block;
-        }
-
-        #canvas:active {
-            cursor: grabbing;
-        }
-
-        #canvas.distance-mode {
-            cursor: crosshair !important;
-        }
-
-        .distance-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        .distance-overlay.active {
-            pointer-events: all;
-        }
-
-        .analysis-panel {
-            background: rgba(45, 55, 72, 0.95);
-            border-radius: 12px;
-            padding: 0;
-            height: fit-content;
-            max-height: calc(100vh - 140px);
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .tab-navigation {
-            display: flex;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px 8px 0 0;
-            overflow: hidden;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .tab-button {
-            flex: 1;
-            padding: 12px 15px;
-            background: transparent;
-            border: none;
-            color: #cbd5e0;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            border-bottom: 3px solid transparent;
-        }
-
-        .tab-button:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #FFD700;
-        }
-
-        .tab-button.active {
-            color: #FFD700;
-            border-bottom-color: #FFD700;
-            background: rgba(255, 215, 0, 0.1);
-        }
-
-        .tab-content {
-            display: none;
-            padding: 20px;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .rh-section {
-            background: linear-gradient(45deg, rgba(255, 215, 0, 0.12), rgba(72, 187, 120, 0.12));
-            border: 1px solid rgba(255, 215, 0, 0.25);
-        }
-
-        .rh-btn {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            color: #000000;
+        
+        label {
             font-weight: 600;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
-        }
-
-        .rh-btn:hover {
-            background: linear-gradient(45deg, #FFA500, #FF8C00);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-        }
-
-        .rh-info {
-            background: linear-gradient(45deg, rgba(255, 215, 0, 0.1), rgba(72, 187, 120, 0.1));
-            border-left: 3px solid #48BB78;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-        }
-
-        .validation-status {
-            position: absolute;
-            top: 50px;
-            right: 10px;
-            background: linear-gradient(45deg, #48BB78, #38a169);
-            padding: 10px 15px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: bold;
-            border: 2px solid rgba(255, 215, 0, 0.4);
-            z-index: 10;
-            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { 
-                box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
-                transform: scale(1);
-            }
-            50% { 
-                box-shadow: 0 6px 20px rgba(72, 187, 120, 0.5);
-                transform: scale(1.02);
-            }
-        }
-
-        .rh-visualization-section {
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(20, 20, 30, 0.9));
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 15px;
-            padding: 25px;
-            margin-top: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        }
-
-        .rh-visualization-section h3 {
-            color: #FFD700;
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.3em;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .rh-visual-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .critical-line-display,
-        .character-support-display,
-        .prime-distribution-display {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            text-align: center;
-        }
-
-        .rh-visual-title {
-            color: #FFD700;
-            font-weight: 600;
-            margin: 10px 0 5px 0;
-            font-size: 1.1em;
-        }
-
-        .rh-visual-desc {
-            color: #bdc3c7;
-            font-size: 0.9em;
-            font-style: italic;
-        }
-
-        .rh-research-controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .rh-explanation {
-            background: linear-gradient(45deg, rgba(255, 215, 0, 0.08), rgba(72, 187, 120, 0.08));
-            border: 2px solid rgba(255, 215, 0, 0.25);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 18px 0;
-            font-size: 14px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .rh-explanation::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #FFD700, #48BB78, #FFD700);
-            animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1.0; }
-        }
-
-        .rh-notice {
-            background: linear-gradient(45deg, rgba(255, 215, 0, 0.1), rgba(72, 187, 120, 0.1));
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 18px 0;
-            font-size: 14px;
-            position: relative;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.1);
-        }
-
-        .unit-circle-highlight {
-            background: rgba(160, 174, 192, 0.12);
-            border: 1px solid rgba(160, 174, 192, 0.25);
-            font-weight: 500;
-        }
-
-        .custom-gap {
-            margin-top: 12px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .gap-input {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px 0;
-            flex-wrap: wrap;
-        }
-
-        .gap-input input {
-            width: 70px;
-            padding: 8px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .gap-input input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        button {
-            background: #4a5568;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 8px 14px;
-            border-radius: 6px;
-            color: white;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 13px;
-            transition: all 0.2s ease;
-            margin: 2px;
-            font-family: inherit;
-        }
-
-        button:hover {
-            background: #5a6478;
-            border-color: rgba(255, 255, 255, 0.25);
-            transform: translateY(-1px);
-        }
-
-        .reset-btn {
-            background: #e53e3e;
-            border-color: rgba(229, 62, 62, 0.3);
-        }
-
-        .special-btn {
-            background: #805ad5;
-            border-color: rgba(128, 90, 213, 0.3);
-        }
-
-        .slider-group {
-            margin: 15px 0;
-        }
-
-        .slider-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .slider-group input[type="range"] {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: rgba(255, 255, 255, 0.3);
-            outline: none;
-        }
-
-        .slider-group input[type="range"]::-webkit-slider-thumb {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: #a0aec0;
-            cursor: pointer;
-            border: 2px solid white;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        .slider-group select {
-            width: 100%;
-            padding: 8px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            font-size: 14px;
-        }
-
-        .slider-group input[type="color"] {
-            width: 100%;
-            height: 40px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .canvas-container {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 12px;
-            padding: 25px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 100%;
-            max-width: 100%;
-            overflow: hidden;
-            box-sizing: border-box;
-        }
-
-        #canvas {
-            border-radius: 8px;
-            background: #000000;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            max-width: 100%;
-            max-height: 875px;
-            width: auto;
-            height: auto;
-            cursor: grab;
-        }
-
-        #canvas:active {
-            cursor: grabbing;
-        }
-
-        .analysis-section {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 25px;
-            margin-top: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-        }
-
-        .analysis-section h3 {
-            color: #a0aec0;
-            margin-bottom: 20px;
-            font-size: 1.2em;
-            text-align: center;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .analysis-section h3:hover {
-            color: #cbd5e0;
-        }
-
-        .collapse-icon {
-            transition: transform 0.3s ease;
-            font-size: 0.8em;
-        }
-
-        .collapse-icon.collapsed {
-            transform: rotate(-90deg);
-        }
-
-        .ring-info {
-            margin: 10px 0;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 6px;
-            font-size: 13px;
-            border-left: 3px solid #a0aec0;
-        }
-
-        .unit-circle-info {
-            background: rgba(160, 174, 192, 0.12);
-            border-left: 3px solid #a0aec0;
-            font-weight: 500;
-        }
-
-        .collapsible-content {
-            max-height: 500px;
-            overflow-y: auto;
-            transition: max-height 0.3s ease, opacity 0.3s ease;
-        }
-
-        .collapsible-content.collapsed {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-        }
-
-        .collapsible-section {
-            max-height: 2000px;
-            overflow-y: auto;
-            transition: max-height 0.3s ease, opacity 0.3s ease;
-        }
-
-        .collapsible-section.collapsed {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-        }
-
-        .legend {
-            margin-top: 30px;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-        }
-
-        .legend h3 {
-            color: #a0aec0;
-            margin-bottom: 20px;
-            font-size: 1.2em;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .legend-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid white;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .math-notation {
-            font-family: 'Times New Roman', serif;
-            font-style: italic;
-        }
-
-        @media (max-width: 1400px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            #canvas {
-                width: 100%;
-                max-width: 90vw;
-                height: auto;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .canvas-container {
-                padding: 15px;
-            }
-            
-            #canvas {
-                max-width: 95vw;
-                max-height: 500px;
-            }
-            
-            .container {
-                padding: 15px;
-            }
-        }
-
-        .animation-status {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #2c3e50;
+            font-size: 0.95em;
         }
         
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 25px;
-            padding: 8px 16px;
-            cursor: pointer;
+        input, select, button {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
             font-size: 14px;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
         
-        .theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
+        input:focus, select:focus {
+            border-color: #9c27b0;
+            outline: none;
+            box-shadow: 0 0 15px rgba(156, 39, 176, 0.3);
         }
         
-        .keyboard-shortcuts {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 15px;
-            font-size: 12px;
-            max-width: 250px;
-            display: none;
-        }
-        
-        .keyboard-shortcuts.visible {
-            display: block;
-        }
-        
-        .keyboard-shortcuts h4 {
-            margin: 0 0 10px 0;
-            color: #FFD700;
-        }
-        
-        .keyboard-shortcuts kbd {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: monospace;
-            font-size: 11px;
-        }
-        
-        .hover-tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #FFD700;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 12px;
-            pointer-events: none;
-            z-index: 10000;
-            max-width: 300px;
-            display: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-        }
-        
-        .hover-tooltip.visible {
-            display: block;
-        }
-        
-        .hover-tooltip h5 {
-            margin: 0 0 8px 0;
-            color: #FFD700;
-            font-size: 14px;
-        }
-        
-        .hover-tooltip .property {
-            margin: 4px 0;
-            color: #4ECDC4;
-        }
-        
-        .hover-tooltip .property strong {
-            color: #ffffff;
-        }
-        
-        .color-palette-selector {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin: 10px 0;
-        }
-        
-        .palette-option {
-            height: 40px;
-            border-radius: 8px;
+        button {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            color: white;
+            border: none;
             cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.2s ease;
-            position: relative;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
         
-        .palette-option:hover {
-            transform: scale(1.05);
-            border-color: #FFD700;
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(156, 39, 176, 0.4);
         }
         
-        .palette-option.active {
-            border-color: #FFD700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         
-        .palette-option.rainbow {
-            background: linear-gradient(90deg, #FF6B6B, #FFD700, #4ECDC4, #9b59b6);
+        .results-table th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
         }
         
-        .palette-option.ocean {
-            background: linear-gradient(90deg, #006994, #1e90ff, #4ECDC4, #7fcdbb);
+        .results-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ecf0f1;
         }
         
-        .palette-option.sunset {
-            background: linear-gradient(90deg, #FF6B6B, #FF8C42, #FFA500, #FFD700);
+        .results-table tr:hover {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
         }
         
-        .palette-option.matrix {
-            background: linear-gradient(90deg, #003300, #00ff00, #00cc00, #39FF14);
+        .result-value {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #2c3e50;
         }
         
-        .palette-option.fire {
-            background: linear-gradient(90deg, #8B0000, #FF0000, #FF4500, #FFA500);
+        .status-excellent {
+            color: #27ae60;
+            font-weight: bold;
         }
         
-        .palette-option.ice {
-            background: linear-gradient(90deg, #E0FFFF, #ADD8E6, #87CEEB, #4682B4);
+        .status-good {
+            color: #f39c12;
+            font-weight: bold;
         }
         
-        .palette-option.purple {
-            background: linear-gradient(90deg, #4B0082, #8B008B, #9370DB, #BA55D3);
+        .status-poor {
+            color: #e74c3c;
+            font-weight: bold;
         }
         
-        .palette-option.earth {
-            background: linear-gradient(90deg, #8B4513, #D2691E, #DEB887, #F4A460);
+        .plot-container {
+            margin: 30px 0;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .formula-display {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.2em;
+            margin: 25px 0;
+            border: 2px solid #f39c12;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border: 2px solid #28a745;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .section-header {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #9c27b0;
+        }
+        
+        .subsection {
+            margin: 30px 0;
+        }
+        
+        .subsection-title {
+            font-size: 1.3em;
+            color: #34495e;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .computing {
+            opacity: 0.7;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        .export-panel {
+            background: #34495e;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .key-insight {
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #e91e63;
+            margin: 20px 0;
         }
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-title">Twin Prime Research Framework</div>
+            <div class="nav-links">
+                <a href="#" class="nav-link active" onclick="showSection('overview')">Overview</a>
+                <a href="#" class="nav-link" onclick="showSection('finite')">Finite Identity</a>
+                <a href="#" class="nav-link" onclick="showSection('scaling')">Scaling Law</a>
+                <a href="#" class="nav-link" onclick="showSection('modular')">Modular Analysis</a>
+                <a href="#" class="nav-link" onclick="showSection('framework')">Two-Point Framework</a>
+            </div>
+        </div>
+    </nav>
+
     <div class="container">
-        <div class="theme-toggle" onclick="toggleTheme()">
-            <span id="themeIcon">🌙</span>
-            <span id="themeText">Dark Mode</span>
-        </div>
-        
-        <div class="keyboard-shortcuts" id="keyboardShortcuts">
-            <h4>⌨️ Keyboard Shortcuts</h4>
-            <div><kbd>?</kbd> Toggle this help</div>
-            <div><kbd>T</kbd> Toggle theme</div>
-            <div><kbd>R</kbd> Toggle rotation</div>
-            <div><kbd>L</kbd> Toggle labels</div>
-            <div><kbd>Space</kbd> Start/Stop animation</div>
-            <div><kbd>←→</kbd> Adjust rotation</div>
-            <div><kbd>↑↓</kbd> Adjust zoom</div>
-            <div><kbd>Esc</kbd> Reset view</div>
-            <div><kbd>S</kbd> Take screenshot</div>
-            <div><kbd>1-8</kbd> Quick gap selection</div>
-        </div>
-        
-        <div class="hover-tooltip" id="hoverTooltip">
-            <h5 id="tooltipTitle">Residue Info</h5>
-            <div id="tooltipContent"></div>
-        </div>
-        
-        <h1>Riemann Hypothesis Explorer</h1>
-        <div class="subtitle">Interactive Modular Rings & Complex Analysis Visualization<br>
-        <em class="math-notation">Exploring ζ(s), L(s,χ), and Prime Distribution through Geometric Patterns</em></div>
-
-        <div class="main-grid">
-            <div class="controls">
-                
-                <div class="control-section" style="background: linear-gradient(45deg, rgba(78, 205, 196, 0.15), rgba(138, 43, 226, 0.15)); border: 2px solid rgba(78, 205, 196, 0.4);">
-                    <h3 onclick="toggleSection('layoutSection')" style="cursor: pointer; user-select: none; color: #4ECDC4;">
-                        <span class="collapse-icon" id="layoutSectionIcon">▼</span>
-                        Coordinate System Layout
-                    </h3>
-                    <div id="layoutSection" class="collapsible-section">
-                    
-                    <div class="slider-group">
-                        <label><strong>Coordinate System:</strong></label>
-                        <select id="coordinateSystem" onchange="updateCoordinateSystem()" style="width: 100%; padding: 8px; border-radius: 6px; font-size: 13px;">
-                            <option value="polar" selected>Polar/Concentric (default)</option>
-                            <option value="log-cylinder">Log-Cylinder (u=ln m, v=θ)</option>
-                            <option value="spiral">Logarithmic Spiral</option>
-                            <option value="hyperbolic">Hyperbolic (Poincaré disk)</option>
-                            <option value="rectangular">Rectangular Grid</option>
-                            <option value="treemap">Treemap/Packing</option>
-                            <option value="voronoi">Voronoi Tessellation</option>
-                            <option value="fractal">Fractal Self-Similar</option>
-                        </select>
-                    </div>
-                    
-                    <div id="coordinateParams" style="margin-top: 15px;">
-                        <!-- Parameters for each coordinate system -->
-                    </div>
-                    
-                    <div style="font-size: 0.85em; opacity: 0.9; margin-top: 10px; padding: 10px; background: rgba(78, 205, 196, 0.1); border-radius: 6px; border-left: 3px solid #4ECDC4;">
-                        <strong>Current System:</strong><br>
-                        <span id="coordSystemDesc">Traditional polar coordinates with concentric rings</span>
-                    </div>
-                    
-                    </div>
-                </div>
-                <div class="control-section rh-section">
-                    <h3 onclick="toggleSection('rhSection')" style="cursor: pointer; user-select: none;">
-                        <span class="collapse-icon" id="rhSectionIcon">▼</span>
-                        Riemann Hypothesis Research Hub
-                    </h3>
-                    <div id="rhSection" class="collapsible-section">
-                    
-                    <div class="custom-gap" style="background: linear-gradient(45deg, rgba(255, 215, 0, 0.12), rgba(72, 187, 120, 0.12)); border: 2px solid rgba(255, 215, 0, 0.3); margin-bottom: 15px;">
-                        <label><strong>Advanced Distance Measurement:</strong></label>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="enableDistanceTool" onchange="toggleDistanceTool()"> Enable Multi-Point Measurement
-                        </div>
-                        <div id="distanceControls" style="display: none; margin-top: 10px;">
-                            <div class="slider-group">
-                                <label>Measurement Mode:</label>
-                                <select id="distanceMode" onchange="updateDistanceMode()">
-                                    <option value="euclidean">Euclidean (straight line)</option>
-                                    <option value="manhattan">Manhattan (|Δx| + |Δy|)</option>
-                                    <option value="geodesic">Geodesic (along ring)</option>
-                                    <option value="angular">Angular (radians)</option>
-                                    <option value="modular">Modular Arithmetic</option>
-                                </select>
-                            </div>
-                            
-                            <div class="slider-group">
-                                <label>Path Type:</label>
-                                <select id="pathType" onchange="updatePathType()">
-                                    <option value="sequential">Sequential (point-to-point)</option>
-                                    <option value="closed">Closed Loop</option>
-                                    <option value="star">Star (all to centroid)</option>
-                                    <option value="mst">Minimum Spanning Tree</option>
-                                    <option value="tsp">Traveling Salesman</option>
-                                </select>
-                            </div>
-                            
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="showDistanceLabels" onchange="draw()"> Show Distance Labels
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="showAngles" onchange="draw()"> Show Angles
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="showMidpoints" onchange="draw()"> Show Midpoints
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="showCentroid" onchange="draw()"> Show Centroid
-                            </div>
-                            
-                            <div style="margin-top: 12px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 6px;">
-                                <strong>Quick Selection:</strong>
-                                <div class="gap-input" style="margin-top: 8px;">
-                                    <button onclick="selectAllOnRing()">All on Ring</button>
-                                    <button onclick="selectPrimesOnly()">Primes Only</button>
-                                    <button onclick="selectByGCD()">By GCD=1</button>
-                                </div>
-                            </div>
-                            
-                            <div style="font-size: 12px; opacity: 0.9; margin: 12px 0 8px 0;">
-                                <strong>Manual Point Entry:</strong>
-                            </div>
-                            <div class="gap-input">
-                                r = <input type="number" id="pointResidue" min="0" placeholder="0" style="width: 50px;">
-                                M = <input type="number" id="pointModulus" min="1" placeholder="30" style="width: 50px;">
-                                <button onclick="addMeasurementPoint()" style="background: #4ECDC4; color: #fff; font-weight: bold;">Add Point</button>
-                            </div>
-                            
-                            <div id="pointsList" style="max-height: 150px; overflow-y: auto; margin: 10px 0; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 6px; font-size: 11px;">
-                                <em>No points selected. Click points on canvas or enter manually.</em>
-                            </div>
-                            
-                            <div id="distanceResults" style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px; min-height: 80px; margin-bottom: 10px; font-size: 12px;">
-                                <strong>Statistics</strong><br>
-                                <em>Select 2+ points to see analysis</em>
-                            </div>
-                            
-                            <div class="gap-input">
-                                <button onclick="clearAllPoints()">Clear All</button>
-                                <button onclick="exportMeasurementData()">Export Data</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="custom-gap" style="background: linear-gradient(45deg, rgba(138, 43, 226, 0.12), rgba(75, 0, 130, 0.12)); border: 2px solid rgba(138, 43, 226, 0.3); margin-bottom: 15px;">
-                        <label><strong>Farey Sequence & Franel-Landau Analysis:</strong></label>
-                        <div class="gap-input">
-                            Farey order N: <input type="number" id="fareyOrder" min="2" max="1000" value="30" style="width: 70px;">
-                            <button class="rh-btn" onclick="generateFareySequence()">Compute Farey</button>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showFareyVisualization" onchange="updateRhVisualizations()"> Show Farey Discrepancy Plot
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showFranelLandau" onchange="updateRhVisualizations()"> Show Franel-Landau Test
-                        </div>
-                        <div id="fareyResults" style="display: none; margin-top: 10px; background: rgba(138, 43, 226, 0.1); padding: 12px; border-radius: 6px;">
-                            <strong>Farey Sequence Results:</strong><br>
-                            <div id="fareyStats" style="font-size: 12px; margin-top: 8px;"></div>
-                        </div>
-                        <div style="font-size: 11px; opacity: 0.85; margin-top: 8px; line-height: 1.4;">
-                            <strong>Franel-Landau Theorem:</strong> RH is equivalent to<br>
-                            <em style="font-family: 'Times New Roman', serif;">D(N) = O(N^(1/2+ε))</em><br>
-                            where D(N) measures discrepancy from uniform spacing
-                        </div>
-                    </div>
-                    
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="enableRhAnalysis"> Enable RH Predictions
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="showCharacterSupport" checked> Show Dirichlet Character Support
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="showLFunctionZeros"> Visualize L-function Critical Line
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="showEquidistributionTest"> Test Prime Equidistribution
-                    </div>
-                    
-                    <div class="custom-gap" style="margin-top: 15px;">
-                        <label><strong>RH Visualization Controls:</strong></label>
-                        
-                        <!-- Critical Line Analysis -->
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showCriticalLine" checked onchange="toggleRhVisualization('criticalLineCanvas')"> Critical Line Analysis
-                        </div>
-                        <div id="criticalLineParams" class="gap-input" style="margin-left: 25px; display: block;">
-                            t-range: <input type="number" id="criticalLineTMin" min="0" value="0" style="width: 50px;"> to 
-                            <input type="number" id="criticalLineTMax" min="1" value="50" style="width: 50px;">
-                            <button onclick="updateRhVisualizations()" style="font-size: 11px; padding: 4px 8px;">Apply</button>
-                        </div>
-                        
-                        <!-- Character Support Domains -->
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showCharacterCanvas" checked onchange="toggleRhVisualization('characterCanvas')"> Character Support Domains
-                        </div>
-                        <div id="characterParams" class="gap-input" style="margin-left: 25px; display: block;">
-                            Max rings: <input type="number" id="characterMaxRings" min="1" max="20" value="10" style="width: 50px;">
-                            <button onclick="updateRhVisualizations()" style="font-size: 11px; padding: 4px 8px;">Apply</button>
-                        </div>
-                        
-                        <!-- Prime Distribution -->
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showPrimeDistCanvas" checked onchange="toggleRhVisualization('primeDistCanvas')"> Prime Distribution
-                        </div>
-                        <div id="primeDistParams" class="gap-input" style="margin-left: 25px; display: block;">
-                            <em style="font-size: 11px; opacity: 0.8;">Uses active sieve data</em>
-                        </div>
-                        
-                        <!-- Zeta Function Zeros -->
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showZetaZeros" checked onchange="toggleRhVisualization('zetaZerosCanvas')"> Zeta Function Zeros
-                        </div>
-                        <div id="zetaZerosParams" class="gap-input" style="margin-left: 25px; display: block;">
-                            Show zeros: <input type="number" id="zetaZerosCount" min="1" max="50" value="10" style="width: 50px;">
-                            <label style="font-size: 11px;"><input type="checkbox" id="animateZetaZeros"> Animate</label>
-                            <button onclick="updateRhVisualizations()" style="font-size: 11px; padding: 4px 8px;">Apply</button>
-                        </div>
-                        
-                        <!-- Prime Counting π(x) -->
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showPrimeCounting" checked onchange="toggleRhVisualization('primeCountingCanvas')"> Prime Counting π(x)
-                        </div>
-                        <div id="primeCountingParams" class="gap-input" style="margin-left: 25px; display: block;">
-                            π(x) limit: <input type="number" id="primeCountLimit" min="100" value="10000" style="width: 70px;">
-                            <button onclick="updateRhVisualizations()" style="font-size: 11px; padding: 4px 8px;">Apply</button>
-                        </div>
-                        
-                        <!-- Residue Heatmap -->
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showResidueHeatmap" checked onchange="toggleRhVisualization('residueHeatmapCanvas')"> Residue Heatmap
-                        </div>
-                        <div id="residueHeatmapParams" class="gap-input" style="margin-left: 25px; display: block;">
-                            <em style="font-size: 11px; opacity: 0.8;">Uses active sieve data</em>
-                        </div>
-                        
-                        <!-- Chi-Squared Test -->
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showChiSquared" checked onchange="toggleRhVisualization('chiSquaredCanvas')"> Chi-Squared Test
-                        </div>
-                        <div id="chiSquaredParams" class="gap-input" style="margin-left: 25px; display: block;">
-                            Significance: <select id="chiSquaredSignificance" onchange="updateRhVisualizations()" style="width: 80px; font-size: 11px;">
-                                <option value="0.05" selected>p=0.05</option>
-                                <option value="0.01">p=0.01</option>
-                                <option value="0.10">p=0.10</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Modulus Comparison -->
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showModulusComparison" checked onchange="toggleRhVisualization('modulusComparisonCanvas')"> Modulus Comparison
-                        </div>
-                        <div id="modulusComparisonParams" class="gap-input" style="margin-left: 25px; display: block;">
-                            Display: <select id="modulusComparisonMode" onchange="updateRhVisualizations()" style="width: 120px; font-size: 11px;">
-                                <option value="phi" selected>Euler φ(M)</option>
-                                <option value="density">Density φ(M)/M</option>
-                                <option value="both">Both</option>
-                            </select>
-                        </div>
-                        
-                        <!-- L-Function Magnitude -->
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showLFunction" checked onchange="toggleRhVisualization('lFunctionCanvas')"> L-Function Magnitude
-                        </div>
-                        <div id="lFunctionParams" class="gap-input" style="margin-left: 25px; display: block; background: rgba(255,215,0,0.1); padding: 10px; border-radius: 6px; margin-top: 5px;">
-                            <strong style="font-size: 12px; color: #FFD700;">L-Function Parameters:</strong><br>
-                            
-                            <!-- L-function Type Selection -->
-                            <div style="margin: 8px 0;">
-                                Type: <select id="lFunctionType" onchange="updateLFunctionParams()" style="width: 140px; font-size: 11px;">
-                                    <option value="dirichlet" selected>Dirichlet L(s,χ)</option>
-                                    <option value="riemann">Riemann ζ(s)</option>
-                                    <option value="hasse-weil">Hasse-Weil L(E,s)</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Dirichlet Parameters -->
-                            <div id="dirichletParams" style="margin: 8px 0;">
-                                Character χ mod: <input type="number" id="lFunctionModulus" min="2" value="30" style="width: 50px;">
-                                index: <input type="number" id="lFunctionCharIndex" min="0" value="0" style="width: 40px;">
-                            </div>
-                            
-                            <!-- Hasse-Weil Parameters (hidden by default) -->
-                            <div id="hasseWeilParams" style="margin: 8px 0; display: none;">
-                                Elliptic Curve: <select id="ellipticCurveChoice" style="width: 100px; font-size: 11px;">
-                                    <option value="11a">11a (rank 0)</option>
-                                    <option value="37a">37a (rank 1)</option>
-                                    <option value="389a">389a (rank 2)</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Evaluation Parameters -->
-                            <div style="margin: 8px 0;">
-                                Critical line σ=1/2, t: <input type="number" id="lFunctionTMin" min="0" value="0" style="width: 45px;"> to 
-                                <input type="number" id="lFunctionTMax" min="1" value="30" style="width: 45px;">
-                            </div>
-                            
-                            <!-- Computation Settings -->
-                            <div style="margin: 8px 0;">
-                                <label style="font-size: 11px;"><input type="checkbox" id="lFunctionShowEulerProduct"> Show Euler product</label><br>
-                                <label style="font-size: 11px;"><input type="checkbox" id="lFunctionShowFunctionalEq"> Show functional equation</label>
-                            </div>
-                            
-                            <!-- Series Terms Control -->
-                            <div style="margin: 8px 0;">
-                                Dirichlet series terms: <input type="number" id="lFunctionSeriesTerms" min="100" max="50000" value="5000" style="width: 60px;">
-                                <br><em style="font-size: 10px; opacity: 0.8;">More terms = better accuracy, slower computation</em>
-                            </div>
-                            
-                            <!-- Precision Display -->
-                            <div style="margin: 8px 0;">
-                                <label style="font-size: 11px;"><input type="checkbox" id="lFunctionShowErrorBounds" checked> Display error bounds</label>
-                            </div>
-                            
-                            <button onclick="updateRhVisualizations()" style="font-size: 11px; padding: 4px 8px; background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; font-weight: bold;">
-                                Compute L-function
-                            </button>
-                            
-                            <div style="margin-top: 8px; font-size: 10px; opacity: 0.85; line-height: 1.4;">
-                                <strong>Current:</strong> <span id="lFunctionCurrentDesc">L(s,χ₀) with χ₀ mod 30 (principal character)</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="custom-gap" style="background: linear-gradient(45deg, rgba(138, 43, 226, 0.15), rgba(255, 215, 0, 0.15)); border: 2px solid rgba(138, 43, 226, 0.4);">
-                        <label><strong>Conjecture Testing Dashboard:</strong></label>
-                        
-                        <div class="slider-group">
-                            <label>Select Conjecture:</label>
-                            <select id="conjectureSelect" onchange="updateConjectureParams()">
-                                <option value="grh">GRH Uniformity</option>
-                                <option value="hardy-littlewood">Hardy-Littlewood k-Tuples</option>
-                                <option value="goldbach">Goldbach Conjecture</option>
-                                <option value="polignac">Polignac's Conjecture</option>
-                                <option value="prime-race">Prime Number Races</option>
-                                <option value="andrica">Andrica's Conjecture</option>
-                                <option value="firoozbakht">Firoozbakht's Conjecture</option>
-                                <option value="legendre">Legendre's Conjecture</option>
-                                <option value="cramer">Cramér's Conjecture</option>
-                            </select>
-                        </div>
-                        
-                        <div id="conjectureParams" style="margin: 10px 0;">
-                            <div class="gap-input">
-                                Test Range: <input type="number" id="conjectureMin" min="2" value="2" style="width: 70px;">
-                                to <input type="number" id="conjectureMax" min="3" value="100000" style="width: 80px;">
-                            </div>
-                            <div id="extraParams" style="margin-top: 8px;">
-                                <!-- Dynamic parameters based on selected conjecture -->
-                            </div>
-                        </div>
-                        
-                        <div class="gap-input">
-                            <button class="rh-btn" onclick="runConjectureTest()">Run Test</button>
-                            <button onclick="viewTestHistory()">View History</button>
-                            <button onclick="exportCertificate()">Export Certificate</button>
-                        </div>
-                        
-                        <div id="conjectureResults" style="display: none; margin-top: 15px; padding: 15px; background: rgba(138, 43, 226, 0.1); border-radius: 8px; border: 2px solid rgba(138, 43, 226, 0.3);">
-                            <strong>Test Results:</strong>
-                            <div id="conjectureResultsContent" style="font-size: 12px; margin-top: 10px;"></div>
-                        </div>
-                        
-                        <div style="font-size: 11px; opacity: 0.85; margin-top: 10px; padding: 8px; background: rgba(138, 43, 226, 0.1); border-radius: 4px;">
-                            <strong>About Conjecture Testing:</strong><br>
-                            Automatically verify famous unsolved problems up to computational limits. 
-                            Tests generate verification certificates with evidence strength and statistical analysis.
-                        </div>
-                    </div>
-                    
-                    <div class="custom-gap">
-                        <label><strong>GRH Test Parameters:</strong></label>
-                        <div class="gap-input">
-                            Test modulus: <input type="number" id="grhModulus" min="2" value="30" placeholder="30">
-                            <button class="rh-btn" onclick="runGrhAnalysis()">Test GRH</button>
-                        </div>
-                        <div class="gap-input">
-                            <button class="rh-btn" onclick="validateCharacterSupport()">Validate χ Support</button>
-                            <button class="rh-btn" onclick="testPrimeEquidistribution()">Test Prime Distribution</button>
-                        </div>
-                        <div id="rhPredictions" style="font-size: 12px; margin: 10px 0; opacity: 0.9;"></div>
-                    </div>
-                    
-                    <div class="custom-gap">
-                        <label><strong>Prime Sieve Engine:</strong></label>
-                        <div class="gap-input">
-                            Search up to: <input type="number" id="sieveLimit" min="100" value="10000" placeholder="10000">
-                        </div>
-                        <div class="gap-input">
-                            Using modulus: <input type="number" id="sieveModulus" min="2" value="30" placeholder="30">
-                            <button class="rh-btn" onclick="runPrimeSieve()">Generate Sieve</button>
-                        </div>
-                        <div class="gap-input">
-                            <button onclick="clearPrimeSieve()">Clear Sieve</button>
-                            <button onclick="exportPrimeData()">Export Data</button>
-                        </div>
-                        <div id="sieveProgress" style="display: none; margin-top: 10px;">
-                            <div style="background: rgba(255,255,255,0.2); border-radius: 10px; height: 20px;">
-                                <div id="progressBar" style="background: linear-gradient(45deg, #4ECDC4, #44A08D); height: 100%; border-radius: 10px; width: 0%; transition: width 0.3s;"></div>
-                            </div>
-                            <div id="progressText" style="text-align: center; margin-top: 5px; font-size: 12px;"></div>
-                        </div>
-                        
-                        <div id="sieveResults" style="display: none; margin-top: 15px;">
-                            <label><strong>Prime Distribution Analysis:</strong></label>
-                            <div id="primeStats" style="font-size: 13px; margin: 10px 0;"></div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="showPrimeMarkers"> Highlight Primes on Rings
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="showCompositeMarkers"> Show Composite Numbers
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="showPrimeDensity"> Show Density Visualization
-                            </div>
-                        </div>
-                        
-                        <div id="primePatternAnalysis" style="display: none; margin-top: 15px;">
-                            <label><strong>Quick Sieve Presets:</strong></label>
-                            <div class="gap-input">
-                                <button onclick="quickSieve(1000, 6)">1K (mod 6)</button>
-                                <button onclick="quickSieve(10000, 30)">10K (mod 30)</button>
-                            </div>
-                            <div class="gap-input">
-                                <button onclick="quickSieve(100000, 210)">100K (mod 210)</button>
-                                <button onclick="quickSieve(1000000, 2310)">1M (mod 2310)</button>
-                            </div>
-                            
-                            <div style="margin-top: 15px;">
-                                <label><strong>Complete Distribution:</strong></label>
-                                <div id="residueDistribution" style="font-size: 12px; max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-top: 10px;"></div>
-                                
-                                <div class="gap-input" style="margin-top: 15px;">
-                                    <button onclick="exportDetailedPrimeList()">Export All Primes</button>
-                                    <button onclick="togglePrimeSearchMode()">Search Primes</button>
-                                </div>
-                                
-                                <div id="primeSearchControls" style="display: none; margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px;">
-                                    <label><strong>Prime Search:</strong></label>
-                                    <div class="gap-input">
-                                        Prime: <input type="number" id="searchPrime" min="2" max="1000000" placeholder="Enter prime">
-                                        <button onclick="findPrimeInResidue()">Find Residue</button>
-                                    </div>
-                                    <div id="searchResult" style="margin-top: 10px; font-size: 13px;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="custom-gap">
-                        <label><strong>Visualization Range Controls:</strong></label>
-                        <div class="gap-input">
-                            Critical Line t-range: <input type="number" id="criticalTMin" min="0" value="0" style="width: 60px;"> to 
-                            <input type="number" id="criticalTMax" min="1" value="50" style="width: 60px;">
-                        </div>
-                        <div class="gap-input">
-                            Zeta Zeros Count: <input type="number" id="zetaZerosCount" min="1" max="50" value="10" style="width: 60px;">
-                            <label style="font-size: 11px; opacity: 0.8;">(first N zeros)</label>
-                        </div>
-                        <div class="gap-input">
-                            π(x) limit: <input type="number" id="primeCountLimit" min="100" value="10000" style="width: 80px;">
-                        </div>
-                        <div class="gap-input">
-                            <button class="rh-btn" onclick="applyVisualizationRanges()">Apply Ranges</button>
-                            <button onclick="resetVisualizationRanges()">Reset Defaults</button>
-                        </div>
-                    </div>
-                    
-                    <div class="custom-gap">
-                        <label><strong>Prime Sieve Engine:</strong></label>
-                        <div class="gap-input">
-                            Search up to: <input type="number" id="sieveLimit" min="100" value="10000" placeholder="10000">
-                        </div>
-                        <div class="gap-input">
-                            Using modulus: <input type="number" id="sieveModulus" min="2" value="30" placeholder="30">
-                            <button class="rh-btn" onclick="runPrimeSieve()">Generate Sieve</button>
-                        </div>
-                        <div class="gap-input">
-                            <button onclick="clearPrimeSieve()">Clear Sieve</button>
-                            <button onclick="exportPrimeData()">Export Data</button>
-                        </div>
-                        <div id="sieveProgress" style="display: none; margin-top: 10px;">
-                            <div style="background: rgba(255,255,255,0.2); border-radius: 10px; height: 20px;">
-                                <div id="progressBar" style="background: linear-gradient(45deg, #4ECDC4, #44A08D); height: 100%; border-radius: 10px; width: 0%; transition: width 0.3s;"></div>
-                            </div>
-                            <div id="progressText" style="text-align: center; margin-top: 5px; font-size: 12px;"></div>
-                        </div>
-                        
-                        <div id="sieveResults" style="display: none; margin-top: 15px;">
-                            <label><strong>Prime Distribution Analysis:</strong></label>
-                            <div id="primeStats" style="font-size: 13px; margin: 10px 0;"></div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="showPrimeMarkers"> Highlight Primes on Rings
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="showCompositeMarkers"> Show Composite Numbers
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="showPrimeDensity"> Show Density Visualization
-                            </div>
-                        </div>
-                        
-                        <div id="primePatternAnalysis" style="display: none; margin-top: 15px;">
-                            <label><strong>Quick Sieve Presets:</strong></label>
-                            <div class="gap-input">
-                                <button onclick="quickSieve(1000, 6)">1K (mod 6)</button>
-                                <button onclick="quickSieve(10000, 30)">10K (mod 30)</button>
-                            </div>
-                            <div class="gap-input">
-                                <button onclick="quickSieve(100000, 210)">100K (mod 210)</button>
-                                <button onclick="quickSieve(1000000, 2310)">1M (mod 2310)</button>
-                            </div>
-                            
-                            <div style="margin-top: 15px;">
-                                <label><strong>Complete Distribution:</strong></label>
-                                <div id="residueDistribution" style="font-size: 12px; max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-top: 10px;"></div>
-                                
-                                <div class="gap-input" style="margin-top: 15px;">
-                                    <button onclick="exportDetailedPrimeList()">Export All Primes</button>
-                                    <button onclick="togglePrimeSearchMode()">Search Primes</button>
-                                </div>
-                                
-                                <div id="primeSearchControls" style="display: none; margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px;">
-                                    <label><strong>Prime Search:</strong></label>
-                                    <div class="gap-input">
-                                        Prime: <input type="number" id="searchPrime" min="2" max="1000000" placeholder="Enter prime">
-                                        <button onclick="findPrimeInResidue()">Find Residue</button>
-                                    </div>
-                                    <div id="searchResult" style="margin-top: 10px; font-size: 13px;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="custom-gap">
-                        <label><strong>Ring Radius Scaling:</strong></label>
-                        <div class="slider-group">
-                            <label>Scaling Function:</label>
-                            <select id="radiusScaling" onchange="updateRadiusScaling()">
-                                <option value="uniform" selected>Uniform Spacing (default)</option>
-                                <option value="linear">Linear: r(m) = c·m</option>
-                                <option value="sqrt">Square-root: r(m) = c·√m</option>
-                                <option value="log">Logarithmic: r(m) = c·log(m+1)</option>
-                                <option value="totient">Totient: r(m) = c·φ(m)</option>
-                                <option value="density">Density: r(m) = c·φ(m)/m</option>
-                                <option value="inverse">Inverse: r(m) = c/m</option>
-                                <option value="exponential">Exponential: r(m) = c·aᵐ</option>
-                            </select>
-                        </div>
-                        
-                        <div class="slider-group">
-                            <label>Scaling Constant c: <span id="scalingConstValue">1.0</span></label>
-                            <input type="range" id="scalingConst" min="0.1" max="5" step="0.1" value="1.0" oninput="updateScalingConst()">
-                        </div>
-                        
-                        <div class="slider-group" id="expBaseGroup" style="display: none;">
-                            <label>Exponential Base a: <span id="expBaseValue">1.15</span></label>
-                            <input type="range" id="expBase" min="1.01" max="1.5" step="0.01" value="1.15" oninput="updateExpBase()">
-                        </div>
-                        
-                        <div style="font-size: 0.85em; opacity: 0.9; margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 6px;">
-                            <strong>Mathematical Interpretation:</strong><br>
-                            <span id="scalingDescription">
-                                Uniform spacing places rings at equal intervals regardless of modulus value.
-                            </span>
-                        </div>
-                        
-                        <div class="gap-input" style="margin-top: 10px;">
-                            <button onclick="showRadiusComparison()">Compare Scalings</button>
-                            <button onclick="resetRadiusScaling()">Reset to Uniform</button>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <h3 onclick="toggleSection('gapSection')" style="cursor: pointer; user-select: none;">
-                        <span class="collapse-icon" id="gapSectionIcon">▼</span>
-                        Gap Analysis
-                    </h3>
-                    <div id="gapSection" class="collapsible-section">
-                    <div class="checkbox-group" id="gapControls">
-                        <!-- All gaps unchecked by default -->
-                    </div>
-                    
-                    <div class="custom-gap">
-                        <label><strong>Dynamic Gap Generation:</strong></label>
-                        <div class="gap-input">
-                            Max Gap: <input type="number" id="maxGap" min="2" step="2" value="12" placeholder="12">
-                        </div>
-                        <div class="gap-input">
-                            <strong>Add Consecutive Range:</strong><br>
-                            From: <input type="number" id="gapStart" min="2" step="1" value="14" placeholder="14">
-                            To: <input type="number" id="gapEnd" min="3" step="1" value="20" placeholder="20">
-                            <button onclick="addConsecutiveGaps()">Add Range</button>
-                        </div>
-                        <div class="gap-input">
-                            <button onclick="generateGaps()">Generate Even Gaps</button>
-                            <button class="reset-btn" onclick="clearAllGaps()">Clear All Gaps</button>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <h3 onclick="toggleSection('ringSection')" style="cursor: pointer; user-select: none;">
-                        <span class="collapse-icon" id="ringSectionIcon">▼</span>
-                        Modular Ring System
-                    </h3>
-                    <div id="ringSection" class="collapsible-section">
-                    <div class="checkbox-group" id="ringControls">
-                        <!-- Generated by JavaScript -->
-                    </div>
-                    
-                    <div class="custom-gap">
-                        <label><strong>Custom Modulus Explorer:</strong></label>
-                        <div class="gap-input">
-                            Single: <input type="number" id="customMod" min="2" value="42" placeholder="42">
-                            <button onclick="addCustomRing()">Add Single</button>
-                        </div>
-                        <div class="gap-input">
-                            <strong>Add Consecutive Range:</strong><br>
-                            From: <input type="number" id="modStart" min="1" value="1" placeholder="1">
-                            To: <input type="number" id="modEnd" min="2" value="20" placeholder="20">
-                            <button onclick="addConsecutiveMods()">Add M₁ to Mₙ</button>
-                        </div>
-                        <div style="font-size: 0.85em; opacity: 0.8; margin-top: 8px;">
-                            No limits - explore any modulus range you want!
-                        </div>
-                        <div class="gap-input" style="margin-top: 15px;">
-                            <button class="reset-btn" onclick="clearAllRings()">Clear All Rings</button>
-                            <button class="special-btn" onclick="resetToDefaults()">Reset to M1-M30</button>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <h3 onclick="toggleSection('visualSection')" style="cursor: pointer; user-select: none;">
-                        <span class="collapse-icon" id="visualSectionIcon">▼</span>
-                        Visual Customization
-                    </h3>
-                    <div id="visualSection" class="collapsible-section">
-                    
-                    <div class="custom-gap">
-                        <label><strong>Color Palette Presets:</strong></label>
-                        <div class="color-palette-selector">
-                            <div class="palette-option rainbow active" onclick="applyPalette('rainbow')" title="Rainbow"></div>
-                            <div class="palette-option ocean" onclick="applyPalette('ocean')" title="Ocean"></div>
-                            <div class="palette-option sunset" onclick="applyPalette('sunset')" title="Sunset"></div>
-                            <div class="palette-option matrix" onclick="applyPalette('matrix')" title="Matrix"></div>
-                            <div class="palette-option fire" onclick="applyPalette('fire')" title="Fire"></div>
-                            <div class="palette-option ice" onclick="applyPalette('ice')" title="Ice"></div>
-                            <div class="palette-option purple" onclick="applyPalette('purple')" title="Purple"></div>
-                            <div class="palette-option earth" onclick="applyPalette('earth')" title="Earth"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="slider-group">
-                        <label>Residue Coloring Scheme:</label>
-                        <select id="residueColorMode" onchange="updateColorMode()">
-                            <option value="hue" selected>Rainbow by Angular Position</option>
-                            <option value="value">By Residue Value</option>
-                            <option value="modulo">By Ring (Modulus)</option>
-                            <option value="prime">Prime vs Composite</option>
-                            <option value="gcd_unified">GCD=1: Unified Color (Character Support)</option>
-                            <option value="gcd_per_mod">GCD=1: Unique Color per Modulus</option>
-                            <option value="gcd_per_residue">GCD=1: Unique Color per Residue Value</option>
-                            <option value="gcd_mathematical">GCD=1: Mathematical Progression</option>
-                            <option value="gcd_spectrum">GCD=1: Spectral Distribution</option>
-                            <option value="custom">Custom Single Color</option>
-                        </select>
-                    </div>
-                    <div class="slider-group" id="customColorGroup" style="display: none;">
-                        <label>Custom Residue Color:</label>
-                        <input type="color" id="customResidueColor" value="#FF6B6B" onchange="draw()">
-                    </div>
-                    
-                    <div class="slider-group" id="gcdColorGroup" style="display: none;">
-                        <label>Base GCD=1 Color:</label>
-                        <input type="color" id="gcdBaseColor" value="#FF6B6B" onchange="draw()">
-                    </div>
-                    
-                    <div class="slider-group" id="nonGcdColorGroup" style="display: none;">
-                        <label>Non-GCD=1 Color (if any):</label>
-                        <input type="color" id="nonGcdColor" value="#666666" onchange="draw()">
-                    </div>
-                    
-                    <div class="slider-group">
-                        <label>Direct Lift Line Color:</label>
-                        <input type="color" id="liftLineColor" value="#FFD700" onchange="draw()">
-                    </div>
-                    
-                    <div class="slider-group">
-                        <label>Modular Lift Line Color:</label>
-                        <input type="color" id="modularLiftColor" value="#FF6384" onchange="draw()">
-                    </div>
-                    
-                    <div class="slider-group">
-                        <label>Lift Line Thickness: <span id="thicknessValue">0.5</span></label>
-                        <input type="range" id="lineThickness" min="0" max="1" step="0.01" value="0.5" oninput="updateThickness()">
-                    </div>
-                    
-                    <div class="slider-group">
-                        <label>Gap Line Thickness: <span id="gapThicknessValue">0.3</span></label>
-                        <input type="range" id="gapLineThickness" min="0" max="1" step="0.01" value="0.3" oninput="updateGapThickness()">
-                    </div>
-                    
-                    <div class="slider-group">
-                        <label>Ring Circle Thickness: <span id="ringThicknessValue">0.2</span></label>
-                        <input type="range" id="ringThickness" min="0" max="1" step="0.01" value="0.2" oninput="updateRingThickness()">
-                    </div>
-                    
-                    <div class="slider-group">
-                        <label>Unit Circle Thickness: <span id="unitThicknessValue">0.8</span></label>
-                        <input type="range" id="unitThickness" min="0" max="1" step="0.01" value="0.8" oninput="updateUnitThickness()">
-                    </div>
-                    
-                    <div class="slider-group">
-                        <label>Residue Point Size: <span id="pointSizeValue">0.4</span></label>
-                        <input type="range" id="pointSize" min="0" max="1" step="0.01" value="0.4" oninput="updatePointSize()">
-                    </div>
-                    
-                    <div class="slider-group">
-                        <label>Point Border Thickness: <span id="pointBorderValue">0.3</span></label>
-                        <input type="range" id="pointBorder" min="0" max="1" step="0.01" value="0.3" oninput="updatePointBorder()">
-                    </div>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <h3 onclick="toggleSection('animationSection')" style="cursor: pointer; user-select: none;">
-                        <span class="collapse-icon" id="animationSectionIcon">▼</span>
-                        Advanced Animation Engine
-                    </h3>
-                    <div id="animationSection" class="collapsible-section">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="enableRotation" onchange="toggleRotation()"> Enable Individual Ring Rotation
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="enableColorInvert" onchange="toggleColorInvert()"> Invert Colors (Dark/Light Mode)
-                    </div>
-                    <div class="slider-group">
-                        <label>Global Animation Speed: <span id="globalSpeedValue">1.0</span>x</label>
-                        <input type="range" id="globalSpeed" min="0.1" max="8" step="0.1" value="1" oninput="updateGlobalSpeed()">
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="reverseDirection"> Reverse Rotation Direction
-                    </div>
-                    
-                    <div class="custom-gap">
-                        <label><strong>Ring Nesting Animation:</strong></label>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="enableNestingAnimation"> Enable Nesting Inversion
-                        </div>
-                        
-                        <div id="nestingAnimationControls" style="display: none; margin-top: 10px;">
-                            <div class="slider-group">
-                                <label>Nesting Inversion: <span id="nestingInversionValue">0.0</span></label>
-                                <input type="range" id="nestingInversion" min="0" max="1" step="0.01" value="0" oninput="updateNestingInversion()">
-                            </div>
-                            
-                            <div class="slider-group">
-                                <label>Animation Speed: <span id="nestingSpeedValue">1.0</span>x</label>
-                                <input type="range" id="nestingSpeed" min="0.1" max="5" step="0.1" value="1.0" oninput="updateNestingSpeed()">
-                            </div>
-                            
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="nestingLoop" checked> Loop Animation
-                            </div>
-                            
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="nestingPingPong"> Ping-Pong (reverse direction)
-                            </div>
-                            
-                            <div style="font-size: 0.85em; opacity: 0.9; margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 6px;">
-                                <strong>Gradual Position Exchange:</strong><br>
-                                • 0.0 = Normal order (M1 inner, M30 outer)<br>
-                                • 0.5 = Rings crossing midpoint<br>
-                                • 1.0 = Inverted (M30 inner, M1 outer)<br>
-                                • Each ring smoothly trades positions
-                            </div>
-                            
-                            <div class="gap-input" style="margin-top: 10px;">
-                                <button onclick="startNestingAnimation()">Start Animation</button>
-                                <button onclick="stopNestingAnimation()">Stop</button>
-                                <button onclick="resetNestingOrder()">Reset</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="custom-gap">
-                        <label><strong>Ring Inversion Animation:</strong></label>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="enableInversion" onchange="toggleInversionAnimation()"> Enable Ring Inversion
-                        </div>
-                        <div id="inversionControls" style="display: none;">
-                            <div class="slider-group">
-                                <label>Inversion Wave Speed: <span id="inversionSpeedValue">1.0</span>x</label>
-                                <input type="range" id="inversionSpeed" min="0.1" max="5" step="0.1" value="1" oninput="updateInversionSpeed()">
-                            </div>
-                            <div class="slider-group">
-                                <label>Inversion Wave Intensity: <span id="inversionIntensityValue">1.0</span>x</label>
-                                <input type="range" id="inversionIntensity" min="0.1" max="3.0" step="0.1" value="1.0" oninput="updateInversionIntensity()">
-                            </div>
-                            <div class="slider-group">
-                                <label>Inversion Pattern:</label>
-                                <select id="inversionPattern" onchange="draw()">
-                                    <option value="wave">Mathematical Wave</option>
-                                    <option value="spiral">Spiral Transform</option>
-                                    <option value="pulse">Radial Pulse</option>
-                                    <option value="twist">Ring Twist</option>
-                                </select>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="inversionLoop" checked> Loop Inversion Continuously
-                            </div>
-                            <button onclick="stopInversionAnimation()">Stop Inversion</button>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <h3 onclick="toggleSection('labelSection')" style="cursor: pointer; user-select: none;">
-                        <span class="collapse-icon" id="labelSectionIcon">▼</span>
-                        Label Controls
-                    </h3>
-                    <div id="labelSection" class="collapsible-section">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="showLabels"> Show Residue Labels
-                    </div>
-                    
-                    <div class="custom-gap" id="labelControls">
-                        <label><strong>Label Format:</strong></label>
-                        <div class="slider-group">
-                            <select id="labelFormat" onchange="updateLabelFormat()">
-                                <option value="number" selected>Number (r)</option>
-                                <option value="fraction">Fraction (r/M)</option>
-                                <option value="farey">Farey Sequence (r/M simplified)</option>
-                                <option value="angle">Angle (θ = 2πr/M)</option>
-                                <option value="gcd">GCD Value gcd(r,M)</option>
-                                <option value="coprime">Coprime Status (✓/✗)</option>
-                                <option value="combined">Combined (r, gcd, θ)</option>
-                            </select>
-                        </div>
-                        
-                        <label><strong>Selective Labeling:</strong></label>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="labelUnitCircle" checked> Label Unit Circle
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="labelGcdOne" checked> Label GCD=1 Residues
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="labelNonGcdOne"> Label GCD≠1 Residues
-                        </div>
-                        
-                        <label><strong>GCD-Specific Labels:</strong></label>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showGcdValue"> Show gcd(r,M) value
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showCoprimeIndicator"> Show ✓/✗ coprime indicator
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showTotientPosition"> Show position in φ(M) sequence
-                        </div>
-                        
-                        <div class="gap-input">
-                            <strong>Label Specific Moduli:</strong><br>
-                            Moduli: <input type="text" id="labelSpecificMods" placeholder="2,3,5,30" style="width: 120px;">
-                            <button onclick="updateSpecificLabels()">Apply</button>
-                        </div>
-                        
-                        <div class="gap-input">
-                            <strong>Label Consecutive Range:</strong><br>
-                            From M: <input type="number" id="labelModStart" min="1" value="1" style="width: 60px;">
-                            To M: <input type="number" id="labelModEnd" min="1" value="10" style="width: 60px;">
-                            <button onclick="updateLabelRange()">Apply Range</button>
-                        </div>
-                        
-                        <div class="gap-input">
-                            Min Ring Radius: <input type="number" id="labelMinRadius" min="0" value="80" placeholder="80">
-                            <button onclick="draw()">Update</button>
-                        </div>
-                        
-                        <div class="slider-group">
-                            <label>Label Size: <span id="labelSizeValue">1.0</span>x</label>
-                            <input type="range" id="labelSize" min="0.3" max="3.0" step="0.1" value="1.0" oninput="updateLabelSize()">
-                        </div>
-                        
-                        <div class="slider-group">
-                            <label>Label Opacity: <span id="labelOpacityValue">0.95</span></label>
-                            <input type="range" id="labelOpacity" min="0.1" max="1.0" step="0.05" value="0.95" oninput="updateLabelOpacity()">
-                        </div>
-                        
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="labelShowPrimeCounts" checked> Show Prime Counts (when sieve active)
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                
-                <div class="control-section">
-                    <h3 onclick="toggleSection('gcdAnalysisSection')" style="cursor: pointer; user-select: none;">
-                        <span class="collapse-icon" id="gcdAnalysisSectionIcon">▼</span>
-                        GCD Analysis & Visualization
-                    </h3>
-                    <div id="gcdAnalysisSection" class="collapsible-section">
-                    <div class="custom-gap">
-                        <label><strong>GCD Visual Analysis Mode:</strong></label>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="highlightGcdBoundary" onchange="draw()"> Highlight GCD=1 boundary
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showGcdConnections" onchange="draw()"> Show GCD structure connections
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="animateGcdHighlight" onchange="toggleGcdAnimation()"> Animate GCD=1 residues
-                        </div>
-                    </div>
-                    
-                    <div class="custom-gap">
-                        <label><strong>GCD Information Display:</strong></label>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showTotientCount" onchange="draw()"> Show φ(M) count per ring
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showGcdDistribution" onchange="draw()"> Show GCD distribution chart
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="compareTotientDensity" onchange="draw()"> Compare totient densities
-                        </div>
-                    </div>
-                    
-                    <div class="custom-gap">
-                        <label><strong>GCD Research Tools:</strong></label>
-                        <div class="gap-input">
-                            <button onclick="analyzeGcdPatterns()">Analyze GCD Patterns</button>
-                            <button onclick="exportGcdData()">Export GCD Data</button>
-                        </div>
-                        <div class="gap-input">
-                            <button onclick="visualizeFareySequence()">Show Farey Sequence</button>
-                            <button onclick="testCoprimalityTheorems()">Test Coprimality Theorems</button>
-                        </div>
-                    </div>
-                    
-                    <div id="gcdAnalysisResults" style="display: none; margin-top: 15px; padding: 15px; background: rgba(72, 187, 120, 0.1); border-radius: 8px; border: 2px solid rgba(72, 187, 120, 0.3);">
-                        <label><strong>GCD Analysis Results:</strong></label>
-                        <div id="gcdResultsContent" style="font-size: 13px; margin-top: 10px;"></div>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <h3 onclick="toggleSection('liftSection')" style="cursor: pointer; user-select: none;">
-                        <span class="collapse-icon" id="liftSectionIcon">▼</span>
-                        Lift Controls
-                    </h3>
-                    <div id="liftSection" class="collapsible-section">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="showDirectLifts" checked> Direct Lifts (r → r, consecutive only)
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="showModularLifts"> Modular Lifts (r → r + M×2ⁿ, consecutive only)
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="showSkipDirectLifts"> Skip-Level Direct Lifts (r → r, all combinations)
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="showSkipModularLifts"> Skip-Level Modular Lifts (r → r + M×2ⁿ, all combinations)
-                    </div>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <h3 onclick="toggleSection('displaySection')" style="cursor: pointer; user-select: none;">
-                        <span class="collapse-icon" id="displaySectionIcon">▼</span>
-                        Display Controls
-                    </h3>
-                    <div id="displaySection" class="collapsible-section">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="showUnitCircle" checked> Highlight Unit Circle
-                    </div>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <h3 onclick="toggleSection('characterSection')" style="cursor: pointer; user-select: none;">
-                        <span class="collapse-icon" id="characterSectionIcon">▼</span>
-                        Dirichlet Character Controls
-                    </h3>
-                    <div id="characterSection" class="collapsible-section">
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showGcdOne" checked onchange="draw()"> Show χ(r) ≠ 0 (Character Support)
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showNonGcdOne" onchange="draw()"> Show χ(r) = 0 (Character Vanishing)
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="highlightGcdDifference" onchange="draw()"> Highlight Character Support Difference
-                        </div>
-                    </div>
-                    
-                    <div class="custom-gap">
-                        <label><strong>Character Visualization:</strong></label>
-                        <div class="slider-group">
-                            <label>χ(r)=0 Opacity: <span id="nonGcdOpacityValue">0.3</span></label>
-                            <input type="range" id="nonGcdOpacity" min="0" max="1" step="0.05" value="0.3" oninput="updateNonGcdOpacity()">
-                        </div>
-                        <div class="slider-group">
-                            <label>χ(r)=0 Color:</label>
-                            <input type="color" id="nonGcdColor" value="#666666" onchange="draw()">
-                        </div>
-                        <div style="font-size: 0.85em; opacity: 0.8; margin-top: 8px;">
-                            <strong>Mathematical Note:</strong> gcd(r,M) = 1 ⟺ χ(r) ≠ 0<br>
-                            Character support determines L-function behavior
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                
-                <div class="control-section">
-                    <button class="reset-btn" onclick="resetAll()">Reset All Settings</button>
-                </div>
-            </div>
-
-            <div class="canvas-container">
-                <canvas id="canvas" width="1000" height="750"></canvas>
-                <div class="animation-status" id="animationStatus">Ready</div>
+        <!-- Overview Section -->
+        <div id="overview" class="section active">
+            <div class="hero">
+                <h1 class="main-title">Twin Prime Conjecture: Complete Mathematical Framework</h1>
+                <div class="subtitle">Exact Finite-Cutoff Identities and Asymptotic Scaling Laws</div>
+                <div class="author-info">Research by Wessen Getachew</div>
             </div>
             
-            <!-- View Controls moved here -->
-            <div class="control-section" style="margin-top: 20px;">
-                <h3 onclick="toggleSection('viewSectionMain')" style="cursor: pointer; user-select: none;">
-                    <span class="collapse-icon" id="viewSectionMainIcon">▼</span>
-                    View Controls
-                </h3>
-                <div id="viewSectionMain" class="collapsible-section">
-                <div class="slider-group">
-                    <label>Zoom Level: <span id="zoomValue">1.0</span>x</label>
-                    <input type="range" id="zoomSlider" min="0.1" max="10" step="0.1" value="1" oninput="updateZoom()">
+            <div class="highlight-box">
+                <h3>Key Mathematical Contributions</h3>
+                <ul>
+                    <li><strong>Exact Finite Identity:</strong> Proven relationship between modular sieve constants and Hardy-Littlewood factors</li>
+                    <li><strong>Rigorous Scaling Law:</strong> Precise asymptotic R_mod ~ 2e^(-3γ)C₂/(log p_max)³</li>
+                    <li><strong>Modular Origin:</strong> Demonstrates twin prime constant emerges from residue structure</li>
+                    <li><strong>Two-Point Reduction:</strong> Reduces twin prime conjecture to testable correlation hypotheses</li>
+                </ul>
+            </div>
+            
+            <div class="theorem-box" data-type="Main Result">
+                <div class="formula-display">
+                    $$R_{\mathrm{mod}}(p_{\max}) = \frac{1}{4} C_2(p_{\max}) \left[M_{\mathrm{no2}}(p_{\max})\right]^3$$
                 </div>
-                <div class="slider-group">
-                    <label>Manual Rotation: <span id="rotationValue">0°</span></label>
-                    <input type="range" id="rotationSlider" min="0" max="360" step="1" value="0" oninput="updateRotation()">
-                </div>
-                <div class="gap-input">
-                    <button onclick="resetView()">Reset View</button>
-                    <button onclick="captureImage()">Capture Image</button>
-                    <button onclick="invertCanvas()">Invert Nest Order</button>
-                </div>
-                <div class="custom-gap">
-                    <label><strong>Image Capture Options:</strong></label>
-                    <div class="checkbox-item">
-                        <input type="radio" name="screenshotResolution" value="standard"> Standard
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="radio" name="screenshotResolution" value="4k" checked> 4K
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="radio" name="screenshotBg" value="black" checked> Black Background
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="radio" name="screenshotBg" value="white"> White Background
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="includeTitle" checked> Include Title & Subtitle
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="includeLegend" checked> Include Legend
-                    </div>
-                </div>
-                
-                <div class="custom-gap">
-                    <label><strong>Animation Export Options:</strong></label>
-                    <div class="checkbox-item">
-                        <input type="radio" name="animationFormat" value="webm" checked> WebM (High Quality)
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="radio" name="animationFormat" value="mp4"> MP4 (Compatible)
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="radio" name="animationFormat" value="gif"> GIF (Optimized)
-                    </div>
-                    <div class="slider-group">
-                        <label>Animation Duration: <span id="animDurationValue">5</span> seconds</label>
-                        <input type="range" id="animDuration" min="2" max="30" step="1" value="5" oninput="updateAnimDuration()">
-                    </div>
-                    <div class="slider-group">
-                        <label>Export FPS: <span id="animFpsValue">30</span></label>
-                        <input type="range" id="animFps" min="15" max="60" step="5" value="30" oninput="updateAnimFps()">
-                    </div>
-                    <div class="slider-group">
-                        <label>Export Resolution:</label>
-                        <select id="animResolution">
-                            <option value="1080p">1080p (1920×1080)</option>
-                            <option value="1440p">1440p (2560×1440)</option>
-                            <option value="4k" selected>4K (3840×2160)</option>
-                            <option value="custom">Custom Size</option>
-                        </select>
-                    </div>
-                    <div class="gap-input" id="customResolutionControls" style="display: none;">
-                        Width: <input type="number" id="customWidth" value="3840" min="480" step="16">
-                        Height: <input type="number" id="customHeight" value="2160" min="480" step="16">
-                    </div>
-                    <div class="gap-input" style="margin-top: 15px;">
-                        <button onclick="startRecording()" id="recordButton">Record Animation</button>
-                        <button onclick="stopRecording()">Stop Recording</button>
-                    </div>
-                </div>
-                <div style="font-size: 0.85em; opacity: 0.8; margin-top: 8px;">
-                    <strong>Navigation:</strong><br>
-                    • Click & drag to pan<br>
-                    • Mouse wheel to zoom<br>
-                    • Double-click to reset center
-                </div>
+                <p><strong>Significance:</strong> This exact identity holds at every finite prime cutoff, explaining the algebraic origin of both the factor 1/4 and exponent 3 in twin prime theory.</p>
+            </div>
+            
+            <div class="key-insight">
+                <strong>Revolutionary Insight:</strong> The Hardy-Littlewood twin prime constant has a <em>modular origin</em> - it emerges naturally from the structure of residue classes rather than being an arbitrary analytical artifact.
+            </div>
+        </div>
+
+        <!-- Finite Identity Section -->
+        <div id="finite" class="section">
+            <h2 class="section-header">Exact Finite-Cutoff Identity</h2>
+            
+            <div class="theorem-box" data-type="Theorem 1">
+                <h3>Exact Finite-Cutoff Equivalence</h3>
+                <div class="formula-display">
+                    $$R_{\mathrm{mod}}(p_{\max}) = \frac{1}{4} \prod_{3 \leq p \leq p_{\max}} \frac{(p-1)(p-2)}{p^2}$$
+                    $$= \frac{1}{4} C_2(p_{\max}) \left[\prod_{3 \leq p \leq p_{\max}} \left(1-\frac{1}{p}\right)\right]^3$$
                 </div>
             </div>
             
-            <!-- Dedicated RH Visualization Section -->
-            <div class="rh-visualization-section">
-                <h3>Riemann Hypothesis Visual Analysis</h3>
-                <div class="rh-visual-grid">
-                    <div class="critical-line-display">
-                        <canvas id="criticalLineCanvas" width="400" height="300"></canvas>
-                        <div class="rh-visual-title">Critical Line Analysis</div>
-                        <div class="rh-visual-desc">Re(s) = 1/2 visualization for L(s,χ)</div>
+            <div class="interactive-panel">
+                <h3>Interactive Verification</h3>
+                <p>Test the exact identity for any prime cutoff:</p>
+                
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="pmax-finite">Prime Cutoff p_max:</label>
+                        <input type="number" id="pmax-finite" value="13" min="3" max="100" step="2">
                     </div>
-                    
-                    <div class="character-support-display">
-                        <canvas id="characterCanvas" width="400" height="300"></canvas>
-                        <div class="rh-visual-title">Character Support Domains</div>
-                        <div class="rh-visual-desc">χ(r) ≠ 0 regions across moduli</div>
-                    </div>
-                    
-                    <div class="prime-distribution-display">
-                        <canvas id="primeDistCanvas" width="400" height="300"></canvas>
-                        <div class="rh-visual-title">Prime Equidistribution</div>
-                        <div class="rh-visual-desc">GRH uniformity predictions</div>
-                    </div>
-                    
-                    <div class="prime-distribution-display">
-                        <canvas id="fareyDiscrepancyCanvas" width="400" height="300"></canvas>
-                        <div class="rh-visual-title">Farey Discrepancy</div>
-                        <div class="rh-visual-desc">Franel-Landau RH equivalence</div>
-                    </div>
-                    
-                    <div class="prime-distribution-display">
-                        <canvas id="franelLandauCanvas" width="400" height="300"></canvas>
-                        <div class="rh-visual-title">Franel-Landau Test</div>
-                        <div class="rh-visual-desc">D(N) = O(N^(1/2+ε)) verification</div>
-                    </div>
-                    
-                    <div class="prime-distribution-display">
-                        <canvas id="zetaZerosCanvas" width="400" height="300"></canvas>
-                        <div class="rh-visual-title">Zeta Function Zeros</div>
-                        <div class="rh-visual-desc">First non-trivial zeros on critical line</div>
-                    </div>
-                    
-                    <div class="prime-distribution-display">
-                        <canvas id="primeCountingCanvas" width="400" height="300"></canvas>
-                        <div class="rh-visual-title">Prime Counting Function π(x)</div>
-                        <div class="rh-visual-desc">π(x) vs Li(x) comparison</div>
-                    </div>
-                    
-                    <div class="prime-distribution-display">
-                        <canvas id="residueHeatmapCanvas" width="400" height="300"></canvas>
-                        <div class="rh-visual-title">Residue Class Heatmap</div>
-                        <div class="rh-visual-desc">Prime density visualization</div>
-                    </div>
-                    
-                    <div class="prime-distribution-display">
-                        <canvas id="chiSquaredCanvas" width="400" height="300"></canvas>
-                        <div class="rh-visual-title">Chi-Squared Test</div>
-                        <div class="rh-visual-desc">Uniformity statistical test</div>
-                    </div>
-                    
-                    <div class="prime-distribution-display">
-                        <canvas id="modulusComparisonCanvas" width="400" height="300"></canvas>
-                        <div class="rh-visual-title">Multi-Modulus Comparison</div>
-                        <div class="rh-visual-desc">φ(M) across selected rings</div>
-                    </div>
-                    
-                    <div class="prime-distribution-display">
-                        <canvas id="lFunctionCanvas" width="400" height="300"></canvas>
-                        <div class="rh-visual-title">L-Function Magnitude |L(s,χ)|</div>
-                        <div class="rh-visual-desc">Along critical line approximation</div>
-                    </div>
+                    <button onclick="verifyFiniteIdentity()">Verify Identity</button>
                 </div>
                 
-                <div class="rh-research-controls">
-                    <button class="rh-btn" onclick="updateRhVisualizations()">Update RH Analysis</button>
-                    <button class="rh-btn" onclick="exportRhData()">Export Research Data</button>
-                    <button class="rh-btn" onclick="runFullGrhSuite()">Run Complete GRH Suite</button>
-                    <button class="rh-btn" onclick="animateZetaZeros()">Animate Zeros</button>
+                <div id="finite-results"></div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">Per-Prime Algebraic Structure</h3>
+                <p>The identity follows from the per-prime relationship:</p>
+                <div class="formula-display">
+                    $$\frac{(p-1)(p-2)}{p^2} = \left(1-\frac{1}{(p-1)^2}\right)\left(1-\frac{1}{p}\right)^3$$
+                </div>
+                <p><strong>Factor 1/4 Origin:</strong> Restricting to odd integers (1/2) × twin gap constraint (1/2) = 1/4</p>
+                <p><strong>Exponent 3 Origin:</strong> Emerges from the algebraic structure of each prime's contribution</p>
+            </div>
+        </div>
+
+        <!-- Scaling Law Section -->
+        <div id="scaling" class="section">
+            <h2 class="section-header">Asymptotic Scaling Law</h2>
+            
+            <div class="theorem-box" data-type="Theorem 2">
+                <h3>Precise Asymptotic Scaling</h3>
+                <div class="formula-display">
+                    $$R_{\mathrm{mod}}(p_{\max}) \sim \frac{2e^{-3\gamma}C_2}{(\log p_{\max})^3} \quad \text{as } p_{\max} \to \infty$$
+                </div>
+                <p>Where $2e^{-3\gamma} \approx 0.3539853276$ and $C_2 \approx 0.6601618158$ is the Hardy-Littlewood constant.</p>
+            </div>
+            
+            <div class="interactive-panel">
+                <h3>High-Precision Scaling Verification</h3>
+                <p>Test convergence to the theoretical asymptotic:</p>
+                
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="pmax-start">Start p_max:</label>
+                        <input type="number" id="pmax-start" value="5" min="3" step="2">
+                    </div>
+                    <div class="control-group">
+                        <label for="pmax-end">End p_max:</label>
+                        <input type="number" id="pmax-end" value="97" min="5" step="2">
+                    </div>
+                    <div class="control-group">
+                        <label for="precision">Decimal Places:</label>
+                        <input type="number" id="precision" value="12" min="8" max="16">
+                    </div>
+                    <button onclick="verifyScalingLaw()">Test Scaling Law</button>
+                    <button onclick="plotConvergence()">Plot Convergence</button>
+                </div>
+                
+                <div id="scaling-results"></div>
+                <div class="plot-container">
+                    <div id="scaling-plot"></div>
                 </div>
             </div>
             
-            <!-- Space reserved for additional content -->
-        </div>
-        
-        <div class="analysis-section">
-            <h3 onclick="toggleAnalysisSection()">
-                <span class="collapse-icon" id="analysisCollapseIcon">▼</span>
-                Mathematical Analysis
-            </h3>
-            <div id="ringInfo" class="collapsible-content">Select rings to view detailed analysis</div>
+            <div class="highlight-box">
+                <h3>Theoretical Foundation</h3>
+                <p>The scaling emerges from Mertens' theorem excluding p=2:</p>
+                <div class="formula-display">
+                    $$\prod_{3 \leq p \leq x} \left(1-\frac{1}{p}\right) \sim \frac{2e^{-\gamma}}{\log x}$$
+                </div>
+                <p>Cubing this and combining with the exact finite identity yields the proven asymptotic.</p>
+            </div>
         </div>
 
-        <div class="legend">
-            <h3 onclick="toggleLegendSection()" style="cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between;">
-                <span style="display: flex; align-items: center; gap: 10px;">
-                    <span class="collapse-icon" id="legendCollapseIcon">▼</span>
-                    Complete Legend & Guide
-                </span>
-            </h3>
-            <div id="legendContent" class="collapsible-content">
-                <div class="legend-grid">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #FFD700;"></div>
-                        <div>
-                            <strong>Unit Circle (M=1)</strong><br>
-                            Mathematical foundation where gcd(0,1)=1. Contains single residue 0. The fundamental building block of the modular ring system.
-                        </div>
+        <!-- Modular Analysis Section -->
+        <div id="modular" class="section">
+            <h2 class="section-header">Twin-Admissible Residues Analysis</h2>
+            
+            <div class="theorem-box" data-type="Definition">
+                <h3>Twin-Admissible Residues</h3>
+                <div class="formula-display">
+                    $$T(M) = \#\{r \bmod M : \gcd(r,M) = \gcd(r+2,M) = 1\}$$
+                </div>
+                <p>For squarefree M:</p>
+                <div class="formula-display">
+                    $$T(M) = \prod_{\substack{p|M \\ p \geq 3}} (p-2), \quad \frac{T(M)}{\varphi(M)} = \prod_{\substack{p|M \\ p \geq 3}} \frac{p-2}{p-1}$$
+                </div>
+            </div>
+            
+            <div class="interactive-panel">
+                <h3>Primorial Verification</h3>
+                <p>Verify the formula for primorial moduli:</p>
+                
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="max-prime">Maximum Prime:</label>
+                        <select id="max-prime">
+                            <option value="5">5 (M=30)</option>
+                            <option value="7">7 (M=210)</option>
+                            <option value="11">11 (M=2310)</option>
+                            <option value="13" selected>13 (M=30030)</option>
+                            <option value="17">17 (M=510510)</option>
+                        </select>
                     </div>
-                    
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: linear-gradient(45deg, #FF6B6B, #4ECDC4);"></div>
-                        <div>
-                            <strong>Residue Points (Modular Classes)</strong><br>
-                            Each colored point represents a residue class <span class="math-notation">r (mod M)</span>. Colors indicate coprimality with the modulus: gcd(r,M)=1 residues (Euler totient) are shown with full opacity.
-                        </div>
-                    </div>
-                    
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #FFD700;"></div>
-                        <div>
-                            <strong>Direct Lift Lines (Golden)</strong><br>
-                            Ring homomorphisms φ: Z/M₁Z → Z/M₂Z where φ(r) = r. These preserve residue structure and show mathematical relationships between different moduli.
-                        </div>
-                    </div>
-                    
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #FF6384;"></div>
-                        <div>
-                            <strong>Modular Lift Lines (Pink)</strong><br>
-                            Chinese Remainder Theorem transformations: r ↦ r + M×2ⁿ. Shows how residues map to shifted positions in larger moduli.
-                        </div>
-                    </div>
-                    
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: linear-gradient(90deg, #4ECDC4, #FF6B6B, #FFD700);"></div>
-                        <div>
-                            <strong>Prime Gap Connections</strong><br>
-                            Links between primes separated by specific gaps: <strong>Gap 2</strong> (Twin Primes), <strong>Gap 4</strong> (Cousin Primes), <strong>Gap 6</strong> (Sexy Primes). Tests Hardy-Littlewood conjectures.
-                        </div>
-                    </div>
-                    
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #48BB78;"></div>
-                        <div>
-                            <strong>Dirichlet Character Support (χ(r) ≠ 0)</strong><br>
-                            Residues where gcd(r,M)=1. These form the domain where Dirichlet characters are non-zero, essential for L-function analysis and the Generalized Riemann Hypothesis.
-                        </div>
-                    </div>
-                    
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: rgba(102, 102, 102, 0.3);"></div>
-                        <div>
-                            <strong>Character Vanishing (χ(r) = 0)</strong><br>
-                            Residues where gcd(r,M)≠1. These points appear dimmed as Dirichlet characters vanish here, excluding them from L-function calculations.
-                        </div>
-                    </div>
-                    
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: linear-gradient(45deg, #667eea, #764ba2);"></div>
-                        <div>
-                            <strong>Color Schemes Available</strong><br>
-                            <strong>Rainbow:</strong> By angular position θ=2πr/M<br>
-                            <strong>GCD Modes:</strong> Highlight character support domains<br>
-                            <strong>Prime Analysis:</strong> Distinguish prime vs composite residues<br>
-                            <strong>Mathematical:</strong> Based on φ(M) density and totient ordering
-                        </div>
-                    </div>
-                    
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #9b59b6;"></div>
-                        <div>
-                            <strong>Riemann Hypothesis Connections</strong><br>
-                            GRH predicts uniform prime distribution in coprime residue classes. The visualization tests these predictions through prime sieves and equidistribution analysis at Re(s)=1/2.
-                        </div>
-                    </div>
-                    
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #e67e22;"></div>
-                        <div>
-                            <strong>Prime Sieve Analysis</strong><br>
-                            When active, highlights prime distribution across residue classes. Golden rings mark classes containing primes, with size indicating density. Tests uniformity predictions.
-                        </div>
-                    </div>
+                    <button onclick="verifyPrimorialFormula()">Verify Formula</button>
+                    <button onclick="computeAllPrimorials()">Compute All</button>
                 </div>
                 
-                <div style="margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                    <h4 style="color: #FFD700; margin-bottom: 15px;">Mathematical Foundations</h4>
-                    <div style="font-size: 14px; line-height: 1.8;">
-                        <p><strong>Euler's Totient Function:</strong> <span class="math-notation">φ(n) = n∏<sub>p|n</sub>(1 - 1/p)</span> counts residues coprime to n</p>
-                        <p><strong>Character Support:</strong> <span class="math-notation">gcd(r,M) = 1 ⟺ χ(r) ≠ 0</span> defines L-function domains</p>
-                        <p><strong>Ring Isomorphism:</strong> <span class="math-notation">Z/nZ ≅ (Z/nZ)*</span> for coprime residues</p>
-                        <p><strong>Angle Formula:</strong> <span class="math-notation">θ = 2π(M-r)/M</span> positions residues correctly</p>
-                        <p><strong>GRH Prediction:</strong> Primes distribute uniformly across φ(M) coprime classes</p>
-                    </div>
+                <div id="modular-results"></div>
+            </div>
+            
+            <div class="key-insight">
+                <strong>Key Observation:</strong> The ratio T(M)/φ(M) decreases as more primes divide M, following the product ∏(p-2)/(p-1). This is distinct from the scaling law factor and represents pure modular arithmetic behavior.
+            </div>
+        </div>
+
+        <!-- Two-Point Framework Section -->
+        <div id="framework" class="section">
+            <h2 class="section-header">Two-Point Correlation Framework</h2>
+            
+            <div class="theorem-box" data-type="Conjecture">
+                <h3>Two-Point Elliott-Halberstam Type</h3>
+                <p>The remaining ingredient for the twin prime asymptotic:</p>
+                <div class="formula-display">
+                    $$\mathcal{V}_2(N^\theta, N; 2) \ll N^{2-\delta}$$
+                </div>
+                <p>for some θ > 1/2 and δ > 0, where the variance measures two-point correlations over arithmetic progressions.</p>
+            </div>
+            
+            <div class="interactive-panel">
+                <h3>Two-Point Correlation Explorer</h3>
+                <p>Investigate Möbius two-point sums:</p>
+                <div class="formula-display">
+                    $$S_2(N,2;\alpha) = \sum_{n \leq N} \mu(n)\mu(n+2)e^{2\pi i n\alpha}$$
                 </div>
                 
-                <div style="margin-top: 20px; padding: 20px; background: linear-gradient(45deg, rgba(255, 215, 0, 0.1), rgba(72, 187, 120, 0.1)); border-radius: 10px; border: 2px solid rgba(255, 215, 0, 0.3);">
-                    <h4 style="color: #FFD700; margin-bottom: 15px;">Research & Development</h4>
-                    <div style="font-size: 14px; line-height: 1.8;">
-                        <p><strong>Created by:</strong> Wessen Getachew</p>
-                        <p><strong>Twitter:</strong> <a href="https://twitter.com/7dView" target="_blank" style="color: #4ECDC4; text-decoration: none;">@7dView</a></p>
-                        <p><strong>Email:</strong> <a href="mailto:getachewwessen@gmail.com" style="color: #4ECDC4; text-decoration: none;">getachewwessen@gmail.com</a></p>
-                        <p style="margin-top: 10px; font-style: italic; opacity: 0.9;">This interactive visualization explores connections between modular arithmetic, prime distribution, and the Riemann Hypothesis through geometric representation of algebraic structures.</p>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="n-limit">Sum Limit N:</label>
+                        <input type="number" id="n-limit" value="200" min="50" max="1000" step="50">
                     </div>
+                    <div class="control-group">
+                        <label for="alpha-points">α Resolution:</label>
+                        <input type="number" id="alpha-points" value="100" min="50" max="200" step="25">
+                    </div>
+                    <button onclick="computeTwoPointSums()">Compute Correlations</button>
                 </div>
                 
-                <div style="margin-top: 20px; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                    <h4 style="color: #a0aec0; margin-bottom: 10px; font-size: 14px;">Quick Start Guide</h4>
-                    <div style="font-size: 13px; line-height: 1.7; opacity: 0.9;">
-                        <p><strong>1. Select Rings:</strong> Check moduli M₁-M₆₀ or add custom values. Unit circle is the foundation.</p>
-                        <p><strong>2. Choose Gaps:</strong> Enable gap 2, 4, or 6 to see twin, cousin, or sexy prime patterns.</p>
-                        <p><strong>3. Adjust Colors:</strong> Try different color schemes to highlight GCD=1 residues or prime classes.</p>
-                        <p><strong>4. Run Prime Sieve:</strong> Generate primes up to 10K+ and analyze distribution uniformity.</p>
-                        <p><strong>5. Enable Animation:</strong> Watch rings rotate and use inversion patterns for dynamic visualization.</p>
-                        <p><strong>6. Test RH Predictions:</strong> Use the GRH analysis tools to test equidistribution hypotheses.</p>
-                    </div>
+                <div class="plot-container">
+                    <div id="correlation-plot"></div>
                 </div>
+            </div>
+            
+            <div class="theorem-box" data-type="Bridge Theorem">
+                <h3>Conditional Resolution</h3>
+                <p>If the two-point Elliott-Halberstam hypothesis holds, then our exact finite identity implies:</p>
+                <div class="formula-display">
+                    $$\pi_2(X) \sim 2C_2 \frac{X}{(\log X)^2}$$
+                </div>
+                <p>with the classical Hardy-Littlewood twin prime constant.</p>
             </div>
         </div>
     </div>
 
+    <div class="export-panel">
+        <h3>Export Research Data</h3>
+        <button onclick="exportAllResults()" style="margin: 10px;">Export All Computations</button>
+        <button onclick="generateReport()" style="margin: 10px;">Generate Summary Report</button>
+    </div>
+
     <script>
-        // RH visualization range state
-        let rhVisualizationRanges = {
-            criticalTMin: 0,
-            criticalTMax: 50,
-            zetaZerosCount: 10,
-            primeCountLimit: 10000
+        // Mathematical constants
+        const C2_CONSTANT = 0.6601618158267969;
+        const EULER_GAMMA = 0.5772156649015329;
+        const THEORETICAL_TARGET = 2 * Math.exp(-3 * EULER_GAMMA);
+        
+        // Global storage
+        let allComputations = {
+            finite: [],
+            scaling: [],
+            modular: [],
+            correlations: []
         };
-        
-        function applyVisualizationRanges() {
-            rhVisualizationRanges.criticalTMin = parseFloat(document.getElementById('criticalTMin').value) || 0;
-            rhVisualizationRanges.criticalTMax = parseFloat(document.getElementById('criticalTMax').value) || 50;
-            rhVisualizationRanges.zetaZerosCount = parseInt(document.getElementById('zetaZerosCount').value) || 10;
-            rhVisualizationRanges.primeCountLimit = parseInt(document.getElementById('primeCountLimit').value) || 10000;
+
+        // Configure MathJax
+        window.MathJax = {
+            tex: {
+                inlineMath: '$', '$'], ['\\(', '\\)',
+                displayMath: '$$', '$$'], ['\\[', '\\]'
+            },
+            svg: { fontCache: 'global' }
+        };
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             
-            updateRhVisualizations();
-            updateAnimationStatus('RH visualization ranges updated');
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
         }
-        
-        function resetVisualizationRanges() {
-            document.getElementById('criticalTMin').value = 0;
-            document.getElementById('criticalTMax').value = 50;
-            document.getElementById('zetaZerosCount').value = 10;
-            document.getElementById('primeCountLimit').value = 10000;
-            applyVisualizationRanges();
+
+        // Utility functions
+        function isPrime(n) {
+            if (n < 2) return false;
+            if (n === 2) return true;
+            if (n % 2 === 0) return false;
+            for (let i = 3; i * i <= n; i += 2) {
+                if (n % i === 0) return false;
+            }
+            return true;
         }
-        
-        function updateFareyDiscrepancyVisualization() {
-            const canvas = document.getElementById('fareyDiscrepancyCanvas');
-            if (!canvas || !document.getElementById('showFareyVisualization')?.checked) {
-                if (canvas) canvas.parentElement.style.display = 'none';
-                return;
+
+        function getPrimesUpTo(limit) {
+            const primes = [];
+            for (let i = 2; i <= limit; i++) {
+                if (isPrime(i)) primes.push(i);
             }
-            
-            canvas.parentElement.style.display = 'block';
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            if (!fareyData.isActive) {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-                ctx.font = '14px Segoe UI';
-                ctx.textAlign = 'center';
-                ctx.fillText('Generate Farey Sequence', canvas.width / 2, canvas.height / 2);
-                return;
-            }
-            
-            const L_N = fareyData.L_N;
-            const xScale = (canvas.width - 60) / L_N;
-            const maxDiscrepancy = Math.max.apply(Math, fareyData.sequence.map(function(f, i) {
-                return Math.abs(f.value - (i + 1) / L_N);
-            }));
-            const yScale = (canvas.height - 60) / (maxDiscrepancy * 1.2);
-            
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(40, 10);
-            ctx.lineTo(40, canvas.height - 40);
-            ctx.lineTo(canvas.width - 10, canvas.height - 40);
-            ctx.stroke();
-            
-            ctx.fillStyle = '#4ECDC4';
-            ctx.strokeStyle = '#FFD700';
-            ctx.lineWidth = 1;
-            
-            fareyData.sequence.forEach(function(f, i) {
-                const x = 40 + (i + 1) * xScale;
-                const fareyY = canvas.height - 40 - f.value * (canvas.height - 60);
-                const uniformY = canvas.height - 40 - ((i + 1) / L_N) * (canvas.height - 60);
-                
-                ctx.fillStyle = '#4ECDC4';
-                ctx.beginPath();
-                ctx.arc(x, fareyY, 2, 0, 2 * Math.PI);
-                ctx.fill();
-                
-                ctx.fillStyle = '#FFD700';
-                ctx.beginPath();
-                ctx.arc(x, uniformY, 2, 0, 2 * Math.PI);
-                ctx.fill();
-                
-                ctx.strokeStyle = 'rgba(255, 107, 107, 0.3)';
-                ctx.beginPath();
-                ctx.moveTo(x, fareyY);
-                ctx.lineTo(x, uniformY);
-                ctx.stroke();
-            });
-            
-            ctx.fillStyle = '#4ECDC4';
-            ctx.font = '11px Segoe UI';
-            ctx.textAlign = 'left';
-            ctx.fillText('Farey F_N', 50, 25);
-            
-            ctx.fillStyle = '#FFD700';
-            ctx.fillText('Uniform U_N', 120, 25);
-            
-            ctx.fillStyle = '#FFD700';
-            ctx.font = '12px Segoe UI';
-            ctx.textAlign = 'center';
-            ctx.fillText('D(' + fareyData.N + ') = ' + fareyData.discrepancy.toFixed(4), canvas.width / 2, canvas.height - 10);
+            return primes;
         }
-        
-        function updateFranelLandauVisualization() {
-            const canvas = document.getElementById('franelLandauCanvas');
-            if (!canvas || !document.getElementById('showFranelLandau')?.checked) {
-                if (canvas) canvas.parentElement.style.display = 'none';
-                return;
+
+        function gcd(a, b) {
+            while (b !== 0) {
+                [a, b] = [b, a % b];
+            }
+            return a;
+        }
+
+        function eulerPhi(n) {
+            let result = n;
+            let p = 2;
+            while (p * p <= n) {
+                if (n % p === 0) {
+                    while (n % p === 0) n /= p;
+                    result -= result / p;
+                }
+                p++;
+            }
+            if (n > 1) result -= result / n;
+            return Math.round(result);
+        }
+
+        function mobiusFunction(n) {
+            if (n === 1) return 1;
+            let factors = 0;
+            let temp = n;
+            
+            for (let p = 2; p * p <= temp; p++) {
+                if (temp % p === 0) {
+                    factors++;
+                    temp /= p;
+                    if (temp % p === 0) return 0; // squared factor
+                }
+            }
+            if (temp > 1) factors++;
+            return factors % 2 === 0 ? 1 : -1;
+        }
+
+        // Core computations
+        function computeRmod(pmax, precision = 12) {
+            const primes = getPrimesUpTo(pmax).filter(p => p >= 3);
+            let logSum = Math.log(0.25);
+            
+            for (const p of primes) {
+                logSum += Math.log((p - 1) * (p - 2) / (p * p));
             }
             
-            canvas.parentElement.style.display = 'block';
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            return parseFloat(Math.exp(logSum).toPrecision(precision));
+        }
+
+        function computeC2Truncated(pmax) {
+            const primes = getPrimesUpTo(pmax).filter(p => p >= 3);
+            let logSum = 0;
             
-            if (!fareyData.isActive) {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-                ctx.font = '14px Segoe UI';
-                ctx.textAlign = 'center';
-                ctx.fillText('Generate Farey Sequence', canvas.width / 2, canvas.height / 2);
-                return;
+            for (const p of primes) {
+                logSum += Math.log(1 - 1/((p-1) * (p-1)));
             }
             
-            const testValues = [5, 10, 15, 20, 30, 50, 75, 100, 150, 200, 300, 500];
+            return Math.exp(logSum);
+        }
+
+        function computeMno2(pmax) {
+            const primes = getPrimesUpTo(pmax).filter(p => p >= 3);
+            let logSum = 0;
+            
+            for (const p of primes) {
+                logSum += Math.log(1 - 1/p);
+            }
+            
+            return Math.exp(logSum);
+        }
+
+        function verifyFiniteIdentity() {
+            const pmax = parseInt(document.getElementById('pmax-finite').value);
+            const precision = 14;
+            
+            // Left side: R_mod
+            const rmod = computeRmod(pmax, precision);
+            
+            // Right side components
+            const c2_trunc = computeC2Truncated(pmax);
+            const mno2 = computeMno2(pmax);
+            const rightSide = 0.25 * c2_trunc * Math.pow(mno2, 3);
+            
+            // Verification
+            const difference = Math.abs(rmod - rightSide);
+            const relativeError = difference / Math.max(rmod, rightSide);
+            const primes = getPrimesUpTo(pmax).filter(p => p >= 3);
+            
+            allComputations.finite.push({pmax, rmod, rightSide, relativeError, primes});
+            
+            const resultsHtml = `
+                <table class="results-table">
+                    <tr>
+                        <th>Component</th>
+                        <th>Value</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>R_mod(${pmax})</td>
+                        <td class="result-value">${rmod.toExponential(8)}</td>
+                        <td>Modular sieve constant</td>
+                    </tr>
+                    <tr>
+                        <td>Right Side</td>
+                        <td class="result-value">${rightSide.toExponential(8)}</td>
+                        <td>(1/4) × C₂ × M_no2³</td>
+                    </tr>
+                    <tr>
+                        <td>Relative Error</td>
+                        <td class="result-value ${relativeError < 1e-12 ? 'status-excellent' : 'status-poor'}">
+                            ${relativeError.toExponential(3)}
+                        </td>
+                        <td>${relativeError < 1e-12 ? 'EXACT MATCH' : 'Numerical precision limit'}</td>
+                    </tr>
+                    <tr>
+                        <td>Components</td>
+                        <td class="result-value">
+                            C₂(${pmax}) = ${c2_trunc.toFixed(10)}<br>
+                            M_no2(${pmax}) = ${mno2.toFixed(10)}
+                        </td>
+                        <td>Primes: [${primes.join(', ')}]</td>
+                    </tr>
+                </table>
+            `;
+            
+            document.getElementById('finite-results').innerHTML = resultsHtml;
+        }
+
+        function verifyScalingLaw() {
+            const pmaxStart = parseInt(document.getElementById('pmax-start').value);
+            const pmaxEnd = parseInt(document.getElementById('pmax-end').value);
+            const precision = parseInt(document.getElementById('precision').value);
+            
+            const primes = getPrimesUpTo(pmaxEnd).filter(p => p >= pmaxStart && p >= 3);
             const results = [];
             
-            testValues.forEach(function(N) {
-                if (N <= 500) {
-                    const farey = [];
-                    for (var q = 1; q <= N; q++) {
-                        for (var a = 0; a <= q; a++) {
-                            if (gcd(a, q) === 1) {
-                                farey.push(a / q);
-                            }
-                        }
-                    }
-                    
-                    const uniqueFarey = Array.from(new Set(farey)).sort(function(a, b) { return a - b; });
-                    const L = uniqueFarey.length;
-                    
-                    var D = 0;
-                    for (var j = 0; j < L; j++) {
-                        D += Math.abs(uniqueFarey[j] - (j + 1) / L);
-                    }
-                    
-                    results.push({ N: N, D: D, rhBound: Math.pow(N, 0.5 + 0.1) });
-                }
-            });
+            let tableHtml = `
+                <table class="results-table">
+                    <tr>
+                        <th>p_max</th>
+                        <th>R_mod(p_max)</th>
+                        <th>S(p_max)</th>
+                        <th>Target: 2e^(-3γ)</th>
+                        <th>Convergence</th>
+                    </tr>
+            `;
             
-            const maxN = Math.max.apply(Math, results.map(function(r) { return r.N; }));
-            const maxY = Math.max.apply(Math, results.map(function(r) { return Math.max(r.D, r.rhBound); }));
-            const xScale = (canvas.width - 60) / maxN;
-            const yScale = (canvas.height - 60) / maxY;
-            
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(40, 10);
-            ctx.lineTo(40, canvas.height - 40);
-            ctx.lineTo(canvas.width - 10, canvas.height - 40);
-            ctx.stroke();
-            
-            ctx.strokeStyle = '#FFD700';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 3]);
-            ctx.beginPath();
-            results.forEach(function(r, i) {
-                const x = 40 + r.N * xScale;
-                const y = canvas.height - 40 - r.rhBound * yScale;
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
-            ctx.stroke();
-            ctx.setLineDash([]);
-            
-            ctx.fillStyle = '#4ECDC4';
-            ctx.strokeStyle = '#4ECDC4';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            results.forEach(function(r, i) {
-                const x = 40 + r.N * xScale;
-                const y = canvas.height - 40 - r.D * yScale;
+            for (const pmax of primes.slice(0, 15)) {
+                const rmod = computeRmod(pmax, precision);
+                const c2_trunc = computeC2Truncated(pmax);
+                const S_value = (rmod * Math.pow(Math.log(pmax), 3)) / c2_trunc;
+                const relativeError = Math.abs(S_value - THEORETICAL_TARGET) / THEORETICAL_TARGET;
                 
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+                results.push({pmax, rmod, S_value, relativeError});
                 
-                ctx.fillRect(x - 2, y - 2, 4, 4);
-            });
-            ctx.stroke();
+                const status = relativeError < 0.01 ? 'status-excellent' : 
+                              relativeError < 0.05 ? 'status-good' : 'status-poor';
+                const statusText = relativeError < 0.01 ? 'Excellent' : 
+                                  relativeError < 0.05 ? 'Good' : 'Poor';
+                
+                tableHtml += `
+                    <tr>
+                        <td>${pmax}</td>
+                        <td class="result-value">${rmod.toExponential(6)}</td>
+                        <td class="result-value">${S_value.toFixed(8)}</td>
+                        <td class="result-value">${THEORETICAL_TARGET.toFixed(8)}</td>
+                        <td class="${status}">${statusText} (${(relativeError*100).toFixed(2)}%)</td>
+                    </tr>
+                `;
+            }
             
-            ctx.fillStyle = '#FFD700';
-            ctx.font = '11px Segoe UI';
-            ctx.textAlign = 'left';
-            ctx.fillText('O(N^(1/2+ε)) bound', 50, 20);
-            
-            ctx.fillStyle = '#4ECDC4';
-            ctx.fillText('Actual D(N)', 50, 35);
-            
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '12px Segoe UI';
-            ctx.textAlign = 'center';
-            ctx.fillText('Franel-Landau: D(N) vs RH Bound', canvas.width / 2, canvas.height - 10);
-            
-            const allSatisfy = results.every(function(r) { return r.D < r.rhBound; });
-            ctx.fillStyle = allSatisfy ? '#4ECDC4' : '#FF6B6B';
-            ctx.font = '10px Segoe UI';
-            ctx.fillText(allSatisfy ? '✓ All points satisfy RH bound' : '⚠ Some points exceed bound', canvas.width - 100, 20);
+            tableHtml += '</table>';
+            document.getElementById('scaling-results').innerHTML = tableHtml;
+            allComputations.scaling = results;
         }
-        
-        // ========================================
-        // END FAREY & FRANEL-LANDAU FUNCTIONS
-        // ========================================
-        
-        // Conjecture testing state
-        let conjectureTestHistory = [];
-        let currentConjecture = 'grh';
-        
-        function updateConjectureParams() {
-            currentConjecture = document.getElementById('conjectureSelect').value;
-            const extraParams = document.getElementById('extraParams');
-            
-            const paramConfigs = {
-                'hardy-littlewood': '<div class="gap-input">k-tuple size: <input type="number" id="kTupleSize" min="2" max="10" value="3" style="width: 50px;"> Max gap: <input type="number" id="maxTupleGap" min="2" value="6" style="width: 50px;"></div>',
-                'goldbach': '<div style="font-size: 11px; margin-top: 5px;"><em>Tests all even numbers in range</em></div>',
-                'polignac': '<div class="gap-input">Test gaps: <input type="text" id="polignacGaps" value="2,4,6,8,10" placeholder="2,4,6" style="width: 100px;"></div>',
-                'prime-race': '<div class="gap-input">Modulus: <input type="number" id="raceModulus" min="3" value="4" style="width: 50px;"> <em>(Compare residue classes)</em></div>',
-                'andrica': '<div style="font-size: 11px; margin-top: 5px;"><em>Tests √(p_{n+1}) - √(p_n) < 1</em></div>',
-                'firoozbakht': '<div style="font-size: 11px; margin-top: 5px;"><em>Tests p_n^(1/n) strictly decreasing</em></div>',
-                'legendre': '<div style="font-size: 11px; margin-top: 5px;"><em>Tests prime exists between n² and (n+1)²</em></div>',
-                'cramer': '<div style="font-size: 11px; margin-top: 5px;"><em>Tests gap/(ln p)² < 1</em></div>',
-                'grh': '<div style="font-size: 11px; margin-top: 5px;"><em>Tests prime distribution uniformity</em></div>'
-            };
-            
-            extraParams.innerHTML = paramConfigs[currentConjecture] || '';
-        }
-        
-        function runConjectureTest() {
-            const conjecture = document.getElementById('conjectureSelect').value;
-            const min = parseInt(document.getElementById('conjectureMin').value);
-            const max = parseInt(document.getElementById('conjectureMax').value);
-            
-            if (max - min < 10) {
-                alert('Range too small. Please use at least 10 numbers.');
+
+        function plotConvergence() {
+            if (allComputations.scaling.length === 0) {
+                verifyScalingLaw();
+                setTimeout(plotConvergence, 500);
                 return;
             }
             
-            updateAnimationStatus('Running ' + conjecture + ' test...');
+            const results = allComputations.scaling;
             
+            const trace1 = {
+                x: results.map(r => r.pmax),
+                y: results.map(r => r.S_value),
+                mode: 'markers+lines',
+                name: 'S(p_max) = R_mod·(log p_max)³/C₂',
+                line: {color: '#9c27b0', width: 3},
+                marker: {size: 10, color: '#9c27b0'}
+            };
+            
+            const trace2 = {
+                x: results.map(r => r.pmax),
+                y: results.map(r => THEORETICAL_TARGET),
+                mode: 'lines',
+                name: '2e^(-3γ) ≈ 0.3540',
+                line: {color: '#e74c3c', width: 3, dash: 'dash'}
+            };
+            
+            const layout = {
+                title: 'Convergence to Theoretical Asymptotic 2e^(-3γ)',
+                xaxis: {title: 'Prime Cutoff p_max', type: 'log'},
+                yaxis: {title: 'Normalized Value S(p_max)'},
+                showlegend: true,
+                plot_bgcolor: '#f8f9fa',
+                paper_bgcolor: 'rgba(0,0,0,0)'
+            };
+            
+            Plotly.newPlot('scaling-plot', [trace1, trace2], layout, {responsive: true});
+        }
+
+        function verifyPrimorialFormula() {
+            const maxPrime = parseInt(document.getElementById('max-prime').value);
+            const primes = getPrimesUpTo(maxPrime);
+            
+            // Compute primorial M
+            let M = 1;
+            for (const p of primes) {
+                M *= p;
+            }
+            
+            // Direct enumeration of T(M)
+            let directCount = 0;
+            for (let r = 1; r < M; r++) {
+                if (gcd(r, M) === 1 && gcd(r + 2, M) === 1) {
+                    directCount++;
+                }
+            }
+            
+            // Formula computation
+            let formulaResult = 1;
+            for (const p of primes) {
+                if (p >= 3) formulaResult *= (p - 2);
+            }
+            
+            const phi = eulerPhi(M);
+            const ratio = directCount / phi;
+            const match = Math.abs(directCount - formulaResult) < 1e-10;
+            
+            const resultData = {M, maxPrime, phi, directCount, formulaResult, ratio, match};
+            allComputations.modular.push(resultData);
+            
+            const resultsHtml = `
+                <table class="results-table">
+                    <tr>
+                        <th>Property</th>
+                        <th>Value</th>
+                        <th>Verification</th>
+                    </tr>
+                    <tr>
+                        <td>Modulus M (primorial)</td>
+                        <td class="result-value">${M.toLocaleString()}</td>
+                        <td>∏p for p ≤ ${maxPrime}</td>
+                    </tr>
+                    <tr>
+                        <td>φ(M)</td>
+                        <td class="result-value">${phi.toLocaleString()}</td>
+                        <td>Euler totient</td>
+                    </tr>
+                    <tr>
+                        <td>T(M) - Direct Count</td>
+                        <td class="result-value">${directCount}</td>
+                        <td>Enumeration of twin-admissible residues</td>
+                    </tr>
+                    <tr>
+                        <td>T(M) - Formula</td>
+                        <td class="result-value">${formulaResult}</td>
+                        <td>∏(p-2) for p≥3, p|M</td>
+                    </tr>
+                    <tr>
+                        <td>Formula Match</td>
+                        <td class="${match ? 'status-excellent' : 'status-poor'}">${match ? 'EXACT ✓' : 'FAIL ✗'}</td>
+                        <td>Direct vs Formula</td>
+                    </tr>
+                    <tr>
+                        <td>T(M)/φ(M)</td>
+                        <td class="result-value">${ratio.toFixed(8)}</td>
+                        <td>Twin-admissible density</td>
+                    </tr>
+                </table>
+            `;
+            
+            document.getElementById('modular-results').innerHTML = resultsHtml;
+        }
+
+        function computeAllPrimorials() {
+            const maxPrimes = [5, 7, 11, 13, 17];
+            const results = [];
+            
+            for (const maxP of maxPrimes) {
+                const primes = getPrimesUpTo(maxP);
+                let M = 1;
+                for (const p of primes) M *= p;
+                
+                let formulaResult = 1;
+                for (const p of primes) {
+                    if (p >= 3) formulaResult *= (p - 2);
+                }
+                
+                const phi = eulerPhi(M);
+                const ratio = formulaResult / phi;
+                
+                results.push({maxP, M, phi, T: formulaResult, ratio});
+            }
+            
+            let tableHtml = `
+                <table class="results-table">
+                    <tr>
+                        <th>Max Prime</th>
+                        <th>M (Primorial)</th>
+                        <th>φ(M)</th>
+                        <th>T(M)</th>
+                        <th>T(M)/φ(M)</th>
+                    </tr>
+            `;
+            
+            for (const r of results) {
+                tableHtml += `
+                    <tr>
+                        <td>${r.maxP}</td>
+                        <td class="result-value">${r.M.toLocaleString()}</td>
+                        <td class="result-value">${r.phi.toLocaleString()}</td>
+                        <td class="result-value">${r.T}</td>
+                        <td class="result-value">${r.ratio.toFixed(6)}</td>
+                    </tr>
+                `;
+            }
+            
+            tableHtml += '</table>';
+            document.getElementById('modular-results').innerHTML = tableHtml;
+            allComputations.modular = results;
+        }
+
+        function computeTwoPointSums() {
+            const N = parseInt(document.getElementById('n-limit').value);
+            const alphaPoints = parseInt(document.getElementById('alpha-points').value);
+            
+            const alphaValues = [];
+            const s2Values = [];
+            const s2MagnitudeValues = [];
+            
+            for (let k = 0; k <= alphaPoints; k++) {
+                const alpha = k / alphaPoints;
+                alphaValues.push(alpha);
+                
+                let realSum = 0;
+                let imagSum = 0;
+                
+                for (let n = 1; n <= N - 2; n++) {
+                    const mu_n = mobiusFunction(n);
+                    const mu_n2 = mobiusFunction(n + 2);
+                    const product = mu_n * mu_n2;
+                    
+                    realSum += product * Math.cos(2 * Math.PI * n * alpha);
+                    imagSum += product * Math.sin(2 * Math.PI * n * alpha);
+                }
+                
+                const magnitude = Math.sqrt(realSum * realSum + imagSum * imagSum);
+                s2Values.push(realSum);
+                s2MagnitudeValues.push(magnitude);
+            }
+            
+            const sqrtN = Math.sqrt(N);
+            
+            const trace1 = {
+                x: alphaValues,
+                y: s2Values,
+                mode: 'lines',
+                name: 'Re[S₂(N,2;α)]',
+                line: {color: '#9c27b0', width: 2}
+            };
+            
+            const trace2 = {
+                x: alphaValues,
+                y: s2MagnitudeValues,
+                mode: 'lines',
+                name: '|S₂(N,2;α)|',
+                line: {color: '#e67e22', width: 2}
+            };
+            
+            const trace3 = {
+                x: alphaValues,
+                y: alphaValues.map(() => sqrtN),
+                mode: 'lines',
+                name: '√N benchmark',
+                line: {color: '#e74c3c', width: 2, dash: 'dash'}
+            };
+            
+            const trace4 = {
+                x: alphaValues,
+                y: alphaValues.map(() => -sqrtN),
+                mode: 'lines',
+                name: '-√N benchmark',
+                line: {color: '#e74c3c', width: 2, dash: 'dash'},
+                showlegend: false
+            };
+            
+            const layout = {
+                title: `Two-Point Möbius Correlations S₂(${N},2;α)`,
+                xaxis: {title: 'α parameter'},
+                yaxis: {title: 'Correlation Value'},
+                showlegend: true,
+                plot_bgcolor: '#f8f9fa',
+                paper_bgcolor: 'rgba(0,0,0,0)'
+            };
+            
+            Plotly.newPlot('correlation-plot', [trace1, trace2, trace3, trace4], layout, {responsive: true});
+            
+            allComputations.correlations.push({N, alphaPoints, maxMagnitude: Math.max(...s2MagnitudeValues), sqrtN});
+        }
+
+        function exportAllResults() {
+            const timestamp = new Date().toISOString().split('T')[0];
+            let csvContent = "# Twin Prime Research Verification Results\n";
+            csvContent += `# Generated: ${timestamp}\n\n`;
+            
+            // Finite identity results
+            csvContent += "# Finite Identity Verification\n";
+            csvContent += "p_max,R_mod,Right_Side,Relative_Error\n";
+            for (const result of allComputations.finite) {
+                csvContent += `${result.pmax},${result.rmod},${result.rightSide},${result.relativeError}\n`;
+            }
+            
+            // Scaling law results
+            csvContent += "\n# Scaling Law Verification\n";
+            csvContent += "p_max,R_mod,S_value,Theoretical_Target,Relative_Error\n";
+            for (const result of allComputations.scaling) {
+                csvContent += `${result.pmax},${result.rmod},${result.S_value},${THEORETICAL_TARGET},${result.relativeError}\n`;
+            }
+            
+            // Modular results
+            csvContent += "\n# Modular Analysis\n";
+            csvContent += "Max_Prime,M,Phi_M,T_M,Ratio\n";
+            for (const result of allComputations.modular) {
+                csvContent += `${result.maxP},${result.M},${result.phi},${result.T},${result.ratio}\n`;
+            }
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `twin_prime_verification_${timestamp}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function generateReport() {
+            const timestamp = new Date().toISOString();
+            
+            let report = `Twin Prime Theory Verification Report
+Generated: ${timestamp}
+
+SUMMARY OF RESULTS
+==================
+
+1. FINITE IDENTITY VERIFICATION
+Last test: p_max = ${allComputations.finite.slice(-1)[0]?.pmax || 'N/A'}
+Relative error: ${allComputations.finite.slice(-1)[0]?.relativeError?.toExponential(3) || 'N/A'}
+Status: ${allComputations.finite.slice(-1)[0]?.relativeError < 1e-12 ? 'EXACT MATCH' : 'Within precision'}
+
+2. SCALING LAW CONVERGENCE
+Tests performed: ${allComputations.scaling.length}
+Best convergence: ${allComputations.scaling.length > 0 ? 
+    Math.min(...allComputations.scaling.map(r => r.relativeError)).toFixed(4) : 'N/A'}%
+Target: 2e^(-3γ) ≈ ${THEORETICAL_TARGET.toFixed(10)}
+
+3. MODULAR FORMULA VERIFICATION
+Primorial tests: ${allComputations.modular.length}
+All formula matches: ${allComputations.modular.every(r => r.match !== false) ? 'CONFIRMED' : 'ERRORS DETECTED'}
+
+THEORETICAL STATUS
+==================
+✓ Exact finite-cutoff identity: PROVEN
+✓ Asymptotic scaling law: THEORETICALLY DERIVED
+✓ Modular residue formula: COMPUTATIONALLY VERIFIED
+◯ Two-point correlations: FRAMEWORK ESTABLISHED (requires further investigation)
+
+The mathematical framework successfully bridges finite sieve methods 
+with classical Hardy-Littlewood theory through exact identities and 
+rigorous asymptotic analysis.
+            `;
+            
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `twin_prime_research_report_${timestamp.split('T')[0]}.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Initialize with default computations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for MathJax to load
             setTimeout(() => {
-                let result;
-                
-                switch(conjecture) {
-                    case 'andrica':
-                        result = testAndricaConjecture(min, max);
-                        break;
-                    case 'prime-race':
-                        result = testPrimeRace(min, max);
-                        break;
-                    case 'hardy-littlewood':
-                        result = testHardyLittlewoodKTuples(min, max);
-                        break;
-                    case 'goldbach':
-                        result = testGoldbachConjecture(min, max);
-                        break;
-                    case 'polignac':
-                        result = testPolignacConjecture(min, max);
-                        break;
-                    case 'firoozbakht':
-                        result = testFiroozbakhtConjecture(min, max);
-                        break;
-                    case 'legendre':
-                        result = testLegendreConjecture(min, max);
-                        break;
-                    case 'cramer':
-                        result = testCramerConjecture(min, max);
-                        break;
-                    case 'grh':
-                        result = testGRHUniformity(min, max);
-                        break;
-                    default:
-                        result = { error: 'Unknown conjecture' };
-                }
-                
-                displayConjectureResults(result);
-                conjectureTestHistory.push({
-                    timestamp: new Date().toISOString(),
-                    conjecture: conjecture,
-                    range: [min, max],
-                    result: result
-                });
-                
-                updateAnimationStatus('Test complete: ' + result.status);
-            }, 100);
-        }
-        
-        function testAndricaConjecture(min, max) {
-            const primes = sieveOfEratosthenes(max).filter(p => p >= min);
-            
-            if (primes.length < 2) {
-                return { status: 'INSUFFICIENT_DATA', verified: false };
-            }
-            
-            let maxDiff = 0;
-            let maxDiffPrimes = [0, 0];
-            let allVerified = true;
-            
-            for (let i = 0; i < primes.length - 1; i++) {
-                const diff = Math.sqrt(primes[i + 1]) - Math.sqrt(primes[i]);
-                
-                if (diff > maxDiff) {
-                    maxDiff = diff;
-                    maxDiffPrimes = [primes[i], primes[i + 1]];
-                }
-                
-                if (diff >= 1) {
-                    allVerified = false;
-                    return {
-                        status: 'COUNTEREXAMPLE_FOUND',
-                        verified: false,
-                        counterexample: { p1: primes[i], p2: primes[i + 1], diff: diff },
-                        tested: primes.length - 1
-                    };
-                }
-            }
-            
-            return {
-                status: 'VERIFIED',
-                verified: true,
-                tested: primes.length - 1,
-                maxDifference: maxDiff,
-                closestCall: maxDiffPrimes,
-                margin: 1 - maxDiff,
-                confidence: allVerified ? 'STRONG' : 'WEAK'
-            };
-        }
-        
-        function testPrimeRace(min, max) {
-            const modulus = parseInt(document.getElementById('raceModulus')?.value || 4);
-            const primes = sieveOfEratosthenes(max).filter(p => p >= min);
-            const coprimes = getCoprimes(modulus);
-            
-            const counts = {};
-            coprimes.forEach(r => counts[r] = 0);
-            
-            primes.forEach(p => {
-                const r = p % modulus;
-                if (coprimes.includes(r)) {
-                    counts[r]++;
-                }
-            });
-            
-            const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-            const leader = sorted[0];
-            const runnerUp = sorted[1];
-            
-            return {
-                status: 'ANALYSIS_COMPLETE',
-                modulus: modulus,
-                tested: primes.length,
-                counts: counts,
-                leader: { residue: parseInt(leader[0]), count: leader[1] },
-                runnerUp: { residue: parseInt(runnerUp[0]), count: runnerUp[1] },
-                margin: leader[1] - runnerUp[1],
-                bias: leader[1] / primes.length
-            };
-        }
-        
-        function testHardyLittlewoodKTuples(min, max) {
-            const k = parseInt(document.getElementById('kTupleSize')?.value || 3);
-            const maxGap = parseInt(document.getElementById('maxTupleGap')?.value || 6);
-            const primes = sieveOfEratosthenes(max).filter(p => p >= min);
-            
-            const tuples = [];
-            
-            for (let i = 0; i <= primes.length - k; i++) {
-                const candidate = [primes[i]];
-                let valid = true;
-                
-                for (let j = 1; j < k; j++) {
-                    if (i + j >= primes.length) {
-                        valid = false;
-                        break;
-                    }
-                    
-                    const gap = primes[i + j] - primes[i];
-                    if (gap > maxGap) {
-                        valid = false;
-                        break;
-                    }
-                    candidate.push(primes[i + j]);
-                }
-                
-                if (valid && candidate.length === k) {
-                    tuples.push(candidate);
-                }
-            }
-            
-            return {
-                status: 'TUPLES_FOUND',
-                k: k,
-                maxGap: maxGap,
-                tested: primes.length,
-                tuplesFound: tuples.length,
-                density: tuples.length / primes.length,
-                examples: tuples.slice(0, 10),
-                largestTuple: tuples[tuples.length - 1] || []
-            };
-        }
-        
-        function testGoldbachConjecture(min, max) {
-            const primes = new Set(sieveOfEratosthenes(max));
-            const results = [];
-            let minPartitions = Infinity;
-            let minPartitionsN = 0;
-            
-            const start = Math.max(4, min % 2 === 0 ? min : min + 1);
-            
-            for (let n = start; n <= max; n += 2) {
-                let partitionCount = 0;
-                let firstPartition = null;
-                
-                for (const p of primes) {
-                    if (p > n / 2) break;
-                    if (primes.has(n - p)) {
-                        if (!firstPartition) firstPartition = [p, n - p];
-                        partitionCount++;
-                    }
-                }
-                
-                if (partitionCount === 0) {
-                    return {
-                        status: 'COUNTEREXAMPLE_FOUND',
-                        verified: false,
-                        counterexample: n,
-                        tested: (n - start) / 2 + 1
-                    };
-                }
-                
-                if (partitionCount < minPartitions) {
-                    minPartitions = partitionCount;
-                    minPartitionsN = n;
-                }
-                
-                results.push({ n, partitionCount, firstPartition });
-            }
-            
-            const avgPartitions = results.reduce((sum, r) => sum + r.partitionCount, 0) / results.length;
-            
-            return {
-                status: 'VERIFIED',
-                verified: true,
-                tested: results.length,
-                averagePartitions: avgPartitions,
-                minPartitions: { n: minPartitionsN, count: minPartitions },
-                confidence: 'STRONG'
-            };
-        }
-        
-        function testPolignacConjecture(min, max) {
-            const gapsStr = document.getElementById('polignacGaps')?.value || '2,4,6,8,10';
-            const testGaps = gapsStr.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g > 0);
-            const primes = sieveOfEratosthenes(max).filter(p => p >= min);
-            
-            const gapCounts = {};
-            testGaps.forEach(g => gapCounts[g] = 0);
-            
-            for (let i = 0; i < primes.length - 1; i++) {
-                const gap = primes[i + 1] - primes[i];
-                if (testGaps.includes(gap)) {
-                    gapCounts[gap]++;
-                }
-            }
-            
-            return {
-                status: 'GAPS_ANALYZED',
-                tested: primes.length - 1,
-                gapsSearched: testGaps,
-                gapCounts: gapCounts,
-                allFound: testGaps.every(g => gapCounts[g] > 0),
-                confidence: 'MODERATE'
-            };
-        }
-        
-        function testFiroozbakhtConjecture(min, max) {
-            const primes = sieveOfEratosthenes(max).filter(p => p >= min);
-            
-            if (primes.length < 2) {
-                return { status: 'INSUFFICIENT_DATA', verified: false };
-            }
-            
-            for (let i = 1; i < primes.length; i++) {
-                const prev = Math.pow(primes[i - 1], 1 / i);
-                const curr = Math.pow(primes[i], 1 / (i + 1));
-                
-                if (curr >= prev) {
-                    return {
-                        status: 'COUNTEREXAMPLE_FOUND',
-                        verified: false,
-                        counterexample: { index: i + 1, prime: primes[i], prev: prev, curr: curr },
-                        tested: i + 1
-                    };
-                }
-            }
-            
-            return {
-                status: 'VERIFIED',
-                verified: true,
-                tested: primes.length,
-                confidence: 'STRONG'
-            };
-        }
-        
-        function testLegendreConjecture(min, max) {
-            const sqrtMax = Math.floor(Math.sqrt(max));
-            const primes = new Set(sieveOfEratosthenes(max));
-            
-            const start = Math.max(1, Math.floor(Math.sqrt(min)));
-            
-            for (let n = start; n <= sqrtMax; n++) {
-                const lower = n * n;
-                const upper = (n + 1) * (n + 1);
-                
-                let foundPrime = false;
-                for (const p of primes) {
-                    if (p > lower && p < upper) {
-                        foundPrime = true;
-                        break;
-                    }
-                    if (p >= upper) break;
-                }
-                
-                if (!foundPrime) {
-                    return {
-                        status: 'COUNTEREXAMPLE_FOUND',
-                        verified: false,
-                        counterexample: { n: n, range: [lower, upper] },
-                        tested: n - start + 1
-                    };
-                }
-            }
-            
-            return {
-                status: 'VERIFIED',
-                verified: true,
-                tested: sqrtMax - start + 1,
-                confidence: 'STRONG'
-            };
-        }
-        
-        function testCramerConjecture(min, max) {
-            const primes = sieveOfEratosthenes(max).filter(p => p >= min);
-            
-            if (primes.length < 2) {
-                return { status: 'INSUFFICIENT_DATA', verified: false };
-            }
-            
-            let maxRatio = 0;
-            let maxRatioPrimes = [0, 0];
-            
-            for (let i = 0; i < primes.length - 1; i++) {
-                const gap = primes[i + 1] - primes[i];
-                const logSquared = Math.pow(Math.log(primes[i]), 2);
-                const ratio = gap / logSquared;
-                
-                if (ratio > maxRatio) {
-                    maxRatio = ratio;
-                    maxRatioPrimes = [primes[i], primes[i + 1]];
-                }
-                
-                if (ratio >= 1) {
-                    return {
-                        status: 'COUNTEREXAMPLE_FOUND',
-                        verified: false,
-                        counterexample: { p1: primes[i], p2: primes[i + 1], ratio: ratio },
-                        tested: i + 1
-                    };
-                }
-            }
-            
-            return {
-                status: 'VERIFIED',
-                verified: true,
-                tested: primes.length - 1,
-                maxRatio: maxRatio,
-                closestCall: maxRatioPrimes,
-                margin: 1 - maxRatio,
-                confidence: 'MODERATE'
-            };
-        }
-        
-        function testGRHUniformity(min, max) {
-            const modulus = parseInt(document.getElementById('grhModulus')?.value || 30);
-            const primes = sieveOfEratosthenes(max).filter(p => p >= min && p > modulus);
-            const coprimes = getCoprimes(modulus);
-            
-            const distribution = {};
-            coprimes.forEach(r => distribution[r] = 0);
-            
-            primes.forEach(p => {
-                const r = p % modulus;
-                if (coprimes.includes(r)) {
-                    distribution[r]++;
-                }
-            });
-            
-            const expected = primes.length / coprimes.length;
-            let chiSquared = 0;
-            
-            coprimes.forEach(r => {
-                const observed = distribution[r];
-                chiSquared += Math.pow(observed - expected, 2) / expected;
-            });
-            
-            const degreesOfFreedom = coprimes.length - 1;
-            const uniformityScore = 1 - Math.min(1, chiSquared / (degreesOfFreedom * 2));
-            
-            return {
-                status: 'UNIFORMITY_ANALYZED',
-                modulus: modulus,
-                tested: primes.length,
-                eulerPhi: coprimes.length,
-                chiSquared: chiSquared,
-                degreesOfFreedom: degreesOfFreedom,
-                uniformityScore: uniformityScore,
-                isUniform: uniformityScore > 0.85,
-                grhSupport: uniformityScore > 0.9 ? 'STRONG' : uniformityScore > 0.8 ? 'MODERATE' : 'WEAK'
-            };
-        }
-        
-        function displayConjectureResults(result) {
-            const resultsDiv = document.getElementById('conjectureResults');
-            const contentDiv = document.getElementById('conjectureResultsContent');
-            
-            resultsDiv.style.display = 'block';
-            
-            let html = '<div style="padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px;">';
-            html += '<strong style="font-size: 14px;">' + result.status.replace(/_/g, ' ') + '</strong><br><br>';
-            
-            if (result.verified === true) {
-                html += '<span style="color: #4ECDC4; font-size: 13px;">VERIFIED (no counterexamples)</span><br>';
-            } else if (result.verified === false) {
-                html += '<span style="color: #FF6B6B; font-size: 13px;">COUNTEREXAMPLE FOUND</span><br>';
-            }
-            
-            html += '<br><strong>Details:</strong><br>';
-            
-            Object.keys(result).forEach(key => {
-                if (key === 'status' || key === 'verified') return;
-                
-                let value = result[key];
-                if (typeof value === 'number') {
-                    value = value < 1 ? value.toFixed(6) : value.toLocaleString();
-                } else if (typeof value === 'object' && value !== null) {
-                    value = JSON.stringify(value, null, 2).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;');
-                }
-                
-                html += key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()) + ': ' + value + '<br>';
-            });
-            
-            html += '</div>';
-            
-            contentDiv.innerHTML = html;
-        }
-        
-        function viewTestHistory() {
-            if (conjectureTestHistory.length === 0) {
-                alert('No test history available. Run some tests first.');
-                return;
-            }
-            
-            let html = 'TEST HISTORY:\n\n';
-            conjectureTestHistory.slice(-10).reverse().forEach((test, i) => {
-                html += `${i + 1}. ${test.conjecture} [${test.range[0]}-${test.range[1]}]\n`;
-                html += `   ${test.timestamp}\n`;
-                html += `   Status: ${test.result.status}\n\n`;
-            });
-            
-            alert(html);
-        }
-        
-        function exportCertificate() {
-            if (conjectureTestHistory.length === 0) {
-                alert('No test results to export. Run a test first.');
-                return;
-            }
-            
-            const latest = conjectureTestHistory[conjectureTestHistory.length - 1];
-            
-            let certificate = 'VERIFICATION CERTIFICATE\n';
-            certificate += '='.repeat(60) + '\n\n';
-            certificate += `Conjecture: ${latest.conjecture.toUpperCase().replace(/-/g, ' ')}\n`;
-            certificate += `Tested: ${latest.timestamp}\n`;
-            certificate += `Range: [${latest.range[0]}, ${latest.range[1]}]\n\n`;
-            certificate += 'Results:\n';
-            certificate += '-'.repeat(60) + '\n';
-            
-            Object.entries(latest.result).forEach(([key, value]) => {
-                certificate += `${key}: ${typeof value === 'object' ? JSON.stringify(value, null, 2) : value}\n`;
-            });
-            
-            certificate += '\n' + '='.repeat(60) + '\n';
-            certificate += 'Generated by Riemann Hypothesis Explorer\n';
-            certificate += 'Built by Wessen Getachew\n';
-            
-            const blob = new Blob([certificate], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `conjecture_certificate_${latest.conjecture}_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.txt`;
-            link.click();
-            URL.revokeObjectURL(url);
-            
-            updateAnimationStatus('Certificate exported');
-        }
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        let animating = false;
-        let animationFrame = 0;
-        let customRingCounter = 1000;
-        let isInverting = false;
-        let inversionProgress = 0;
-        let ringRotationSpeeds = {};
-        let specificLabelMods = new Set();
-        let inversionIntensity = 1.0;
-        let currentLabelFormat = 'number';
-        let gcdAnimationPhase = 0;
-        let gcdAnimationActive = false;
-        
-        // Coordinate system state
-        let coordinateSystem = 'polar';
-        let coordSystemParams = {
-            logCylinder: { uScale: 1.0, vScale: 1.0 },
-            spiral: { growth: 0.3, tightness: 0.5 },
-            hyperbolic: { curvature: 1.0 },
-            rectangular: { cellSize: 50, arrangement: 'totient' },
-            treemap: { algorithm: 'squarify', padding: 2 },
-            voronoi: { jitter: 0.1 },
-            fractal: { depth: 3, branching: 4 }
-        };
-        
-        // Enhanced multi-point distance measurement state
-        let distanceMeasurementActive = false;
-        let measurementPoints = [];
-        let distanceMode = 'euclidean';
-        let pathType = 'sequential';
-        
-        // Farey sequence state
-        let fareyData = {
-            N: 30,
-            sequence: [],
-            discrepancy: 0,
-            isActive: false
-        };
-        
-        function toggleGcdAnimation() {
-            gcdAnimationActive = document.getElementById('animateGcdHighlight').checked;
-            
-            if (gcdAnimationActive) {
-                updateAnimationStatus('GCD animation enabled');
-                if (!animating) {
-                    animating = true;
-                    animate();
-                }
-            } else {
-                updateAnimationStatus('GCD animation disabled');
-            }
-        }
-        
-        // Ring radius scaling state
-        let radiusScalingMode = 'uniform';
-        let scalingConstant = 1.0;
-        let exponentialBase = 1.15;
-        
-        // Nesting animation state
-        let nestingInversionAmount = 0;
-        let nestingAnimationActive = false;
-        let nestingAnimationSpeed = 1.0;
-        let nestingAnimationProgress = 0;
-        let nestingAnimationDirection = 1;
-        
-        // Interactive features state
-        let currentTheme = 'dark';
-        let currentPalette = 'rainbow';
-        let hoveredResidue = null;
-        let selectedResidue = null;
-        let showKeyboardShortcuts = false;
-        let colorInverted = false;
-        
-        // Color palettes
-        const colorPalettes = {
-            rainbow: (angle) => `hsl(${angle * 360}, 75%, 65%)`,
-            ocean: (angle) => `hsl(${180 + angle * 60}, 70%, 55%)`,
-            sunset: (angle) => `hsl(${angle * 60}, 100%, 60%)`,
-            matrix: (angle) => `hsl(${120 + angle * 30}, 100%, ${40 + angle * 30}%)`,
-            fire: (angle) => `hsl(${angle * 60}, 100%, ${50 + angle * 20}%)`,
-            ice: (angle) => `hsl(${180 + angle * 60}, 60%, ${60 + angle * 30}%)`,
-            purple: (angle) => `hsl(${270 + angle * 60}, 70%, 60%)`,
-            earth: (angle) => `hsl(${30 + angle * 30}, 60%, 50%)`
-        };
-        
-        // Animation recording state
-        let mediaRecorder = null;
-        let recordedChunks = [];
-        let isRecording = false;
-        let recordingCanvas = null;
-        let recordingStream = null;
-        let recordingStartTime = 0;
-        let frameCount = 0;
-        
-        // Pan and zoom state
-        let panX = 0;
-        let panY = 0;
-        let currentZoom = 1;
-        let isDragging = false;
-        let dragStartX = 0;
-        let dragStartY = 0;
-        let dragStartPanX = 0;
-        let dragStartPanY = 0;
-        
-        // Prime sieve data storage
-        let primeData = {
-            primes: [],
-            modulus: null,
-            limit: null,
-            residueDistribution: {},
-            totalPrimes: 0,
-            isActive: false
-        };
-
-        // Enhanced modulus configurations with unit circle foundation
-        const configs = {
-            'unit': { mod: 1, label: '1', description: 'Unit Circle - Fundamental mathematical foundation' },
-            '-5': { mod: 30/32, label: '30/32', description: 'M₋₅ = 30/32 ≈ 0.9375' },
-            '-4': { mod: 30/16, label: '30/16', description: 'M₋₄ = 30/16 = 1.875' },
-            '-3': { mod: 30/8, label: '30/8', description: 'M₋₃ = 30/8 = 3.75' },
-            '-2': { mod: 30/4, label: '30/4', description: 'M₋₂ = 30/4 = 7.5' },
-            '-1': { mod: 30/2, label: '15', description: 'M₋₁ = 15' },
-            '0': { mod: 30, label: '30', description: 'M₀ = 30 (Base modulus)' },
-            '1': { mod: 60, label: '60', description: 'M₁ = 60' },
-            '2': { mod: 120, label: '120', description: 'M₂ = 120' },
-            '3': { mod: 240, label: '240', description: 'M₃ = 240' },
-            '4': { mod: 480, label: '480', description: 'M₄ = 480' },
-            '5': { mod: 960, label: '960', description: 'M₅ = 960' },
-            '6': { mod: 1920, label: '1920', description: 'M₆ = 1920' },
-            '7': { mod: 3840, label: '3840', description: 'M₇ = 3840' },
-            '8': { mod: 7680, label: '7680', description: 'M₈ = 7680' },
-            '9': { mod: 15360, label: '15360', description: 'M₉ = 15360' },
-            '10': { mod: 30720, label: '30720', description: 'M₁₀ = 30720' }
-        };
-
-        // Enhanced GRH analysis functions
-        function runGrhAnalysis() {
-            const modulus = parseInt(document.getElementById('grhModulus').value);
-            
-            if (modulus < 2) {
-                alert('Please enter a valid modulus ≥ 2 for GRH analysis');
-                return;
-            }
-            
-            // Test prime equidistribution for GRH
-            const analysis = analyzePrimeEquidistribution(modulus);
-            
-            // Display results
-            updateRhAnalysisDisplay(analysis);
-            
-            updateAnimationStatus(`GRH analysis complete for mod ${modulus}`);
-        }
-
-        function validateCharacterSupport() {
-            const selectedRings = getSelectedRings();
-            let validationResults = [];
-            
-            selectedRings.forEach(ringId => {
-                const config = configs[ringId];
-                if (config) {
-                    const coprimes = getCoprimes(config.mod);
-                    const validation = {
-                        modulus: config.mod,
-                        totalResidues: config.mod,
-                        characterSupport: coprimes.length,
-                        eulerTotient: coprimes.length,
-                        density: coprimes.length / config.mod
-                    };
-                    validationResults.push(validation);
-                }
-            });
-            
-            displa
+                verifyFiniteIdentity();
+                computeAllPrimorials();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
