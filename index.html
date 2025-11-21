@@ -412,10 +412,15 @@
                     </div>
                     
                     <div class="control-section">
+                        <div class="section-title">Export & Actions</div>
                         <div class="button-group">
-                            <button onclick="updateVisualization()">Update</button>
-                            <button onclick="exportPNG('4K')">Export 4K PNG</button>
-                            <button onclick="exportCSV()">Export CSV</button>
+                            <button onclick="updateVisualization()">Update Visualization</button>
+                        </div>
+                        <div class="button-group" style="margin-top: 8px;">
+                            <button onclick="exportPNG('1080p')" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);">PNG 1080p</button>
+                            <button onclick="exportPNG('4K')" style="background: linear-gradient(135deg, #2196F3 0%, #0b7dda 100%);">PNG 4K</button>
+                            <button onclick="exportPNG('8K')" style="background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);">PNG 8K</button>
+                            <button onclick="exportCSV()" style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);">CSV Data</button>
                         </div>
                     </div>
                 </div>
@@ -855,18 +860,42 @@
             tempCanvas.height = height;
             const tempCtx = tempCanvas.getContext('2d');
             
-            const scale = width / canvas.width;
+            // Fill black background
+            tempCtx.fillStyle = '#000000';
+            tempCtx.fillRect(0, 0, width, height);
+            
+            // Calculate proper scaling - use smaller dimension to maintain aspect ratio
+            const scaleX = width / canvas.width;
+            const scaleY = height / canvas.height;
+            const scale = Math.min(scaleX, scaleY);
+            
+            // Center the canvas content
+            const offsetX = (width - canvas.width * scale) / 2;
+            const offsetY = (height - canvas.height * scale) / 2;
+            
+            // Draw the main canvas scaled and centered
+            tempCtx.save();
+            tempCtx.translate(offsetX, offsetY);
             tempCtx.scale(scale, scale);
             tempCtx.drawImage(canvas, 0, 0);
+            tempCtx.restore();
             
-            tempCtx.setTransform(1, 0, 0, 1, 0, 0);
+            // Add title and metadata at the top
             tempCtx.fillStyle = 'white';
-            tempCtx.font = `bold ${36 * scale}px Arial`;
+            tempCtx.font = `bold ${Math.floor(width * 0.02)}px Arial`;
             tempCtx.textAlign = 'center';
-            tempCtx.fillText('Composite Channel Projection Corollary', width / 2, 50 * scale);
-            tempCtx.font = `${20 * scale}px Arial`;
-            tempCtx.fillText(`M = ${currentData.M} | Complete Farey Hierarchy | ${new Date().toLocaleDateString()}`, 
-                width / 2, 85 * scale);
+            tempCtx.fillText('Modular Rings & Farey Hierarchy', width / 2, width * 0.03);
+            
+            tempCtx.font = `${Math.floor(width * 0.012)}px Arial`;
+            const status = currentData.isPrime ? 'PRIME' : 'COMPOSITE';
+            tempCtx.fillText(`M = ${currentData.M} (${status}) | ${currentData.factorization} | ${new Date().toLocaleDateString()}`, 
+                width / 2, width * 0.05);
+            
+            // Add watermark at bottom
+            tempCtx.font = `${Math.floor(width * 0.01)}px Arial`;
+            tempCtx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            tempCtx.fillText(`φ(${currentData.M}) = ${currentData.phi} | ${currentData.divisors.length} rings | Ring Differential: ${document.getElementById('ringRotation').value}°`, 
+                width / 2, height - width * 0.02);
             
             const link = document.createElement('a');
             link.download = `farey_hierarchy_M${currentData.M}_${resolution}_${Date.now()}.png`;
