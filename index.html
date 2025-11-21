@@ -212,7 +212,8 @@
             border-radius: 4px;
             background: #000000;
             cursor: crosshair;
-            max-width: 100%;
+            width: 100%;
+            max-width: 1400px;
             height: auto;
         }
         
@@ -362,6 +363,29 @@
             .right-panel {
                 grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
                 display: grid;
+            }
+            
+            canvas {
+                width: 100%;
+                height: auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .subtitle {
+                font-size: 0.9em;
+            }
+            
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            canvas {
+                width: 100%;
             }
         }
     </style>
@@ -777,7 +801,7 @@
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const zoom = parseFloat(document.getElementById('zoom').value) / 100;
-            const baseRadius = Math.min(canvas.width, canvas.height) * 0.4 * zoom;
+            const baseRadius = Math.min(canvas.width, canvas.height) * 0.35 * zoom;
             const pointSize = parseFloat(document.getElementById('pointSize').value);
             const opacity = parseFloat(document.getElementById('projectionOpacity').value) / 100;
             const rotation = parseFloat(document.getElementById('rotation').value) * Math.PI / 180;
@@ -789,7 +813,7 @@
             const divisors = currentData.divisors.filter(d => d < currentData.M).reverse();
             const radiusMap = new Map();
             divisors.forEach((d, idx) => {
-                radiusMap.set(d, baseRadius * (1 - (idx + 1) * 0.12));
+                radiusMap.set(d, baseRadius * (1 - (idx + 1) * 0.15));
             });
             
             const showFareyLines = document.getElementById('showFareyLines').checked;
@@ -855,33 +879,40 @@
             // Draw rings
             divisors.forEach(d => {
                 const r = radiusMap.get(d);
-                ctx.strokeStyle = 'rgba(255, 215, 0, 0.2)';
-                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
+                ctx.lineWidth = 2;
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, r, 0, 2 * Math.PI);
                 ctx.stroke();
                 
                 if (showLabels && d !== currentData.M) {
                     ctx.fillStyle = '#ffd700';
-                    ctx.font = 'bold 11px monospace';
+                    ctx.font = 'bold 14px monospace';
                     ctx.textAlign = 'left';
-                    ctx.fillText(`M'=${d}`, centerX + r + 5, centerY);
+                    ctx.fillText(`M'=${d}`, centerX + r + 8, centerY);
                     
                     if (showMult && currentData.channelMultiplicity.has(d)) {
                         const mult = currentData.M / d;
                         ctx.fillStyle = '#ffaa00';
-                        ctx.font = '9px monospace';
-                        ctx.fillText(`d=${mult}`, centerX + r + 5, centerY + 12);
+                        ctx.font = '11px monospace';
+                        ctx.fillText(`d=${mult}`, centerX + r + 8, centerY + 14);
                     }
                 }
             });
             
             // Draw outer ring
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.arc(centerX, centerY, baseRadius, 0, 2 * Math.PI);
             ctx.stroke();
+            
+            if (showLabels) {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 16px monospace';
+                ctx.textAlign = 'left';
+                ctx.fillText(`M=${currentData.M}`, centerX + baseRadius + 8, centerY);
+            }
             
             // Draw points
             currentData.residues.forEach((pt, idx) => {
@@ -917,12 +948,13 @@
                 ctx.stroke();
                 
                 // Label r=0 at top
-                if (pt.r === 0 && currentData.M <= 100) {
+                if (pt.r === 0) {
                     ctx.fillStyle = '#00ffff';
-                    ctx.font = 'bold 12px monospace';
+                    ctx.font = 'bold 14px monospace';
                     ctx.textAlign = 'center';
-                    ctx.fillText('r=0', x, y - size - 8);
-                    ctx.fillText('gcd=M', x, y + size + 12);
+                    ctx.fillText('r=0', x, y - size - 10);
+                    ctx.font = '11px monospace';
+                    ctx.fillText('gcd=M', x, y + size + 16);
                 }
             });
             
