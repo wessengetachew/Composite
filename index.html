@@ -42,30 +42,6 @@
         .subtitle {
             font-size: 1.1em;
             color: #aaa;
-            margin-bottom: 10px;
-        }
-        
-        .author {
-            font-size: 0.95em;
-            color: #00ffff;
-            margin-top: 10px;
-        }
-        
-        .repo-links {
-            font-size: 0.85em;
-            color: #888;
-            margin-top: 8px;
-        }
-        
-        .repo-links a {
-            color: #00aaff;
-            text-decoration: none;
-            margin: 0 8px;
-        }
-        
-        .repo-links a:hover {
-            color: #00ffff;
-            text-decoration: underline;
         }
         
         .main-layout {
@@ -212,8 +188,7 @@
             border-radius: 4px;
             background: #000000;
             cursor: crosshair;
-            width: 100%;
-            max-width: 1400px;
+            max-width: 100%;
             height: auto;
         }
         
@@ -364,29 +339,6 @@
                 grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
                 display: grid;
             }
-            
-            canvas {
-                width: 100%;
-                height: auto;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.5em;
-            }
-            
-            .subtitle {
-                font-size: 0.9em;
-            }
-            
-            .control-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            canvas {
-                width: 100%;
-            }
         }
     </style>
 </head>
@@ -395,15 +347,6 @@
         <header>
             <h1>Composite Channel Projection Corollary</h1>
             <div class="subtitle">Every composite modulus has reducible residues projecting onto simpler Farey channels</div>
-            <div class="author">by Wessen Getachew</div>
-            <div class="repo-links">
-                For more projects: 
-                <a href="https://github.com/wessengetachew/Ethiopian" target="_blank">Epsilon</a> |
-                <a href="https://github.com/wessengetachew/GCD" target="_blank">GCD</a> |
-                <a href="https://github.com/wessengetachew/Primes" target="_blank">Primes</a> |
-                <a href="https://github.com/wessengetachew/Farey" target="_blank">Farey</a> |
-                <a href="https://github.com/wessengetachew/PI" target="_blank">PI</a>
-            </div>
         </header>
         
         <div class="main-layout">
@@ -750,7 +693,7 @@
                     rRed: rRed,
                     mRed: mRed,
                     isIrreducible: isIrreducible,
-                    theta: (2 * Math.PI * r) / M - Math.PI / 2, // r=0 at top (12 o'clock)
+                    theta: (2 * Math.PI * r) / M - Math.PI / 2, // r=0 at top (12 o'clock), -π/2 offset
                     spf: smallestPrimeFactor(d),
                     lpf: largestPrimeFactor(d)
                 };
@@ -801,7 +744,7 @@
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const zoom = parseFloat(document.getElementById('zoom').value) / 100;
-            const baseRadius = Math.min(canvas.width, canvas.height) * 0.35 * zoom;
+            const baseRadius = Math.min(canvas.width, canvas.height) * 0.4 * zoom;
             const pointSize = parseFloat(document.getElementById('pointSize').value);
             const opacity = parseFloat(document.getElementById('projectionOpacity').value) / 100;
             const rotation = parseFloat(document.getElementById('rotation').value) * Math.PI / 180;
@@ -813,7 +756,7 @@
             const divisors = currentData.divisors.filter(d => d < currentData.M).reverse();
             const radiusMap = new Map();
             divisors.forEach((d, idx) => {
-                radiusMap.set(d, baseRadius * (1 - (idx + 1) * 0.15));
+                radiusMap.set(d, baseRadius * (1 - idx * 0.12));
             });
             
             const showFareyLines = document.getElementById('showFareyLines').checked;
@@ -879,40 +822,33 @@
             // Draw rings
             divisors.forEach(d => {
                 const r = radiusMap.get(d);
-                ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'rgba(255, 215, 0, 0.2)';
+                ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, r, 0, 2 * Math.PI);
                 ctx.stroke();
                 
                 if (showLabels && d !== currentData.M) {
                     ctx.fillStyle = '#ffd700';
-                    ctx.font = 'bold 14px monospace';
+                    ctx.font = 'bold 11px monospace';
                     ctx.textAlign = 'left';
-                    ctx.fillText(`M'=${d}`, centerX + r + 8, centerY);
+                    ctx.fillText(`M'=${d}`, centerX + r + 5, centerY);
                     
                     if (showMult && currentData.channelMultiplicity.has(d)) {
                         const mult = currentData.M / d;
                         ctx.fillStyle = '#ffaa00';
-                        ctx.font = '11px monospace';
-                        ctx.fillText(`d=${mult}`, centerX + r + 8, centerY + 14);
+                        ctx.font = '9px monospace';
+                        ctx.fillText(`d=${mult}`, centerX + r + 5, centerY + 12);
                     }
                 }
             });
             
             // Draw outer ring
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
-            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.arc(centerX, centerY, baseRadius, 0, 2 * Math.PI);
             ctx.stroke();
-            
-            if (showLabels) {
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 16px monospace';
-                ctx.textAlign = 'left';
-                ctx.fillText(`M=${currentData.M}`, centerX + baseRadius + 8, centerY);
-            }
             
             // Draw points
             currentData.residues.forEach((pt, idx) => {
@@ -948,13 +884,12 @@
                 ctx.stroke();
                 
                 // Label r=0 at top
-                if (pt.r === 0) {
+                if (pt.r === 0 && currentData.M <= 100) {
                     ctx.fillStyle = '#00ffff';
-                    ctx.font = 'bold 14px monospace';
+                    ctx.font = 'bold 12px monospace';
                     ctx.textAlign = 'center';
-                    ctx.fillText('r=0', x, y - size - 10);
-                    ctx.font = '11px monospace';
-                    ctx.fillText('gcd=M', x, y + size + 16);
+                    ctx.fillText('r=0', x, y - size - 8);
+                    ctx.fillText('gcd=M', x, y + size + 12);
                 }
             });
             
@@ -1255,4 +1190,4 @@
         updateVisualization();
     </script>
 </body>
-</html>
+    </html>
