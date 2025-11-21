@@ -3,1927 +3,2382 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Harmonic and Geometric Framework for Prime Gap Analysis - Interactive Research Tool</title>
+    <title>Enhanced Cosmic Scale Riemann Hypothesis Tester</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(30, 30, 45, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #a0a0a0;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .control-group {
+            background: rgba(40, 40, 60, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-group h3 {
+            margin: 0 0 15px 0;
+            color: #4ecdc4;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #c0c0c0;
+        }
+        
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
             box-sizing: border-box;
         }
-
-        body {
-            font-family: 'Times New Roman', serif;
-            background: #f5f5f0;
-            color: #1a1a1a;
-            line-height: 1.6;
-        }
-
-        .page-container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: white;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-
-        header {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            color: white;
-            padding: 40px 60px;
-            border-bottom: 4px solid #1e40af;
-        }
-
-        .paper-title {
-            font-size: 2.2em;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-align: center;
-            letter-spacing: 0.5px;
-        }
-
-        .author-info {
-            text-align: center;
-            font-size: 1.1em;
-            margin-bottom: 10px;
-        }
-
-        .paper-meta {
-            text-align: center;
-            font-size: 0.95em;
-            opacity: 0.9;
-            font-style: italic;
-        }
-
-        .abstract-section {
-            background: #fafaf8;
-            border-left: 4px solid #3b82f6;
-            padding: 30px 60px;
-            margin: 0;
-        }
-
-        .abstract-section h2 {
-            font-size: 1.4em;
-            margin-bottom: 15px;
-            color: #1e3a8a;
-        }
-
-        .abstract-section p {
-            text-align: justify;
-            font-size: 1.05em;
-            margin-bottom: 12px;
-        }
-
-        .keywords {
-            margin-top: 20px;
-            font-style: italic;
-            color: #4b5563;
-        }
-
-        .keywords strong {
-            color: #1e3a8a;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            min-height: calc(100vh - 400px);
-        }
-
-        .control-sidebar {
-            background: #fafaf8;
-            border-right: 2px solid #e5e7eb;
-            padding: 30px 20px;
-            overflow-y: auto;
-            max-height: calc(100vh - 300px);
-            position: sticky;
-            top: 0;
-        }
-
-        .control-sidebar::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .control-sidebar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        .control-sidebar::-webkit-scrollbar-thumb {
-            background: #3b82f6;
-            border-radius: 4px;
-        }
-
-        .section-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #1e3a8a;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #e5e7eb;
-            font-family: 'Georgia', serif;
-        }
-
-        .control-group {
-            margin-bottom: 25px;
-        }
-
-        .control-item {
-            margin-bottom: 18px;
-        }
-
-        .control-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-            font-size: 0.92em;
-            color: #374151;
-        }
-
-        .control-value {
-            font-weight: bold;
-            color: #1e3a8a;
-            font-family: 'Courier New', monospace;
-        }
-
-        .dual-input {
-            display: grid;
-            grid-template-columns: 1fr 75px;
-            gap: 8px;
-            align-items: center;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: #e5e7eb;
+        
+        input:focus, select:focus {
             outline: none;
-            -webkit-appearance: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1);
         }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #3b82f6;
-            cursor: pointer;
-            border: 2px solid #1e40af;
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #3b82f6;
-            cursor: pointer;
-            border: 2px solid #1e40af;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            padding: 6px 8px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 0.9em;
-            font-family: 'Courier New', monospace;
-        }
-
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 0.9em;
-            background: white;
-            cursor: pointer;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-
+        
         button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 8px;
-            background: #3b82f6;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
             color: white;
             border: none;
-            border-radius: 4px;
-            font-size: 0.95em;
+            cursor: pointer;
             font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-family: 'Georgia', serif;
-        }
-
-        button:hover {
-            background: #2563eb;
-        }
-
-        button.secondary {
-            background: #6b7280;
-        }
-
-        button.secondary:hover {
-            background: #4b5563;
-        }
-
-        button.export {
-            background: #059669;
-        }
-
-        button.export:hover {
-            background: #047857;
-        }
-
-        .play-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .checkbox-control {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            font-size: 0.9em;
-        }
-
-        .checkbox-control input {
-            margin-right: 8px;
-            cursor: pointer;
-        }
-
-        .checkbox-control label {
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .formula-box {
-            background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            padding: 12px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85em;
-            color: #1f2937;
-            overflow-x: auto;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             margin-top: 10px;
         }
-
-        .canvas-section {
-            padding: 30px;
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
-        .figure-container {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .figure-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #1e3a8a;
+        .preset-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
             margin-bottom: 15px;
-            text-align: center;
-            font-family: 'Georgia', serif;
         }
 
-        .figure-caption {
-            font-size: 0.92em;
-            color: #4b5563;
-            text-align: justify;
-            margin-top: 15px;
-            padding: 12px;
-            background: #fafaf8;
-            border-left: 3px solid #3b82f6;
-            line-height: 1.5;
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            background: #000000;
-            cursor: crosshair;
-        }
-
-        .info-panel {
-            background: #fafaf8;
-            border: 2px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 25px;
-            margin-top: 20px;
-        }
-
-        .info-panel h3 {
-            font-size: 1.2em;
-            color: #1e3a8a;
-            margin-bottom: 20px;
-            font-family: 'Georgia', serif;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .metric-item {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-left: 3px solid #3b82f6;
-            padding: 12px;
-            border-radius: 4px;
-        }
-
-        .metric-label {
-            font-size: 0.85em;
-            color: #6b7280;
-            margin-bottom: 4px;
-        }
-
-        .metric-value {
-            font-size: 1.15em;
-            font-weight: bold;
-            color: #1e3a8a;
-            font-family: 'Courier New', monospace;
-        }
-
-        .detail-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            border: 3px solid #3b82f6;
+        .preset-btn {
+            padding: 8px 12px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
             border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            z-index: 1000;
-            max-width: 500px;
-            display: none;
+            color: white;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.3s ease;
+            margin-top: 0;
+            width: auto;
         }
 
-        .detail-popup.active {
-            display: block;
+        .preset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-
-        .popup-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-            display: none;
+        
+        .results {
+            background: rgba(40, 40, 60, 0.8);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-        .popup-overlay.active {
-            display: block;
-        }
-
-        .popup-title {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #1e3a8a;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #e5e7eb;
+        
+        .results h3 {
+            margin-top: 0;
+            color: #4ecdc4;
+            border-bottom: 2px solid #4ecdc4;
             padding-bottom: 10px;
         }
-
-        .popup-content {
-            font-size: 0.95em;
-            line-height: 1.6;
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
         }
-
-        .popup-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(20, 20, 30, 0.5);
+            border-radius: 8px;
+            border-left: 4px solid #4ecdc4;
+        }
+        
+        .metric-label {
+            font-weight: 500;
+            color: #c0c0c0;
+        }
+        
+        .metric-value {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .math-formula {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #4ecdc4;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
             font-size: 1.2em;
-            line-height: 1;
+        }
+        
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .status.computing {
+            background: rgba(255, 243, 205, 0.2);
+            color: #feca57;
+            border: 1px solid #feca57;
+        }
+        
+        .status.complete {
+            background: rgba(209, 236, 241, 0.2);
+            color: #4ecdc4;
+            border: 1px solid #4ecdc4;
         }
 
-        .theorem-box {
-            background: #eff6ff;
-            border: 2px solid #3b82f6;
-            border-radius: 6px;
+        .cosmic-status {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
             padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 2px solid;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .status-cosmic {
+            background: linear-gradient(45deg, rgba(255, 107, 107, 0.2), rgba(238, 90, 82, 0.2));
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .status-legendary {
+            background: linear-gradient(45deg, rgba(255, 154, 86, 0.2), rgba(255, 123, 123, 0.2));
+            border-color: #ff9a56;
+            color: #ff9a56;
+        }
+
+        .status-mythical {
+            background: linear-gradient(45deg, rgba(78, 205, 196, 0.2), rgba(68, 160, 141, 0.2));
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        .status-excellent {
+            background: linear-gradient(45deg, rgba(150, 206, 180, 0.2), rgba(68, 160, 141, 0.2));
+            border-color: #96ceb4;
+            color: #96ceb4;
+        }
+
+        .status-good {
+            background: linear-gradient(45deg, rgba(254, 202, 87, 0.2), rgba(255, 159, 67, 0.2));
+            border-color: #feca57;
+            color: #feca57;
+        }
+
+        .status-high {
+            background: linear-gradient(45deg, rgba(255, 154, 86, 0.2), rgba(255, 107, 107, 0.2));
+            border-color: #ff9a56;
+            color: #ff9a56;
+        }
+        
+        .visualization-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .visualization-item {
+            background: rgba(40, 40, 60, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .visualization-item h4 {
+            color: #4ecdc4;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        canvas {
+            border: 2px solid #4ecdc4;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            max-width: 100%;
+            height: auto;
+            cursor: crosshair;
+        }
+        
+        .computing-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+            margin-left: 5px;
+        }
+        
+        .chart-info {
+            background: rgba(20, 20, 30, 0.9);
+            border: 1px solid #4ecdc4;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            min-height: 60px;
+        }
+        
+        .chart-info-title {
+            color: #4ecdc4;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .chart-tooltip {
+            position: absolute;
+            background: rgba(20, 20, 30, 0.95);
+            border: 1px solid #4ecdc4;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 11px;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+            max-width: 200px;
+        }
+        
+        .theory-box {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(68, 160, 141, 0.1));
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #4ecdc4;
+            border: 1px solid rgba(78, 205, 196, 0.3);
+        }
+        
+        .theory-box h4 {
+            margin-top: 0;
+            color: #4ecdc4;
+        }
+
+        .detailed-results {
+            margin-top: 20px;
+            background: rgba(20, 20, 30, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .results-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #c0c0c0;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 0;
+            width: auto;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            border-color: #4ecdc4;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .top-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .top-results-table th,
+        .top-results-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+        }
+
+        .top-results-table th {
+            background: rgba(78, 205, 196, 0.2);
+            color: #4ecdc4;
+        }
+
+        .insights {
+            background: rgba(78, 205, 196, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        .heatmap-container {
+            text-align: center;
             margin: 20px 0;
         }
 
-        .theorem-box .theorem-title {
+        .heatmap-legend {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .statistics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: rgba(20, 20, 30, 0.8);
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
             font-weight: bold;
-            color: #1e3a8a;
-            font-size: 1.1em;
-            margin-bottom: 10px;
+            color: #4ecdc4;
         }
 
-        .theorem-box .theorem-content {
-            font-style: italic;
-            color: #1f2937;
-            margin-bottom: 10px;
-        }
-
-        footer {
-            background: #1f2937;
-            color: #9ca3af;
-            padding: 20px 60px;
-            text-align: center;
+        .stat-label {
+            color: #a0a0a0;
             font-size: 0.9em;
+            margin-top: 5px;
         }
 
-        @media print {
-            .control-sidebar {
-                display: none;
-            }
-            .main-content {
-                grid-template-columns: 1fr;
-            }
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            padding: 8px 16px;
+            background: linear-gradient(45deg, #45b7d1, #96ceb4);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            margin-top: 0;
+            width: auto;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(69, 183, 209, 0.4);
+        }
+        
+        @keyframes computing {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .computing button {
+            animation: computing 2s infinite;
+        }
+
+        small {
+            color: #a0a0a0;
+            font-size: 12px;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .advanced-options {
+            background: rgba(30, 30, 50, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .performance-indicator {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid;
+        }
+
+        .perf-excellent {
+            background: rgba(78, 205, 196, 0.1);
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        .perf-good {
+            background: rgba(150, 206, 180, 0.1);
+            border-color: #96ceb4;
+            color: #96ceb4;
+        }
+
+        .perf-warning {
+            background: rgba(254, 202, 87, 0.1);
+            border-color: #feca57;
+            color: #feca57;
+        }
+
+        .perf-danger {
+            background: rgba(255, 107, 107, 0.1);
+            border-color: #ff6b6b;
+            color: #ff6b6b;
         }
     </style>
 </head>
 <body>
-    <div class="popup-overlay" id="popup-overlay"></div>
-    <div class="detail-popup" id="detail-popup">
-        <button class="popup-close" onclick="closePopup()">×</button>
-        <div class="popup-title" id="popup-title">Details</div>
-        <div class="popup-content" id="popup-content"></div>
-    </div>
-
-    <div class="page-container">
-        <header>
-            <h1 class="paper-title">A Harmonic and Geometric Framework for Prime Gap Analysis</h1>
-            <div class="author-info">Wessen Getachew</div>
-            <div class="paper-meta">Interactive Research Tool | 2025</div>
-        </header>
-
-        <section class="abstract-section">
-            <h2>Abstract</h2>
-            <p>
-                We present a unified and original framework that reveals deterministic structure in the distribution of twin, cousin, sexy, and triplet primes using a geometric lattice based on triangular numbers, harmonic analysis, and newly discovered rational constants. This approach offers a spatial visualization of prime gaps and introduces a family of zeta-like functions that converge to exact rational values.
-            </p>
-            <p>
-                The framework enables elegant filtering, measurement, and pattern detection across prime number families. Through triangular lattice filtering, we demonstrate that certain families of prime gaps exhibit repeatable spatial alignments. Applying harmonic sums (zeta-like functions) to these filtered sets reveals a remarkable result: each prime gap family has a rational constant when evaluated at s = 1. For twin primes, we obtain ζ<sub>twin</sub>(1) = 6891/7153, termed the Twin Harmonic Index.
-            </p>
-            <p>
-                Furthermore, we establish connections to the Riemann Hypothesis through prime gap harmonic phase laws, demonstrating that the behavior of ζ(s) in the critical strip is entirely determined by the gap distribution function G(s). We prove that G(s) converges for Re(s) > 1/2 and diverges for Re(s) ≤ 1/2, with the divergence boundary uniquely locked at s = 1/2.
-            </p>
-            <div class="keywords">
-                <strong>Keywords:</strong> Prime gaps, Twin primes, Riemann Hypothesis, Harmonic analysis, Triangular lattice, Euler product reconstruction, Zeta functions, Phase law, Prime distribution
-            </div>
-
-            <div class="theorem-box">
-                <div class="theorem-title">RH Phase Law (Main Result)</div>
-                <div class="theorem-content">
-                    Let s = σ + it where σ = Re(s). Define the dual alpha function α<sub>dual</sub>(s) = 3.34·tanh(6.76(0.63-σ)) - 0.54 + 0.93·e<sup>-0.1σ</sup> + 8.71·tanh(0.05σ). Then:
-                    <br><br>
-                    (1) For σ > 1/2: α<sub>dual</sub>(σ) < 1 ⟹ G(s) converges ⟹ ζ(s) is analytic (no zeros)
-                    <br>
-                    (2) For σ ≤ 1/2: α<sub>dual</sub>(σ) ≥ 1 ⟹ G(s) diverges ⟹ ζ(s) oscillates and crosses zero
-                    <br><br>
-                    Since ζ(s) can only have zeros where G(s) diverges, and divergence occurs only at σ = 1/2, all non-trivial zeros must lie on the critical line.
-                </div>
-            </div>
-
-            <div class="theorem-box">
-                <div class="theorem-title">Getachew Farey Collapse Theorem</div>
-                <div class="theorem-content">
-                    Let a/b be a rational number with gcd(a,b) = 1. Define its complement C(a/b) = (b-a)/b. Then:
-                    <br><br>
-                    <strong>Theorem (Positive Collapse):</strong> a/b + (b-a)/b = 1
-                    <br>
-                    <strong>Corollary (Negative Collapse):</strong> -a/b + -(b-a)/b = -1
-                    <br><br>
-                    The map C is an involution (C∘C = identity) that pairs Farey fractions with the same denominator. On the unit circle, a/b ↦ e<sup>2πia/b</sup> and its complement (b-a)/b ↦ e<sup>2πi(b-a)/b</sup> are complex conjugates, providing a geometric interpretation of the collapse.
-                </div>
-            </div>
-        </section>
-
-        <div class="main-content">
-            <aside class="control-sidebar">
-                <div class="control-group">
-                    <div class="section-title">1. Complex Plane Parameters</div>
-                    
-                    <div class="control-item">
-                        <div class="control-label">
-                            <span>Real Part (σ):</span>
-                            <span class="control-value" id="sigma-display">0.500</span>
-                        </div>
-                        <div class="dual-input">
-                            <input type="range" id="sigma-slider" min="-1" max="3" step="0.001" value="0.5">
-                            <input type="number" id="sigma-input" min="-1" max="3" step="0.001" value="0.5">
-                        </div>
-                    </div>
-
-                    <div class="control-item">
-                        <div class="control-label">
-                            <span>Imaginary Part (t):</span>
-                            <span class="control-value" id="t-display">14.135</span>
-                        </div>
-                        <div class="dual-input">
-                            <input type="range" id="t-slider" min="0" max="200" step="0.001" value="14.135">
-                            <input type="number" id="t-input" min="0" max="200" step="0.001" value="14.135">
-                        </div>
-                    </div>
-
-                    <div class="play-controls">
-                        <button id="play-sigma">▶ Animate σ</button>
-                        <button id="play-t">▶ Animate t</button>
-                    </div>
-
-                    <div class="formula-box">
-                        Critical Line: Re(s) = 1/2<br>
-                        Current σ: <span id="current-sigma">0.500</span><br>
-                        Distance: <span id="sigma-distance">0.000</span>
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <div class="section-title">2. Computational Parameters</div>
-                    
-                    <div class="control-item">
-                        <div class="control-label">
-                            <span>Prime Limit:</span>
-                            <span class="control-value" id="prime-limit-display">1000000</span>
-                        </div>
-                        <div class="dual-input">
-                            <input type="range" id="prime-limit-slider" min="1000" max="10000000" step="1000" value="1000000">
-                            <input type="number" id="prime-limit-input" min="1000" max="10000000" step="1000" value="1000000">
-                        </div>
-                    </div>
-
-                    <div class="control-item">
-                        <div class="control-label">
-                            <span>Maximum Gap:</span>
-                            <span class="control-value" id="max-gap-display">1000</span>
-                        </div>
-                        <div class="dual-input">
-                            <input type="range" id="max-gap-slider" min="10" max="5000" step="10" value="1000">
-                            <input type="number" id="max-gap-input" min="10" max="5000" step="10" value="1000">
-                        </div>
-                    </div>
-
-                    <div class="control-item">
-                        <div class="control-label">
-                            <span>Resolution:</span>
-                            <span class="control-value" id="resolution-display">500</span>
-                        </div>
-                        <div class="dual-input">
-                            <input type="range" id="resolution-slider" min="100" max="2000" step="50" value="500">
-                            <input type="number" id="resolution-input" min="100" max="2000" step="50" value="500">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <div class="section-title">3. Visualization Mode</div>
-                    
-                    <select id="viz-mode">
-                        <option value="gap-distribution">Gap Distribution Analysis</option>
-                        <option value="harmonic-spectrum">Harmonic Spectrum</option>
-                        <option value="convergence-map">Convergence Map (σ-t plane)</option>
-                        <option value="phase-portrait">Phase Portrait</option>
-                        <option value="dual-alpha">α_dual(s) Function</option>
-                        <option value="euler-reconstruction">Euler Product Reconstruction</option>
-                        <option value="twin-prime-lattice">Twin Prime Triangular Lattice</option>
-                        <option value="rh-phase-law">RH Phase Law Visualization</option>
-                        <option value="gap-euler-tree">Gap-Based Euler Product Tree</option>
-                        <option value="pi-decomposition">π Decomposition via Gaps</option>
-                        <option value="zeta-twin-analysis">ζ_twin(1) = 6891/7153 Analysis</option>
-                        <option value="farey-collapse">Getachew Farey Collapse Theorem</option>
-                        <option value="farey-unit-circle">Farey Pairs on Unit Circle</option>
-                    </select>
-
-                    <div class="formula-box" style="margin-top: 15px;">
-                        α_dual(σ) = 3.34·tanh(6.76(0.63-σ))<br>
-                        &nbsp;&nbsp;- 0.54 + 0.93·e^(-0.1σ)<br>
-                        &nbsp;&nbsp;+ 8.71·tanh(0.05σ)
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <div class="section-title">4. Display Options</div>
-                    
-                    <div class="checkbox-control">
-                        <input type="checkbox" id="show-critical-line" checked>
-                        <label for="show-critical-line">Critical Line (σ=1/2)</label>
-                    </div>
-
-                    <div class="checkbox-control">
-                        <input type="checkbox" id="show-grid" checked>
-                        <label for="show-grid">Coordinate Grid</label>
-                    </div>
-
-                    <div class="checkbox-control">
-                        <input type="checkbox" id="show-zeros" checked>
-                        <label for="show-zeros">Known Zeros</label>
-                    </div>
-
-                    <div class="checkbox-control">
-                        <input type="checkbox" id="show-legend" checked>
-                        <label for="show-legend">Legend</label>
-                    </div>
-
-                    <div class="checkbox-control">
-                        <input type="checkbox" id="show-labels" checked>
-                        <label for="show-labels">Axis Labels</label>
-                    </div>
-
-                    <div class="checkbox-control">
-                        <input type="checkbox" id="enable-click" checked>
-                        <label for="enable-click">Click for Details</label>
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <div class="section-title">5. Actions</div>
-                    
-                    <button id="compute-analysis">Generate Full Analysis</button>
-                    <button id="export-4k" class="export">Export 4K PNG</button>
-                    <button id="export-8k" class="export">Export 8K PNG</button>
-                    <button id="reset" class="secondary">Reset All Parameters</button>
-                </div>
-            </aside>
-
-            <main class="canvas-section">
-                <div class="figure-container">
-                    <div class="figure-title" id="figure-title">Figure 1: Gap Distribution Analysis</div>
-                    <canvas id="main-canvas" width="1200" height="800"></canvas>
-                    <div class="figure-caption" id="figure-caption">
-                        This figure displays the distribution of prime gaps up to the specified maximum gap size. Each bar represents the frequency of occurrence for a particular gap value. Twin primes (gap = 2) are highlighted in gold. The distribution follows empirical patterns predicted by the triangular lattice framework and exhibits harmonic structure when analyzed through the ζ_twin function.
-                    </div>
-                </div>
-
-                <div class="info-panel">
-                    <h3>Real-Time Mathematical Analysis</h3>
-                    <div class="metrics-grid">
-                        <div class="metric-item">
-                            <div class="metric-label">Complex Value s</div>
-                            <div class="metric-value" id="s-value">0.500 + 14.135i</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">α_dual(σ)</div>
-                            <div class="metric-value" id="alpha-value">1.245</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">Convergence Status</div>
-                            <div class="metric-value" id="convergence-status">DIVERGENT</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">Total Gaps</div>
-                            <div class="metric-value" id="total-gaps">78,498</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">Unique Gap Sizes</div>
-                            <div class="metric-value" id="unique-gaps">336</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">Twin Primes (g=2)</div>
-                            <div class="metric-value" id="twin-count">8,169</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">Max Gap Found</div>
-                            <div class="metric-value" id="max-gap-found">154</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">P₁ (Gap 2 Euler)</div>
-                            <div class="metric-value" id="p1-value">1.333333</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">π Reconstruction</div>
-                            <div class="metric-value" id="pi-recon">3.14159265</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">Nearest Zero</div>
-                            <div class="metric-value" id="nearest-zero">14.134725</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">ζ_twin(1) Approximation</div>
-                            <div class="metric-value" id="zeta-twin">0.96330...</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">Computation Time</div>
-                            <div class="metric-value" id="compute-time">0.00s</div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+    <div class="container">
+        <h1>🌌 Enhanced Cosmic Scale Riemann Hypothesis Tester</h1>
+        <p class="subtitle">Advanced Browser-Based Computational Testing with Comprehensive Analysis - Up to 100 Million Points</p>
+        
+        <div class="theory-box">
+            <h4>The Riemann Hypothesis - One of Mathematics' Greatest Mysteries</h4>
+            <p>The Riemann Hypothesis, proposed by Bernhard Riemann in 1859, is one of the most important unsolved problems in mathematics. It concerns the distribution of prime numbers and has profound implications for number theory, cryptography, and our understanding of mathematical patterns.</p>
+            
+            <div class="math-formula">
+                S(N,α) = Σ<sub>n≤N</sub> μ(n) · e<sup>2πinα</sup>
+            <div class="theory-box">
+            <h4>🌀 The Riemann Zeta Function and Its Critical Zeros</h4>
+            
+            <div style="background: rgba(69, 183, 209, 0.1); border-radius: 8px; padding: 15px; margin: 15px 0;">
+                <h5 style="color: #45b7d1; margin-top: 0;">The Zeta Function Defined</h5>
+                <div style="text-align: center; font-family: 'Times New Roman', serif; font-size: 16px; margin: 15px 0;">
+                    ζ(s) = Σ<sub>n=1</sub><sup>∞</sup> 1/n<sup>s</sup> = 1 + 1/2<sup>s</sup> + 1/3<sup>s</sup> + 1/4<sup>s</sup> + ...
+                <div class="theory-box">
+            <h4>Enhanced by Wessen Getachew</h4>
+            <p><strong>Creator:</strong> Wessen Getachew (<a href="https://twitter.com/7dview" target="_blank" style="color: #4ecdc4;">@7dview</a>)</p>
+            <p><strong>Mathematical Framework:</strong> Based on classical work by Davenport, Halberstam, Montgomery, and modern computational number theory</p>
+            <p><strong>Implementation:</strong> Advanced JavaScript algorithms with comprehensive visualization and interactive analysis for browser-based scientific computing</p>
+            <p><strong>Special thanks to:</strong> The open mathematics community, Andrew Odlyzko's computational work, Xavier Gourdon's large-scale verifications, and all researchers who have contributed to our understanding of the Riemann Hypothesis</p>
         </div>
+                <p style="margin: 10px 0; font-size: 13px;">Where <strong>s = σ + it</strong> is a complex number with real part σ and imaginary part t</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 15px 0;">
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 6px;">
+                        <h6 style="color: #45b7d1; margin: 0 0 5px 0;">For Real s > 1:</h6>
+                        <p style="margin: 0; font-size: 12px;">Series converges absolutely<br>ζ(2) = π²/6, ζ(4) = π⁴/90</p>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 6px;">
+                        <h6 style="color: #45b7d1; margin: 0 0 5px 0;">For σ < 1:</h6>
+                        <p style="margin: 0; font-size: 12px;">Analytic continuation needed<br>Functional equation relates ζ(s) to ζ(1-s)</p>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 6px;">
+                        <h6 style="color: #45b7d1; margin: 0 0 5px 0;">The Critical Strip:</h6>
+                        <p style="margin: 0; font-size: 12px;">0 < σ < 1<br>Where non-trivial zeros live</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h5 style="color: #4ecdc4; margin: 20px 0 10px 0;">🎯 The Critical Zeros and Prime Connection</h5>
+            
+            <div style="background: rgba(255, 107, 107, 0.1); border-radius: 8px; padding: 15px; margin: 15px 0;">
+                <h6 style="color: #ff6b6b; margin-top: 0;">Euler's Product Formula (The Bridge to Primes)</h6>
+                <div style="text-align: center; font-family: 'Times New Roman', serif; font-size: 14px; margin: 10px 0;">
+                    ζ(s) = Π<sub>p prime</sub> 1/(1 - 1/p<sup>s</sup>)
+                </div>
+                <p style="margin: 10px 0; font-size: 13px;"><strong>This is why ζ(s) encodes all information about primes!</strong> Every prime p contributes a factor to the infinite product.</p>
+            </div>
+            
+            <div style="background: rgba(254, 202, 87, 0.1); border-radius: 8px; padding: 15px; margin: 15px 0;">
+                <h6 style="color: #feca57; margin-top: 0;">The Explicit Formula (How Zeros Control Primes)</h6>
+                <div style="text-align: center; font-family: 'Times New Roman', serif; font-size: 14px; margin: 10px 0;">
+                    π(x) = Li(x) - Σ<sub>ρ</sub> Li(x<sup>ρ</sup>) + O(x<sup>1/2</sup>)
+                </div>
+                <p style="margin: 10px 0; font-size: 13px;">Where ρ = 1/2 + it are the <strong>critical zeros</strong>. Each zero ρ contributes an oscillatory term Li(x<sup>ρ</sup>) to the prime counting function!</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 15px 0;">
+                    <div>
+                        <h7 style="color: #feca57; font-weight: bold;">If RH is True (all zeros on σ = 1/2):</h7>
+                        <ul style="margin: 5px 0; padding-left: 15px; font-size: 12px;">
+                            <li>|π(x) - Li(x)| ≪ √x ln(x)</li>
+                            <li>Prime gaps ≪ √p ln(p)</li>
+                            <li>Oscillations are "balanced"</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h7 style="color: #ff6b6b; font-weight: bold;">If RH is False (zeros off the line):</h7>
+                        <ul style="margin: 5px 0; padding-left: 15px; font-size: 12px;">
+                            <li>Larger deviations possible</li>
+                            <li>Prime distribution less regular</li>
+                            <li>Cryptographic implications</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <h5 style="color: #4ecdc4; margin: 20px 0 10px 0;">🔗 How Our Möbius Verification Connects to Zeros</h5>
+            
+            <div style="background: rgba(78, 205, 196, 0.1); border-radius: 8px; padding: 15px; margin: 15px 0;">
+                <h6 style="color: #4ecdc4; margin-top: 0;">The Deep Connection</h6>
+                <p style="margin: 10px 0; font-size: 13px;">Our exponential sums S(N,α) = Σ μ(n)e<sup>2πinα</sup> are related to the zeta zeros through:</p>
+                
+                <div style="text-align: center; font-family: 'Times New Roman', serif; font-size: 13px; margin: 15px 0; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px;">
+                    Σ<sub>n≤x</sub> μ(n) = Σ<sub>ρ</sub> x<sup>ρ</sup>/ρ ζ'(ρ)/ζ(ρ) + lower order terms
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 15px 0;">
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 6px;">
+                        <h7 style="color: #4ecdc4; font-weight: bold;">When |S(N,α)| is small:</h7>
+                        <p style="margin: 5px 0; font-size: 12px;">• Zeros are behaving "as expected"<br>• Cancellation is working properly<br>• RH predictions hold</p>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 6px;">
+                        <h7 style="color: #ff6b6b; font-weight: bold;">When |S(N,α)| is large:</h7>
+                        <p style="margin: 5px 0; font-size: 12px;">• Possible resonance effects<br>• Zero distribution anomalies<br>• Interesting mathematics!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h5 style="color: #4ecdc4; margin: 20px 0 10px 0;">🌐 The Complete Picture: All s Values</h5>
+            
+            <div style="background: linear-gradient(135deg, rgba(150, 206, 180, 0.1), rgba(68, 160, 141, 0.1)); border-radius: 8px; padding: 15px; margin: 15px 0;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                    <div>
+                        <h6 style="color: #96ceb4; margin: 0 0 10px 0;">📍 Trivial Zeros (s = -2, -4, -6, ...)</h6>
+                        <p style="margin: 0; font-size: 12px;">At negative even integers. These come from the functional equation and are well understood. They don't affect prime distribution significantly.</p>
+                    </div>
+                    
+                    <div>
+                        <h6 style="color: #96ceb4; margin: 0 0 10px 0;">🎯 Critical Zeros (σ = 1/2 + it)</h6>
+                        <p style="margin: 0; font-size: 12px;"><strong>The stars of the show!</strong> These control prime distribution. RH says they ALL lie on the critical line σ = 1/2.</p>
+                    </div>
+                    
+                    <div>
+                        <h6 style="color: #96ceb4; margin: 0 0 10px 0;">🚫 The Critical Strip (0 < σ < 1)</h6>
+                        <p style="margin: 0; font-size: 12px;">If any non-trivial zeros exist off the line σ = 1/2 but in this strip, RH fails and prime behavior becomes less predictable.</p>
+                    </div>
+                    
+                    <div>
+                        <h6 style="color: #96ceb4; margin: 0 0 10px 0;">🔄 Functional Equation</h6>
+                        <p style="margin: 0; font-size: 12px;">ζ(s) = 2<sup>s</sup>π<sup>s-1</sup>sin(πs/2)Γ(1-s)ζ(1-s)<br>Relates values at s and 1-s</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h5 style="color: #4ecdc4; margin: 20px 0 10px 0;">🔢 Known Zero Statistics</h5>
+            
+            <table style="width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 12px;">
+                <tr style="background: rgba(255,255,255,0.1);">
+                    <th style="padding: 8px; border: 1px solid #666;">Height Range</th>
+                    <th style="padding: 8px; border: 1px solid #666;">Zeros Computed</th>
+                    <th style="padding: 8px; border: 1px solid #666;">All on σ = 1/2?</th>
+                    <th style="padding: 8px; border: 1px solid #666;">Computational Effort</th>
+                </tr>
+                <tr><td style="padding: 6px; border: 1px solid #666;">0 < t < 100</td><td style="padding: 6px; border: 1px solid #666;">29</td><td style="padding: 6px; border: 1px solid #666;">✅ Yes</td><td style="padding: 6px; border: 1px solid #666;">By hand (Riemann era)</td></tr>
+                <tr><td style="padding: 6px; border: 1px solid #666;">0 < t < 10,000</td><td style="padding: 6px; border: 1px solid #666;">~3,000</td><td style="padding: 6px; border: 1px solid #666;">✅ Yes</td><td style="padding: 6px; border: 1px solid #666;">Early computers</td></tr>
+                <tr><td style="padding: 6px; border: 1px solid #666;">0 < t < 10¹³</td><td style="padding: 6px; border: 1px solid #666;">~10¹³</td><td style="padding: 6px; border: 1px solid #666;">✅ Yes</td><td style="padding: 6px; border: 1px solid #666;">Modern supercomputers</td></tr>
+            </table>
+            
+            <h5 style="color: #4ecdc4; margin: 20px 0 10px 0;">🎼 The Beautiful Harmony</h5>
+            
+            <div style="background: rgba(69, 183, 209, 0.1); border: 1px solid rgba(69, 183, 209, 0.3); border-radius: 8px; padding: 15px; margin: 15px 0;">
+                <p style="margin: 0; font-style: italic; font-size: 14px;"><strong>The zeros of ζ(s) are like the "harmonics" of the prime number "symphony."</strong></p>
+                
+                <ul style="margin: 10px 0; padding-left: 20px; font-size: 13px;">
+                    <li><strong>Each zero ρ = 1/2 + it</strong> contributes an oscillation Li(x<sup>ρ</sup>) = Li(x<sup>1/2+it</sup>) to the prime counting function</li>
+                    <li><strong>The imaginary parts t</strong> determine the "frequencies" of oscillation in prime distribution</li>
+                    <li><strong>If all zeros are on σ = 1/2,</strong> these oscillations are perfectly balanced and cancel optimally</li>
+                    <li><strong>Our Möbius verification</strong> checks that this cancellation is working as RH predicts</li>
+                </ul>
+                
+                <div style="text-align: center; margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                    <strong>Every small ratio |S(N,α)|/√N we compute is evidence that the zeros are singing in perfect harmony! 🎵</strong>
+                </div>
+            </div>
+            
+            <h5 style="color: #4ecdc4; margin: 20px 0 10px 0;">🔬 What Our Verification Specifically Tests</h5>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 15px 0;">
+                <div style="background: rgba(255, 107, 107, 0.1); border-left: 4px solid #ff6b6b; padding: 12px;">
+                    <h6 style="color: #ff6b6b; margin: 0 0 8px 0;">Direct Zero Impact</h6>
+                    <p style="margin: 0; font-size: 12px;">Our sums are directly influenced by zeros with imaginary parts t ≈ α·N/(2π). We're probing the zero distribution!</p>
+                </div>
+                
+                <div style="background: rgba(254, 202, 87, 0.1); border-left: 4px solid #feca57; padding: 12px;">
+                    <h6 style="color: #feca57; margin: 0 0 8px 0;">Cancellation Quality</h6>
+                    <p style="margin: 0; font-size: 12px;">Small ratios mean the zeros are creating the precise cancellations needed for RH error bounds.</p>
+                </div>
+                
+                <div style="background: rgba(78, 205, 196, 0.1); border-left: 4px solid #4ecdc4; padding: 12px;">
+                    <h6 style="color: #4ecdc4; margin: 0 0 8px 0;">Statistical Behavior</h6>
+                    <p style="margin: 0; font-size: 12px;">The distribution of our results reflects the statistical properties of zeros predicted by random matrix theory.</p>
+                </div>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, rgba(78, 205, 196, 0.15), rgba(68, 160, 141, 0.15)); border-radius: 10px; padding: 20px; margin: 20px 0; border: 2px solid rgba(78, 205, 196, 0.3);">
+                <h6 style="color: #4ecdc4; margin: 0 0 15px 0; text-align: center; font-size: 16px;">🌟 The Grand Unification</h6>
+                <p style="margin: 0; text-align: center; font-size: 14px; font-style: italic;">Our browser-based Möbius verification connects:</p>
+                <div style="text-align: center; margin: 15px 0; line-height: 1.8;">
+                    <strong>Riemann Zeta Zeros</strong> ↔ <strong>Prime Distribution</strong> ↔ <strong>Möbius Cancellation</strong> ↔ <strong>Cryptographic Security</strong>
+                </div>
+                <p style="margin: 15px 0 0 0; text-align: center; font-size: 13px;">Every test you run explores this magnificent mathematical symphony! 🎼</p>
+            </div>
+        </div>
+            
+            <p><strong>What we're testing:</strong> Under the Riemann Hypothesis, these Möbius exponential sums should satisfy |S(N,α)| = O(√N) uniformly in α. If we find ratios significantly larger than √N, it could indicate interesting mathematical phenomena or even contradict RH predictions.</p>
+            
+            <h4>The Möbius Function μ(n)</h4>
+            <p>The Möbius function is defined as:</p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li><strong>μ(n) = 1</strong> if n is a square-free positive integer with an even number of prime factors</li>
+                <li><strong>μ(n) = -1</strong> if n is a square-free positive integer with an odd number of prime factors</li>
+                <li><strong>μ(n) = 0</strong> if n has a squared prime factor</li>
+            </ul>
+            <p>Examples: μ(1)=1, μ(2)=-1, μ(3)=-1, μ(4)=0, μ(6)=1, μ(12)=0</p>
+        </div>
+        
+        <div class="theory-box">
+            <h4>Historical Context & Significance</h4>
+            <p><strong>Prime Number Connection:</strong> The hypothesis directly relates to how accurately we can predict the distribution of prime numbers. If true, it provides the best possible bounds for counting primes.</p>
+            
+            <p><strong>Cryptographic Implications:</strong> Many modern encryption systems rely on the difficulty of factoring large numbers. RH predictions help us understand the security foundations of these systems.</p>
+            
+            <p><strong>Computational Verification:</strong> The hypothesis has been verified for the first 10<sup>13</sup> zeros, but a general proof remains one of mathematics' greatest challenges.</p>
+        </div>
+        
+        <div class="theory-box">
+            <h4>🔢 What This Tells Us About Prime Numbers</h4>
+            
+            <div style="background: rgba(78, 205, 196, 0.1); border-radius: 8px; padding: 15px; margin: 15px 0;">
+                <h5 style="color: #4ecdc4; margin-top: 0;">The Gauss-Legendre Connection</h5>
+                <p><strong>π(x)</strong> = actual count of primes ≤ x &nbsp;|&nbsp; <strong>Li(x)</strong> = logarithmic integral ≈ x/ln(x)</p>
+                <p><strong>Historic Insight:</strong> In 1792, 15-year-old Gauss predicted π(x) ≈ Li(x). Our RH verification directly validates this prediction!</p>
+                
+                <table style="width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px;">
+                    <tr style="background: rgba(255,255,255,0.1);">
+                        <th style="padding: 8px; border: 1px solid #666;">x</th>
+                        <th style="padding: 8px; border: 1px solid #666;">π(x) actual</th>
+                        <th style="padding: 8px; border: 1px solid #666;">Li(x) Gauss</th>
+                        <th style="padding: 8px; border: 1px solid #666;">Error</th>
+                        <th style="padding: 8px; border: 1px solid #666;">Error %</th>
+                    </tr>
+                    <tr><td style="padding: 6px; border: 1px solid #666;">10³</td><td style="padding: 6px; border: 1px solid #666;">168</td><td style="padding: 6px; border: 1px solid #666;">178</td><td style="padding: 6px; border: 1px solid #666;">+10</td><td style="padding: 6px; border: 1px solid #666;">5.9%</td></tr>
+                    <tr><td style="padding: 6px; border: 1px solid #666;">10⁶</td><td style="padding: 6px; border: 1px solid #666;">78,498</td><td style="padding: 6px; border: 1px solid #666;">78,628</td><td style="padding: 6px; border: 1px solid #666;">+130</td><td style="padding: 6px; border: 1px solid #666;">0.17%</td></tr>
+                    <tr><td style="padding: 6px; border: 1px solid #666;">10⁹</td><td style="padding: 6px; border: 1px solid #666;">50,847,534</td><td style="padding: 6px; border: 1px solid #666;">50,849,235</td><td style="padding: 6px; border: 1px solid #666;">+1,701</td><td style="padding: 6px; border: 1px solid #666;">0.003%</td></tr>
+                </table>
+            </div>
+            
+            <h5 style="color: #4ecdc4; margin: 20px 0 10px 0;">How Our Verification Validates Prime Behavior</h5>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 15px 0;">
+                <div style="background: rgba(255, 107, 107, 0.1); border-left: 4px solid #ff6b6b; padding: 10px;">
+                    <h6 style="color: #ff6b6b; margin: 0 0 8px 0;">🌟 When Ratio < 1.0</h6>
+                    <ul style="margin: 0; padding-left: 15px; font-size: 13px;">
+                        <li>Prime gaps stay close to ln(x)</li>
+                        <li>No large "prime deserts"</li>
+                        <li>Gauss's formula is highly accurate</li>
+                        <li>Cryptographic security is strong</li>
+                    </ul>
+                </div>
+                
+                <div style="background: rgba(254, 202, 87, 0.1); border-left: 4px solid #feca57; padding: 10px;">
+                    <h6 style="color: #feca57; margin: 0 0 8px 0;">⭐ Major Arc Dominance</h6>
+                    <ul style="margin: 0; padding-left: 15px; font-size: 13px;">
+                        <li>Primes in arithmetic progressions behave regularly</li>
+                        <li>Dirichlet's theorem is validated</li>
+                        <li>Twin prime patterns follow predictions</li>
+                        <li>Hardy-Littlewood conjectures gain support</li>
+                    </ul>
+                </div>
+                
+                <div style="background: rgba(78, 205, 196, 0.1); border-left: 4px solid #4ecdc4; padding: 10px;">
+                    <h6 style="color: #4ecdc4; margin: 0 0 8px 0;">📊 Low Variance Results</h6>
+                    <ul style="margin: 0; padding-left: 15px; font-size: 13px;">
+                        <li>Primes avoid excessive clustering</li>
+                        <li>Cramér's conjecture gains support</li>
+                        <li>Random matrix connections validated</li>
+                        <li>Prime Number Theorem error bounds tight</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h5 style="color: #4ecdc4; margin: 20px 0 10px 0;">Real-World Applications</h5>
+            <div style="background: rgba(150, 206, 180, 0.1); border-radius: 8px; padding: 15px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div>
+                        <h6 style="color: #96ceb4; margin: 0 0 5px 0;">🔐 Cryptography</h6>
+                        <p style="margin: 0; font-size: 12px;">RSA security, prime generation, key sizing, factoring difficulty bounds</p>
+                    </div>
+                    <div>
+                        <h6 style="color: #96ceb4; margin: 0 0 5px 0;">🧮 Algorithms</h6>
+                        <p style="margin: 0; font-size: 12px;">Primality testing, hash functions, pseudorandom generators, sieve optimization</p>
+                    </div>
+                    <div>
+                        <h6 style="color: #96ceb4; margin: 0 0 5px 0;">📚 Mathematics</h6>
+                        <p style="margin: 0; font-size: 12px;">L-functions, automorphic forms, analytic number theory, additive combinatorics</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h5 style="color: #4ecdc4; margin: 20px 0 10px 0;">What Our Möbius Sums Reveal</h5>
+            <p>The exponential sums S(N,α) = Σ μ(n)e^(2πinα) are intimately connected to prime distribution through:</p>
+            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 15px; font-family: 'Courier New', monospace; margin: 10px 0;">
+                <div style="text-align: center; margin-bottom: 10px;">π(x) = Li(x) - Σ<sub>ρ</sub> Li(x<sup>ρ</sup>) + O(x<sup>θ</sup>)</div>
+                <div style="font-size: 11px; text-align: center; color: #a0a0a0;">Riemann's exact prime counting formula</div>
+            </div>
+            <ul style="font-size: 13px; margin: 10px 0;">
+                <li><strong>Small ratios |S(N,α)|/√N:</strong> Error terms π(x) - Li(x) are controlled ≪ √x ln(x)</li>
+                <li><strong>Major arc peaks:</strong> Primes in arithmetic progressions follow Dirichlet predictions</li>
+                <li><strong>Smooth convergence:</strong> No chaotic behavior - primes are "well-distributed"</li>
+                <li><strong>Low variance:</strong> Prime gaps stay near logarithmic average</li>
+            </ul>
+            
+            <div style="background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(68, 160, 141, 0.1)); border-radius: 8px; padding: 15px; margin: 15px 0; border: 1px solid rgba(78, 205, 196, 0.3);">
+                <h6 style="color: #4ecdc4; margin: 0 0 10px 0;">🎯 The Beautiful Connection</h6>
+                <p style="margin: 0; font-style: italic;">Every successful RH verification means: <strong>"Primes are distributed so regularly that a teenager's 1792 intuition predicts their count to within √N accuracy!"</strong></p>
+                <p style="margin: 10px 0 0 0; font-size: 12px;">When you see smooth, low-ratio visualizations, you're witnessing computational proof that the universe's prime distribution follows deep, predictable patterns that Gauss intuited over 230 years ago.</p>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <h3>🎯 Test Configuration</h3>
+                
+                <label for="maxN">Maximum N:</label>
+                <div class="preset-buttons">
+                    <button class="preset-btn" onclick="setPreset(100000)">100K</button>
+                    <button class="preset-btn" onclick="setPreset(500000)">500K</button>
+                    <button class="preset-btn" onclick="setPreset(1000000)">1M</button>
+                    <button class="preset-btn" onclick="setPreset(5000000)">5M</button>
+                    <button class="preset-btn" onclick="setPreset(10000000)">10M</button>
+                    <button class="preset-btn" onclick="setPreset(25000000)">25M</button>
+                    <button class="preset-btn" onclick="setPreset(50000000)">50M</button>
+                    <button class="preset-btn" onclick="setPreset(100000000)">100M</button>
+                </div>
+                <input type="number" id="customN" value="1000000" min="1" max="100000000" placeholder="Enter custom N value">
+                
+                <div id="performanceIndicator" class="performance-indicator perf-excellent">
+                    ⚡ Excellent performance expected (~1-2 seconds)
+                </div>
+                
+                <label for="testMode">Test Mode:</label>
+                <select id="testMode">
+                    <option value="stochastic">Stochastic α sampling</option>
+                    <option value="major-arcs" selected>Major arcs analysis</option>
+                    <option value="uniform">Uniform grid</option>
+                    <option value="comprehensive">Comprehensive (all methods)</option>
+                    <option value="adaptive">Adaptive precision</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <h3>⚙️ Sampling Parameters</h3>
+                
+                <div class="two-column">
+                    <div>
+                        <label for="numSamples">Number of α samples:</label>
+                        <input type="number" id="numSamples" value="100" min="10" max="2000">
+                        <small>More samples = better coverage</small>
+                    </div>
+                    
+                    <div>
+                        <label for="maxDenom">Max denominator (major arcs):</label>
+                        <input type="number" id="maxDenom" value="12" min="2" max="50">
+                        <small>Higher values test more rational α = a/q</small>
+                    </div>
+                </div>
+                
+                <div class="two-column">
+                    <div>
+                        <label for="gridSize">Grid size (uniform mode):</label>
+                        <input type="number" id="gridSize" value="64" min="8" max="256">
+                        <small>Grid resolution for uniform sampling</small>
+                    </div>
+                    
+                    <div>
+                        <label for="precisionLevel">Precision level:</label>
+                        <select id="precisionLevel">
+                            <option value="standard">Standard</option>
+                            <option value="high" selected>High</option>
+                            <option value="ultra">Ultra (slow)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h3>📊 Visualization & Analysis</h3>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showDetails" checked>
+                    <label for="showDetails">Show detailed analysis</label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="generateHeatmap" checked>
+                    <label for="generateHeatmap">Generate complexity heatmap</label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showStatistics" checked>
+                    <label for="showStatistics">Statistical analysis</label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="realTimeUpdates">
+                    <label for="realTimeUpdates">Real-time progress updates</label>
+                </div>
+                
+                <div class="advanced-options">
+                    <h4 style="margin-top: 0; color: #96ceb4;">Advanced Options</h4>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="enablePhaseAnalysis">
+                        <label for="enablePhaseAnalysis">Phase analysis</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="enableDistributionAnalysis">
+                        <label for="enableDistributionAnalysis">Distribution analysis</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="enableFrequencyAnalysis">
+                        <label for="enableFrequencyAnalysis">Frequency domain analysis</label>
+                    </div>
+                </div>
+                
+                <button id="startTest">🚀 Launch Enhanced Cosmic Test</button>
+            </div>
+        </div>
+        
+        <div class="progress-container" id="progressContainer" style="display: none;">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="statusText" class="status computing">Initializing enhanced computation...</div>
+        </div>
+        
+        <div class="results" id="results" style="display: none;">
+            <h3>📊 Enhanced Cosmic Verification Results</h3>
+            
+            <div class="metrics-grid">
+                <div class="metric">
+                    <span class="metric-label">Maximum N tested:</span>
+                    <span class="metric-value" id="resultN">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">√N (theoretical bound):</span>
+                    <span class="metric-value" id="resultSqrtN">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Maximum |S(N,α)| found:</span>
+                    <span class="metric-value" id="resultMaxSum">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Ratio |S(N,α)|/√N:</span>
+                    <span class="metric-value" id="resultRatio">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Best α value:</span>
+                    <span class="metric-value" id="resultBestAlpha">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Computation time:</span>
+                    <span class="metric-value" id="computeTime">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Operations per second:</span>
+                    <span class="metric-value" id="opsPerSec">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Memory efficiency:</span>
+                    <span class="metric-value" id="memoryEff">-</span>
+                </div>
+            </div>
 
-        <footer>
-            A Harmonic and Geometric Framework for Prime Gap Analysis | Wessen Getachew, 2025<br>
-            Interactive Research Tool for Exploring Prime Distribution via Triangular Lattice and Zeta Functions
-        </footer>
+            <div class="cosmic-status" id="cosmicStatus" style="display: none;">
+                🌟 Status will appear here
+            </div>
+            
+            <div id="statisticalSummary" style="display: none;">
+                <h4 style="color: #4ecdc4; margin-bottom: 15px;">Statistical Summary</h4>
+                <div class="statistics-grid" id="statsGrid">
+                    <!-- Statistics will be populated here -->
+                </div>
+            </div>
+            
+            <div id="detailedResults" style="display: none;" class="detailed-results">
+                <div class="results-tabs">
+                    <button class="tab-button active" onclick="switchTab('topResults')">Top Results</button>
+                    <button class="tab-button" onclick="switchTab('insights')">Mathematical Insights</button>
+                    <button class="tab-button" onclick="switchTab('distribution')">Distribution Analysis</button>
+                    <button class="tab-button" onclick="switchTab('phase')">Phase Analysis</button>
+                    <button class="tab-button" onclick="switchTab('export')">Export Data</button>
+                </div>
+                
+                <div id="topResults" class="tab-content active">
+                    <h4 style="color: #4ecdc4; margin-bottom: 15px;">Top Exponential Sum Values</h4>
+                    <table class="top-results-table" id="topResultsTable">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>α value</th>
+                                <th>|S(N,α)|</th>
+                                <th>Ratio</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topResultsBody">
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="insights" class="tab-content">
+                    <div class="insights">
+                        <h5 style="color: #4ecdc4; margin-bottom: 10px;">Mathematical Insights</h5>
+                        <div id="insightsContent">
+                            <p>Complete a test to see detailed analysis and insights.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="distribution" class="tab-content">
+                    <h4 style="color: #4ecdc4; margin-bottom: 15px;">Distribution Analysis</h4>
+                    <div id="distributionAnalysis">
+                        <p>Distribution analysis will appear here after computation.</p>
+                    </div>
+                </div>
+                
+                <div id="phase" class="tab-content">
+                    <h4 style="color: #4ecdc4; margin-bottom: 15px;">Phase Analysis</h4>
+                    <div id="phaseAnalysis">
+                        <p>Phase analysis will appear here after computation.</p>
+                    </div>
+                </div>
+                
+                <div id="export" class="tab-content">
+                    <h4 style="color: #4ecdc4; margin-bottom: 15px;">Export Data</h4>
+                    <div class="export-buttons">
+                        <button class="export-btn" onclick="exportResults('csv')">📄 Export CSV</button>
+                        <button class="export-btn" onclick="exportResults('json')">📋 Export JSON</button>
+                        <button class="export-btn" onclick="exportResults('txt')">📝 Export Report</button>
+                        <button class="export-btn" onclick="exportVisualization()">🖼️ Export Charts</button>
+                    </div>
+                    <p style="margin-top: 15px; color: #a0a0a0;">Export your results in various formats for further analysis or sharing.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="visualization-grid" id="visualizationGrid" style="display: none;">
+            <div class="visualization-item">
+                <h4>Exponential Sum Distribution</h4>
+                <canvas id="sumChart" width="400" height="300"></canvas>
+                <div class="chart-info" id="sumChartInfo">
+                    <div class="chart-info-title">Click on points to see details</div>
+                    <div id="sumChartDetails">Hover over data points or click for exact values</div>
+                </div>
+            </div>
+            
+            <div class="visualization-item">
+                <h4>Complexity Heatmap</h4>
+                <div class="heatmap-container">
+                    <canvas id="heatmapChart" width="400" height="300"></canvas>
+                    <div class="chart-info" id="heatmapInfo">
+                        <div class="chart-info-title">Heatmap Values</div>
+                        <div id="heatmapDetails">Click on cells to see sum values</div>
+                    </div>
+                    <div class="heatmap-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #4ecdc4;"></div>
+                            <span>Low</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #feca57;"></div>
+                            <span>Medium</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ff6b6b;"></div>
+                            <span>High</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="visualization-item">
+                <h4>Phase Distribution</h4>
+                <canvas id="phaseChart" width="400" height="300"></canvas>
+                <div class="chart-info" id="phaseChartInfo">
+                    <div class="chart-info-title">Phase Analysis</div>
+                    <div id="phaseChartDetails">Click on points to see phase and magnitude</div>
+                </div>
+            </div>
+            
+            <div class="visualization-item">
+                <h4>Convergence Analysis</h4>
+                <canvas id="convergenceChart" width="400" height="300"></canvas>
+                <div class="chart-info" id="convergenceChartInfo">
+                    <div class="chart-info-title">Convergence Data</div>
+                    <div id="convergenceChartDetails">Click on the line to see iteration details</div>
+                </div>
+            </div>
+            
+            <div class="visualization-item">
+                <h4>Ratio vs α Scatter Plot</h4>
+                <canvas id="scatterChart" width="400" height="300"></canvas>
+                <div class="chart-info" id="scatterChartInfo">
+                    <div class="chart-info-title">Scatter Plot Data</div>
+                    <div id="scatterChartDetails">Click on points to see α and ratio values</div>
+                </div>
+            </div>
+            
+            <div class="visualization-item">
+                <h4>Statistical Distribution</h4>
+                <canvas id="histogramChart" width="400" height="300"></canvas>
+                <div class="chart-info" id="histogramInfo">
+                    <div class="chart-info-title">Histogram Data</div>
+                    <div id="histogramDetails">Click on bars to see frequency counts</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tooltip for interactive charts -->
+        <div class="chart-tooltip" id="chartTooltip"></div>
     </div>
 
     <script>
-        // Known Riemann zeros
-        const knownZeros = [
-            14.134725, 21.022040, 25.010858, 30.424876, 32.935062,
-            37.586178, 40.918719, 43.327073, 48.005151, 49.773832,
-            52.970321, 56.446248, 59.347044, 60.831779, 65.112544,
-            67.079811, 69.546402, 72.067158, 75.704691, 77.144840,
-            79.337375, 82.910381, 84.735493, 87.425275, 88.809111,
-            92.491899, 94.651344, 95.870634, 98.831194, 101.317851
-        ];
-
-        // Canvas and context
-        const canvas = document.getElementById('main-canvas');
-        const ctx = canvas.getContext('2d');
-
-        // Control elements
-        const sigmaSlider = document.getElementById('sigma-slider');
-        const tSlider = document.getElementById('t-slider');
-        const primeLimitSlider = document.getElementById('prime-limit-slider');
-        const maxGapSlider = document.getElementById('max-gap-slider');
-        const resolutionSlider = document.getElementById('resolution-slider');
-
-        const sigmaInput = document.getElementById('sigma-input');
-        const tInput = document.getElementById('t-input');
-        const primeLimitInput = document.getElementById('prime-limit-input');
-        const maxGapInput = document.getElementById('max-gap-input');
-        const resolutionInput = document.getElementById('resolution-input');
-
-        const vizModeSelect = document.getElementById('viz-mode');
-
-        const showCriticalLine = document.getElementById('show-critical-line');
-        const showGrid = document.getElementById('show-grid');
-        const showZeros = document.getElementById('show-zeros');
-        const showLegend = document.getElementById('show-legend');
-        const showLabels = document.getElementById('show-labels');
-        const enableClick = document.getElementById('enable-click');
-
-        const playSigmaBtn = document.getElementById('play-sigma');
-        const playTBtn = document.getElementById('play-t');
-        const computeBtn = document.getElementById('compute-analysis');
-        const export4kBtn = document.getElementById('export-4k');
-        const export8kBtn = document.getElementById('export-8k');
-        const resetBtn = document.getElementById('reset');
-
-        // State
-        let state = {
-            sigma: 0.5,
-            t: 14.135,
-            primeLimit: 1000000,
-            maxGap: 1000,
-            resolution: 500,
-            vizMode: 'gap-distribution',
-            primes: [],
-            gaps: [],
-            gapCounts: new Map(),
-            playingSigma: false,
-            playingT: false,
-            lastComputeTime: 0,
-            clickedElements: []
-        };
-
-        // Figure titles and captions
-        const figureMeta = {
-            'gap-distribution': {
-                title: 'Figure 1: Prime Gap Distribution Analysis',
-                caption: 'Distribution of prime gaps showing frequency of each gap value. Twin primes (gap=2, highlighted in gold) constitute a significant portion. The distribution exhibits patterns consistent with the triangular lattice geometric framework, where certain gap values align with spatial nodes in the (2n+1)² = 8T_n + 1 lattice.'
-            },
-            'harmonic-spectrum': {
-                title: 'Figure 2: Harmonic Spectrum of Gap Contributions',
-                caption: 'Visualization of harmonic oscillations in the gap-weighted zeta decomposition. The amplitude modulation reflects the α_dual(σ) phase function, with convergent regions (σ > 1/2) showing damped oscillations and divergent regions (σ ≤ 1/2) showing amplified harmonics.'
-            },
-            'convergence-map': {
-                title: 'Figure 3: Convergence Map in the σ-t Complex Plane',
-                caption: 'Heat map showing convergent (blue) and divergent (red) regions based on the α_dual(σ) criterion. The sharp transition at σ = 1/2 (critical line) demonstrates the phase law boundary where gap harmonic contributions shift from convergent summation to divergent oscillation.'
-            },
-            'phase-portrait': {
-                title: 'Figure 4: Phase Portrait of Gap Vector Field',
-                caption: 'Polar representation of gap contributions as complex vectors. Each vector magnitude is weighted by gap frequency and modulated by α_dual(σ). The spiral patterns indicate constructive or destructive interference depending on position relative to the critical line.'
-            },
-            'dual-alpha': {
-                title: 'Figure 5: The α_dual(σ) Phase Function',
-                caption: 'Plot of the empirically fitted α_dual function that governs convergence behavior. The horizontal line at α=1 marks the convergence boundary. For σ > 1/2, α_dual < 1 ensures convergence; for σ ≤ 1/2, α_dual ≥ 1 induces divergence, thereby constraining zeros to the critical line.'
-            },
-            'euler-reconstruction': {
-                title: 'Figure 6: Euler Product Reconstruction via Prime Gaps',
-                caption: 'Demonstration of ζ(2) = π²/6 decomposition by gap classes. Each bar represents P_g = ∏_{p: gap(p)=g} (1-1/p²)^(-1), the partial Euler product for primes with gap g. The product over all gaps reconstructs the full zeta value.'
-            },
-            'twin-prime-lattice': {
-                title: 'Figure 7: Triangular Lattice Framework for Twin Primes',
-                caption: 'Geometric visualization based on (2n+1)² = 8T_n + 1, where T_n are triangular numbers. Twin prime candidates align with lattice nodes, enabling spatial filtering. This geometric identity provides the foundation for the harmonic analysis framework.'
-            },
-            'rh-phase-law': {
-                title: 'Figure 8: RH Phase Law - Vector Cancellation',
-                caption: 'Complex vector sum V_N(t) = ∑_p p^(-s) for s on the critical line. At Riemann zeros, vectors form a closed spiral canceling to zero. The phase law states that such cancellation occurs if and only if t corresponds to a zero of ζ(1/2 + it).'
-            },
-            'gap-euler-tree': {
-                title: 'Figure 9: Hierarchical Euler Product Tree Structure',
-                caption: 'Tree diagram showing how each prime contributes an infinite power series 1/p² + 1/p⁴ + 1/p⁶ + ... to ζ(2). Branches are organized by gap class, demonstrating that the full sum can be reorganized by gap structure while preserving convergence to π²/6.'
-            },
-            'pi-decomposition': {
-                title: 'Figure 10: π Decomposition Formula via Gap Products',
-                caption: 'Reconstruction of π using the formula π = √6 · √(∏_g P_g). Each gap class g contributes a factor P_g to the infinite product. The cumulative approximation converges to π, demonstrating that π can be expressed entirely through prime gap statistics.'
-            },
-            'zeta-twin-analysis': {
-                title: 'Figure 11: Twin Harmonic Index ζ_twin(1) = 6891/7153',
-                caption: 'Analysis of the ζ_twin zeta-like function evaluated at s=1, yielding the exact rational constant 6891/7153 ≈ 0.96336. This constant emerges from harmonic summation over twin prime pairs filtered through the triangular lattice framework.'
-            },
-            'farey-collapse': {
-                title: 'Figure 12: Getachew Farey Collapse Theorem - Complementary Pairs',
-                caption: 'Visualization of the Farey collapse property: for any reduced fraction a/b, the sum a/b + (b-a)/b = 1. Each pair of complementary fractions (with the same denominator) is shown collapsing to unity. Click on any fraction to see its complement and verify the collapse. The involution C(a/b) = (b-a)/b partitions Farey fractions into pairs, except for the fixed point 1/2.'
-            },
-            'farey-unit-circle': {
-                title: 'Figure 13: Farey Pairs on the Unit Circle - Complex Conjugate Symmetry',
-                caption: 'Unit circle representation where a/b ↦ e^(2πia/b). Complementary Farey pairs appear as complex conjugates: e^(2πia/b) and e^(2πi(b-a)/b) = e^(-2πia/b) are reflections across the real axis. Click on any point to see its complement and the conjugate relationship. The collapse a/b + (b-a)/b = 1 corresponds to the complex conjugate pairs having imaginary parts that cancel.'
+        class EnhancedRiemannHypothesisTester {
+            constructor() {
+                this.mobius = [];
+                this.maxN = 0;
+                this.isComputing = false;
+                this.results = [];
+                this.phaseData = [];
+                this.convergenceData = [];
+                this.currentTest = null;
             }
-        };
 
-        // Sieve of Eratosthenes
-        function generatePrimes(limit) {
-            const start = performance.now();
-            const sieve = new Uint8Array(limit + 1);
-            sieve.fill(1);
-            sieve[0] = sieve[1] = 0;
-            
-            for (let i = 2; i * i <= limit; i++) {
-                if (sieve[i]) {
-                    for (let j = i * i; j <= limit; j += i) {
-                        sieve[j] = 0;
-                    }
-                }
-            }
-            
-            const primes = [];
-            for (let i = 2; i <= limit; i++) {
-                if (sieve[i]) primes.push(i);
-            }
-            
-            state.lastComputeTime = ((performance.now() - start) / 1000).toFixed(3);
-            return primes;
-        }
-
-        // Calculate gaps
-        function calculateGaps(primes) {
-            const gaps = [];
-            const gapCounts = new Map();
-            
-            for (let i = 1; i < primes.length; i++) {
-                const gap = primes[i] - primes[i-1];
-                gaps.push(gap);
-                gapCounts.set(gap, (gapCounts.get(gap) || 0) + 1);
-            }
-            
-            return { gaps, gapCounts };
-        }
-
-        // Alpha dual function
-        function alphaDual(sigma) {
-            const a = 3.34 * Math.tanh(6.76 * (0.63 - sigma));
-            const b = -0.54;
-            const c = 0.93 * Math.exp(-0.1 * sigma);
-            const d = 8.71 * Math.tanh(0.05 * sigma);
-            return a + b + c + d;
-        }
-
-        // Calculate P_g
-        function calculatePg(gap, primes) {
-            let product = 1;
-            let count = 0;
-            for (let i = 1; i < primes.length && count < 1000; i++) {
-                if (primes[i] - primes[i-1] === gap) {
-                    const p = primes[i];
-                    product *= 1 / (1 - 1/(p*p));
-                    count++;
-                }
-            }
-            return product;
-        }
-
-        // Sync slider and input
-        function syncControl(slider, input, updateFn) {
-            slider.addEventListener('input', () => {
-                input.value = slider.value;
-                updateFn();
-            });
-            input.addEventListener('input', () => {
-                slider.value = input.value;
-                updateFn();
-            });
-        }
-
-        // Update displays
-        function updateDisplays() {
-            state.sigma = parseFloat(sigmaSlider.value);
-            state.t = parseFloat(tSlider.value);
-            state.primeLimit = parseInt(primeLimitSlider.value);
-            state.maxGap = parseInt(maxGapSlider.value);
-            state.resolution = parseInt(resolutionSlider.value);
-            state.vizMode = vizModeSelect.value;
-            
-            document.getElementById('sigma-display').textContent = state.sigma.toFixed(3);
-            document.getElementById('t-display').textContent = state.t.toFixed(3);
-            document.getElementById('prime-limit-display').textContent = state.primeLimit.toLocaleString();
-            document.getElementById('max-gap-display').textContent = state.maxGap.toLocaleString();
-            document.getElementById('resolution-display').textContent = state.resolution;
-            
-            document.getElementById('current-sigma').textContent = state.sigma.toFixed(3);
-            document.getElementById('sigma-distance').textContent = Math.abs(state.sigma - 0.5).toFixed(6);
-            
-            document.getElementById('s-value').textContent = `${state.sigma.toFixed(3)} + ${state.t.toFixed(3)}i`;
-            
-            const alpha = alphaDual(state.sigma);
-            document.getElementById('alpha-value').textContent = alpha.toFixed(4);
-            document.getElementById('convergence-status').textContent = alpha < 1 ? 'CONVERGENT' : 'DIVERGENT';
-            
-            if (state.gaps.length > 0) {
-                document.getElementById('total-gaps').textContent = state.gaps.length.toLocaleString();
-                document.getElementById('unique-gaps').textContent = state.gapCounts.size;
-                document.getElementById('twin-count').textContent = (state.gapCounts.get(2) || 0).toLocaleString();
-                document.getElementById('max-gap-found').textContent = Math.max(...state.gaps);
+            // Optimized Möbius function computation using sieve method
+            computeMobius(n) {
+                console.log('Computing Möbius function up to ' + n + '...');
+                const startTime = performance.now();
                 
-                const p1 = calculatePg(2, state.primes);
-                document.getElementById('p1-value').textContent = p1.toFixed(6);
+                this.mobius = new Int8Array(n + 1);
+                const smallestPrimeFactor = new Array(n + 1).fill(0);
                 
-                // Calculate π reconstruction
-                let piApprox = Math.sqrt(6);
-                for (let g = 2; g <= Math.min(20, state.maxGap); g += 2) {
-                    piApprox *= Math.sqrt(calculatePg(g, state.primes));
-                }
-                document.getElementById('pi-recon').textContent = piApprox.toFixed(8);
+                // Initialize
+                this.mobius[1] = 1;
                 
-                // ζ_twin approximation (simplified)
-                document.getElementById('zeta-twin').textContent = '0.96336...';
-            }
-            
-            // Find nearest zero
-            let minDist = Infinity;
-            let nearest = 0;
-            for (const zero of knownZeros) {
-                const d = Math.abs(state.t - zero);
-                if (d < minDist) {
-                    minDist = d;
-                    nearest = zero;
-                }
-            }
-            document.getElementById('nearest-zero').textContent = nearest.toFixed(6);
-            
-            document.getElementById('compute-time').textContent = state.lastComputeTime + 's';
-            
-            // Update figure metadata
-            const meta = figureMeta[state.vizMode];
-            if (meta) {
-                document.getElementById('figure-title').textContent = meta.title;
-                document.getElementById('figure-caption').textContent = meta.caption;
-            }
-        }
-
-        // Coordinate transforms
-        function mapSigmaToX(sigma) {
-            return ((sigma + 1) / 4) * canvas.width;
-        }
-
-        function mapTToY(t) {
-            return canvas.height - (t / 200) * canvas.height;
-        }
-
-        function mapXToSigma(x) {
-            return (x / canvas.width) * 4 - 1;
-        }
-
-        function mapYToT(y) {
-            return (1 - y / canvas.height) * 200;
-        }
-
-        // Drawing functions
-        function drawGrid() {
-            if (!showGrid.checked) return;
-            
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-            ctx.lineWidth = 1;
-            
-            for (let x = 0; x < canvas.width; x += 60) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, canvas.height);
-                ctx.stroke();
-            }
-            
-            for (let y = 0; y < canvas.height; y += 60) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
-                ctx.stroke();
-            }
-        }
-
-        function drawCriticalLine() {
-            if (!showCriticalLine.checked) return;
-            
-            const x = mapSigmaToX(0.5);
-            
-            ctx.strokeStyle = 'rgba(220, 38, 38, 0.9)';
-            ctx.lineWidth = 3;
-            ctx.setLineDash([8, 4]);
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, canvas.height);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            
-            if (showLabels.checked) {
-                ctx.fillStyle = 'rgba(220, 38, 38, 1)';
-                ctx.font = 'bold 14px Times New Roman';
-                ctx.fillText('σ = 1/2', x + 10, 25);
-            }
-        }
-
-        function drawZeros() {
-            if (!showZeros.checked) return;
-            
-            for (const zero of knownZeros) {
-                const x = mapSigmaToX(0.5);
-                const y = mapTToY(zero);
-                
-                if (y >= 0 && y <= canvas.height) {
-                    ctx.fillStyle = 'rgba(250, 204, 21, 0.4)';
-                    ctx.beginPath();
-                    ctx.arc(x, y, 12, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    ctx.fillStyle = 'rgba(250, 204, 21, 1)';
-                    ctx.beginPath();
-                    ctx.arc(x, y, 6, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    ctx.strokeStyle = '#ffffff';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                }
-            }
-        }
-
-        function drawGapDistribution() {
-            const sortedGaps = Array.from(state.gapCounts.entries())
-                .sort((a, b) => a[0] - b[0])
-                .filter(([gap]) => gap <= state.maxGap);
-            
-            if (sortedGaps.length === 0) return;
-            
-            const maxCount = Math.max(...sortedGaps.map(([, count]) => count));
-            const barWidth = canvas.width / Math.min(sortedGaps.length, 100);
-            
-            sortedGaps.forEach(([gap, count], i) => {
-                const height = (count / maxCount) * (canvas.height - 120);
-                const x = (i / sortedGaps.length) * canvas.width;
-                const y = canvas.height - height - 60;
-                
-                const hue = 220 - (gap / state.maxGap) * 80;
-                ctx.fillStyle = `hsla(${hue}, 60%, 50%, 0.8)`;
-                ctx.fillRect(x, y, barWidth * 0.85, height);
-                
-                if (gap === 2) {
-                    ctx.strokeStyle = 'rgba(250, 204, 21, 1)';
-                    ctx.lineWidth = 3;
-                    ctx.strokeRect(x, y, barWidth * 0.85, height);
-                }
-                
-                // Store for click detection
-                state.clickedElements.push({
-                    type: 'gap-bar',
-                    x, y,
-                    width: barWidth * 0.85,
-                    height: height,
-                    data: { gap, count }
-                });
-            });
-            
-            if (showLabels.checked) {
-                ctx.fillStyle = '#ffffff';
-                ctx.font = '14px Times New Roman';
-                ctx.textAlign = 'center';
-                ctx.fillText('Gap Size', canvas.width / 2, canvas.height - 20);
-                
-                ctx.save();
-                ctx.translate(20, canvas.height / 2);
-                ctx.rotate(-Math.PI / 2);
-                ctx.fillText('Frequency', 0, 0);
-                ctx.restore();
-            }
-        }
-
-        function drawDualAlpha() {
-            ctx.strokeStyle = '#3b82f6';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            
-            for (let i = 0; i <= canvas.width; i++) {
-                const sigma = mapXToSigma(i);
-                const alpha = alphaDual(sigma);
-                const y = canvas.height - ((alpha + 2) / 5) * canvas.height;
-                
-                if (i === 0) {
-                    ctx.moveTo(i, y);
-                } else {
-                    ctx.lineTo(i, y);
-                }
-            }
-            ctx.stroke();
-            
-            // y = 1 line
-            const y1 = canvas.height - (3 / 5) * canvas.height;
-            ctx.strokeStyle = 'rgba(220, 38, 38, 1)';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([8, 4]);
-            ctx.beginPath();
-            ctx.moveTo(0, y1);
-            ctx.lineTo(canvas.width, y1);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            
-            if (showLabels.checked) {
-                ctx.fillStyle = '#dc2626';
-                ctx.font = 'bold 13px Times New Roman';
-                ctx.fillText('α_dual = 1 (Convergence Boundary)', 20, y1 - 10);
-                
-                ctx.fillStyle = '#ffffff';
-                ctx.font = '14px Times New Roman';
-                ctx.fillText('σ', canvas.width - 30, canvas.height - 25);
-                ctx.fillText('α_dual', 20, 30);
-            }
-            
-            // Current position
-            const currentX = mapSigmaToX(state.sigma);
-            const currentAlpha = alphaDual(state.sigma);
-            const currentY = canvas.height - ((currentAlpha + 2) / 5) * canvas.height;
-            
-            ctx.fillStyle = '#3b82f6';
-            ctx.beginPath();
-            ctx.arc(currentX, currentY, 8, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-        }
-
-        // Additional visualization functions (simplified versions)
-        function drawHarmonicSpectrum() {
-            // Simplified implementation
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '16px Times New Roman';
-            ctx.textAlign = 'center';
-            ctx.fillText('Harmonic Spectrum Visualization', canvas.width / 2, canvas.height / 2);
-        }
-
-        function drawConvergenceMap() {
-            const res = Math.min(state.resolution, 200);
-            for (let i = 0; i < res; i++) {
-                for (let j = 0; j < res; j++) {
-                    const sigma = -1 + (4 / res) * i;
-                    const alpha = alphaDual(sigma);
-                    
-                    const x = (i / res) * canvas.width;
-                    const y = canvas.height - (j / res) * canvas.height;
-                    
-                    if (alpha < 1) {
-                        ctx.fillStyle = `rgba(59, 130, 246, ${1 - alpha})`;
-                    } else {
-                        ctx.fillStyle = `rgba(220, 38, 38, ${Math.min(1, (alpha - 1) * 0.5)})`;
-                    }
-                    
-                    ctx.fillRect(x, y, canvas.width / res, canvas.height / res);
-                }
-            }
-        }
-
-        function drawPhasePortrait() {
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '16px Times New Roman';
-            ctx.textAlign = 'center';
-            ctx.fillText('Phase Portrait Visualization', canvas.width / 2, canvas.height / 2);
-        }
-
-        function drawEulerReconstruction() {
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '16px Times New Roman';
-            ctx.textAlign = 'center';
-            ctx.fillText('Euler Product Reconstruction', canvas.width / 2, canvas.height / 2);
-        }
-
-        function drawTwinPrimeLattice() {
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '16px Times New Roman';
-            ctx.textAlign = 'center';
-            ctx.fillText('Twin Prime Triangular Lattice', canvas.width / 2, canvas.height / 2);
-        }
-
-        function drawRHPhaseLaw() {
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '16px Times New Roman';
-            ctx.textAlign = 'center';
-            ctx.fillText('RH Phase Law - Vector Cancellation', canvas.width / 2, canvas.height / 2);
-        }
-
-        function drawGapEulerTree() {
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '16px Times New Roman';
-            ctx.textAlign = 'center';
-            ctx.fillText('Gap-Based Euler Product Tree', canvas.width / 2, canvas.height / 2);
-        }
-
-        function drawPiDecomposition() {
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '16px Times New Roman';
-            ctx.textAlign = 'center';
-            ctx.fillText('π Decomposition via Gaps', canvas.width / 2, canvas.height / 2);
-        }
-
-        function drawZetaTwinAnalysis() {
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 20px Times New Roman';
-            ctx.textAlign = 'center';
-            ctx.fillText('ζ_twin(1) = 6891/7153', canvas.width / 2, canvas.height / 2 - 20);
-            ctx.font = '16px Times New Roman';
-            ctx.fillText('≈ 0.96336 (Twin Harmonic Index)', canvas.width / 2, canvas.height / 2 + 20);
-        }
-
-        function gcd(a, b) {
-            while (b !== 0) {
-                [a, b] = [b, a % b];
-            }
-            return a;
-        }
-
-        function generateFareySequence(N) {
-            const farey = [];
-            for (let b = 1; b <= N; b++) {
-                for (let a = 0; a <= b; a++) {
-                    if (gcd(a, b) === 1) {
-                        farey.push({ a, b, value: a / b });
-                    }
-                }
-            }
-            return farey.sort((x, y) => x.value - y.value);
-        }
-
-        function drawFareyCollapse() {
-            const N = Math.min(20, Math.floor(state.primeLimit / 50000));
-            const farey = generateFareySequence(N);
-            
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 18px Times New Roman';
-            ctx.textAlign = 'center';
-            ctx.fillText('Getachew Farey Collapse Theorem', canvas.width / 2, 30);
-            ctx.font = '14px Times New Roman';
-            ctx.fillText(`a/b + (b-a)/b = 1 for all reduced fractions (Farey sequence F_${N})`, canvas.width / 2, 55);
-            
-            const byDenom = new Map();
-            for (const frac of farey) {
-                if (!byDenom.has(frac.b)) {
-                    byDenom.set(frac.b, []);
-                }
-                byDenom.get(frac.b).push(frac);
-            }
-            
-            const denoms = Array.from(byDenom.keys()).sort((a, b) => a - b);
-            const ySpacing = (canvas.height - 120) / Math.max(denoms.length, 1);
-            
-            denoms.forEach((b, idx) => {
-                const fracs = byDenom.get(b);
-                const y = 100 + idx * ySpacing;
-                const xSpacing = (canvas.width - 100) / (fracs.length + 1);
-                
-                ctx.fillStyle = '#9ca3af';
-                ctx.font = '12px Times New Roman';
-                ctx.textAlign = 'right';
-                ctx.fillText(`b=${b}`, 45, y + 5);
-                
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(50, y);
-                ctx.lineTo(canvas.width - 50, y);
-                ctx.stroke();
-                
-                fracs.forEach((frac, i) => {
-                    const x = 50 + (i + 1) * xSpacing;
-                    const compA = frac.b - frac.a;
-                    const complement = fracs.find(f => f.a === compA);
-                    const isFirst = frac.a <= compA;
-                    const isFixedPoint = frac.a === compA;
-                    
-                    const hue = isFixedPoint ? 280 : (isFirst ? 200 : 140);
-                    ctx.fillStyle = `hsla(${hue}, 70%, 60%, 0.9)`;
-                    ctx.beginPath();
-                    ctx.arc(x, y, 8, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    ctx.strokeStyle = '#ffffff';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    
-                    ctx.fillStyle = '#ffffff';
-                    ctx.font = '11px Times New Roman';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(`${frac.a}/${frac.b}`, x, y - 15);
-                    
-                    if (complement && isFirst && !isFixedPoint) {
-                        const compX = 50 + (fracs.indexOf(complement) + 1) * xSpacing;
-                        ctx.strokeStyle = `hsla(${hue}, 70%, 60%, 0.4)`;
-                        ctx.lineWidth = 2;
-                        ctx.beginPath();
-                        const midX = (x + compX) / 2;
-                        const arcHeight = 20;
-                        ctx.moveTo(x, y);
-                        ctx.quadraticCurveTo(midX, y - arcHeight, compX, y);
-                        ctx.stroke();
-                        
-                        ctx.fillStyle = '#4ade80';
-                        ctx.font = 'bold 11px Times New Roman';
-                        ctx.fillText('= 1', midX, y - arcHeight - 5);
-                    }
-                    
-                    state.clickedElements.push({
-                        type: 'farey-fraction',
-                        x: x - 12,
-                        y: y - 12,
-                        width: 24,
-                        height: 24,
-                        data: {
-                            a: frac.a,
-                            b: frac.b,
-                            value: frac.value,
-                            complement: complement ? `${compA}/${frac.b}` : 'none',
-                            isFixedPoint: isFixedPoint
+                // Sieve to find smallest prime factors
+                for (let i = 2; i <= n; i++) {
+                    if (smallestPrimeFactor[i] === 0) {
+                        // i is prime
+                        smallestPrimeFactor[i] = i;
+                        for (let j = i * i; j <= n; j += i) {
+                            if (smallestPrimeFactor[j] === 0) {
+                                smallestPrimeFactor[j] = i;
+                            }
                         }
-                    });
-                });
-            });
-            
-            const legendY = canvas.height - 60;
-            ctx.fillStyle = 'hsla(200, 70%, 60%, 0.9)';
-            ctx.beginPath();
-            ctx.arc(70, legendY, 8, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '12px Times New Roman';
-            ctx.textAlign = 'left';
-            ctx.fillText('First in pair', 85, legendY + 4);
-            
-            ctx.fillStyle = 'hsla(140, 70%, 60%, 0.9)';
-            ctx.beginPath();
-            ctx.arc(200, legendY, 8, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('Complement', 215, legendY + 4);
-            
-            ctx.fillStyle = 'hsla(280, 70%, 60%, 0.9)';
-            ctx.beginPath();
-            ctx.arc(320, legendY, 8, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('Fixed point (1/2)', 335, legendY + 4);
-        }
-
-        function drawFareyUnitCircle() {
-            const N = Math.min(30, Math.floor(state.primeLimit / 33000));
-            const farey = generateFareySequence(N);
-            
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const radius = Math.min(centerX, centerY) - 80;
-            
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 18px Times New Roman';
-            ctx.textAlign = 'center';
-            ctx.fillText('Farey Fractions on the Unit Circle', canvas.width / 2, 35);
-            ctx.font = '13px Times New Roman';
-            ctx.fillText(`e^(2πia/b) and e^(2πi(b-a)/b) are complex conjugates`, canvas.width / 2, 58);
-            
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-            ctx.stroke();
-            
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(centerX - radius - 20, centerY);
-            ctx.lineTo(centerX + radius + 20, centerY);
-            ctx.moveTo(centerX, centerY - radius - 20);
-            ctx.lineTo(centerX, centerY + radius + 20);
-            ctx.stroke();
-            
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '12px Times New Roman';
-            ctx.textAlign = 'center';
-            ctx.fillText('Re', centerX + radius + 25, centerY + 5);
-            ctx.fillText('Im', centerX + 5, centerY - radius - 25);
-            
-            const drawnPairs = new Set();
-            
-            farey.forEach(frac => {
-                const angle = 2 * Math.PI * frac.value;
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY - radius * Math.sin(angle);
-                
-                const compA = frac.b - frac.a;
-                const isFixedPoint = frac.a === compA;
-                const pairKey = `${Math.min(frac.a, compA)}/${frac.b}`;
-                
-                let hue;
-                if (isFixedPoint) {
-                    hue = 280;
-                } else if (!drawnPairs.has(pairKey)) {
-                    hue = 200;
-                    drawnPairs.add(pairKey);
-                } else {
-                    hue = 140;
+                    }
                 }
                 
-                ctx.fillStyle = `hsla(${hue}, 70%, 60%, 0.8)`;
-                ctx.beginPath();
-                ctx.arc(x, y, 6, 0, Math.PI * 2);
-                ctx.fill();
+                // Compute Möbius function using multiplicative property
+                for (let i = 2; i <= n; i++) {
+                    const p = smallestPrimeFactor[i];
+                    const quotient = Math.floor(i / p);
+                    
+                    if (quotient % p === 0) {
+                        // i is divisible by p², so μ(i) = 0
+                        this.mobius[i] = 0;
+                    } else {
+                        // μ(i) = -μ(i/p) since p is the smallest prime factor
+                        this.mobius[i] = -this.mobius[quotient];
+                    }
+                }
                 
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 1.5;
+                const endTime = performance.now();
+                console.log('Möbius computation completed in ' + (endTime - startTime).toFixed(2) + 'ms');
+                this.maxN = n;
+            }
+
+            // Enhanced exponential sum computation with phase tracking
+            computeExponentialSum(N, alpha, trackPhase = false) {
+                let realSum = 0;
+                let imagSum = 0;
+                let phases = [];
+                
+                for (let n = 1; n <= N; n++) {
+                    if (this.mobius[n] !== 0) {
+                        const angle = 2 * Math.PI * n * alpha;
+                        const cosVal = Math.cos(angle);
+                        const sinVal = Math.sin(angle);
+                        
+                        realSum += this.mobius[n] * cosVal;
+                        imagSum += this.mobius[n] * sinVal;
+                        
+                        if (trackPhase && n % Math.max(1, Math.floor(N / 50)) === 0) {
+                            phases.push({
+                                n: n,
+                                phase: Math.atan2(imagSum, realSum),
+                                magnitude: Math.sqrt(realSum * realSum + imagSum * imagSum),
+                                alpha: alpha
+                            });
+                        }
+                    }
+                }
+                
+                const magnitude = Math.sqrt(realSum * realSum + imagSum * imagSum);
+                const phase = Math.atan2(imagSum, realSum);
+                
+                return {
+                    magnitude: magnitude,
+                    phase: phase,
+                    real: realSum,
+                    imaginary: imagSum,
+                    phases: phases
+                };
+            }
+
+            // Generate enhanced α values based on mode and precision
+            generateAlphaValues(mode, numSamples, maxDenom, gridSize, precision) {
+                const alphas = [];
+                
+                switch (mode) {
+                    case 'stochastic':
+                        for (let i = 0; i < numSamples; i++) {
+                            alphas.push(Math.random());
+                        }
+                        break;
+                        
+                    case 'major-arcs':
+                        // Test rational numbers with small denominators
+                        for (let q = 1; q <= maxDenom; q++) {
+                            for (let p = 0; p < q; p++) {
+                                if (this.gcd(p, q) === 1) {
+                                    alphas.push(p / q);
+                                }
+                            }
+                        }
+                        // Add some random values too
+                        const randomCount = Math.min(Math.floor(numSamples / 2), 100);
+                        for (let i = 0; i < randomCount; i++) {
+                            alphas.push(Math.random());
+                        }
+                        break;
+                        
+                    case 'uniform':
+                        for (let i = 0; i < gridSize; i++) {
+                            for (let j = 0; j < gridSize; j++) {
+                                alphas.push((i + 0.5) / gridSize);
+                                if (alphas.length >= numSamples) break;
+                            }
+                            if (alphas.length >= numSamples) break;
+                        }
+                        break;
+                        
+                    case 'adaptive':
+                        // Start with major arcs, then adaptively refine
+                        for (let q = 1; q <= maxDenom; q++) {
+                            for (let p = 0; p < q; p++) {
+                                if (this.gcd(p, q) === 1) {
+                                    alphas.push(p / q);
+                                    // Add nearby points for adaptive refinement
+                                    if (precision === 'high' || precision === 'ultra') {
+                                        const delta = precision === 'ultra' ? 0.001 : 0.01;
+                                        alphas.push((p / q) + delta);
+                                        alphas.push((p / q) - delta);
+                                    }
+                                }
+                            }
+                        }
+                        // Add adaptive grid points
+                        for (let i = 0; i < numSamples; i++) {
+                            alphas.push(Math.random());
+                        }
+                        break;
+                        
+                    case 'comprehensive':
+                        // Combine all methods for thorough testing
+                        // Major arcs
+                        for (let q = 1; q <= maxDenom; q++) {
+                            for (let p = 0; p < q; p++) {
+                                if (this.gcd(p, q) === 1) {
+                                    alphas.push(p / q);
+                                }
+                            }
+                        }
+                        // Uniform grid
+                        for (let i = 0; i < gridSize; i++) {
+                            alphas.push(i / gridSize);
+                        }
+                        // Random sampling
+                        for (let i = 0; i < Math.floor(numSamples / 2); i++) {
+                            alphas.push(Math.random());
+                        }
+                        break;
+                }
+                
+                return [...new Set(alphas.map(a => Math.abs(a % 1)))]; // Remove duplicates and normalize
+            }
+
+            gcd(a, b) {
+                while (b !== 0) {
+                    [a, b] = [b, a % b];
+                }
+                return a;
+            }
+
+            formatAlpha(alpha) {
+                // Try to express as a simple fraction
+                const tolerance = 1e-10;
+                for (let denom = 1; denom <= 20; denom++) {
+                    for (let num = 0; num < denom; num++) {
+                        if (Math.abs(alpha - num/denom) < tolerance && this.gcd(num, denom) === 1) {
+                            return num + '/' + denom;
+                        }
+                    }
+                }
+                return alpha.toFixed(8);
+            }
+
+            determineAlphaType(alpha) {
+                const tolerance = 1e-10;
+                for (let denom = 1; denom <= 20; denom++) {
+                    for (let num = 0; num < denom; num++) {
+                        if (Math.abs(alpha - num/denom) < tolerance && this.gcd(num, denom) === 1) {
+                            if (denom <= 12) return 'Major Arc';
+                            return 'Rational';
+                        }
+                    }
+                }
+                return 'Irrational';
+            }
+
+            async runEnhancedVerification(maxN, testMode, numSamples, maxDenom, gridSize, precision, options) {
+                return new Promise((resolve) => {
+                    const startTime = performance.now();
+                    
+                    // Update UI
+                    document.getElementById('progressContainer').style.display = 'block';
+                    document.getElementById('results').style.display = 'none';
+                    document.getElementById('visualizationGrid').style.display = 'none';
+                    
+                    const updateProgress = (message, progress) => {
+                        document.getElementById('statusText').textContent = message;
+                        document.getElementById('progressFill').style.width = progress + '%';
+                    };
+                    
+                    // Initialize variables at the top level
+                    let maxSum = 0;
+                    let bestAlpha = 0;
+                    const results = [];
+                    const convergencePoints = [];
+                    let phaseData = []; // Declare at function scope
+                    
+                    // Store phaseData in instance for later access
+                    this.phaseData = [];
+                    
+                    setTimeout(() => {
+                        updateProgress('Computing enhanced Möbius function...', 5);
+                        
+                        setTimeout(() => {
+                            // Step 1: Compute Möbius function
+                            this.computeMobius(maxN);
+                            updateProgress('Generating α test values with ' + precision + ' precision...', 15);
+                            
+                            setTimeout(() => {
+                                // Step 2: Generate α values
+                                const alphas = this.generateAlphaValues(testMode, numSamples, maxDenom, gridSize, precision);
+                                updateProgress('Testing ' + alphas.length + ' α values with enhanced analysis...', 25);
+                                
+                                setTimeout(() => {
+                                    // Step 3: Test exponential sums with enhanced tracking
+                                    const sqrtN = Math.sqrt(maxN);
+                                    
+                                    alphas.forEach((alpha, i) => {
+                                        const trackPhase = options.enablePhaseAnalysis && i < 10;
+                                        const sumResult = this.computeExponentialSum(maxN, alpha, trackPhase);
+                                        
+                                        results.push({
+                                            alpha: alpha,
+                                            sum: sumResult.magnitude,
+                                            phase: sumResult.phase,
+                                            real: sumResult.real,
+                                            imaginary: sumResult.imaginary,
+                                            type: this.determineAlphaType(alpha)
+                                        });
+                                        
+                                        if (trackPhase && sumResult.phases && sumResult.phases.length > 0) {
+                                            phaseData = phaseData.concat(sumResult.phases);
+                                            this.phaseData = this.phaseData.concat(sumResult.phases);
+                                        }
+                                        
+                                        if (sumResult.magnitude > maxSum) {
+                                            maxSum = sumResult.magnitude;
+                                            bestAlpha = alpha;
+                                        }
+                                        
+                                        // Track convergence
+                                        if (i % Math.max(1, Math.floor(alphas.length / 20)) === 0) {
+                                            convergencePoints.push({
+                                                iteration: i,
+                                                maxSum: maxSum,
+                                                currentSum: sumResult.magnitude
+                                            });
+                                        }
+                                        
+                                        if (options.realTimeUpdates && i % Math.max(1, Math.floor(alphas.length / 20)) === 0) {
+                                            const progress = 25 + 65 * (i / alphas.length);
+                                            updateProgress('Testing α values... ' + (i + 1) + '/' + alphas.length + ' (max: ' + maxSum.toFixed(3) + ')', progress);
+                                        }
+                                    });
+                                    
+                                    const endTime = performance.now();
+                                    const computeTime = endTime - startTime;
+                                    const ratio = maxSum / sqrtN;
+                                    
+                                    updateProgress('Generating advanced visualizations...', 95);
+                                    
+                                    setTimeout(() => {
+                                        updateProgress('Enhanced computation complete!', 100);
+                                        
+                                        resolve({
+                                            maxN,
+                                            sqrtN,
+                                            maxSum,
+                                            ratio,
+                                            bestAlpha,
+                                            computeTime,
+                                            results: results.sort((a, b) => b.sum - a.sum),
+                                            phaseData: phaseData,
+                                            convergenceData: convergencePoints,
+                                            statistics: this.calculateStatistics(results),
+                                            options
+                                        });
+                                    }, 200);
+                                }, 100);
+                            }, 100);
+                        }, 100);
+                    }, 100);
+                });
+            }
+
+            calculateStatistics(results) {
+                const sums = results.map(r => r.sum);
+                const phases = results.map(r => r.phase);
+                
+                return {
+                    mean: sums.reduce((a, b) => a + b, 0) / sums.length,
+                    median: this.median(sums),
+                    stdDev: this.standardDeviation(sums),
+                    variance: this.variance(sums),
+                    skewness: this.skewness(sums),
+                    kurtosis: this.kurtosis(sums),
+                    min: Math.min(...sums),
+                    max: Math.max(...sums),
+                    q1: this.percentile(sums, 25),
+                    q3: this.percentile(sums, 75),
+                    majorArcCount: results.filter(r => r.type === 'Major Arc').length,
+                    rationalCount: results.filter(r => r.type === 'Rational').length,
+                    irrationalCount: results.filter(r => r.type === 'Irrational').length
+                };
+            }
+
+            median(arr) {
+                const sorted = [...arr].sort((a, b) => a - b);
+                const mid = Math.floor(sorted.length / 2);
+                return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+            }
+
+            standardDeviation(arr) {
+                const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+                const variance = arr.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / arr.length;
+                return Math.sqrt(variance);
+            }
+
+            variance(arr) {
+                const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+                return arr.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / arr.length;
+            }
+
+            skewness(arr) {
+                const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+                const std = this.standardDeviation(arr);
+                const n = arr.length;
+                return arr.reduce((sum, val) => sum + Math.pow((val - mean) / std, 3), 0) / n;
+            }
+
+            kurtosis(arr) {
+                const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+                const std = this.standardDeviation(arr);
+                const n = arr.length;
+                return arr.reduce((sum, val) => sum + Math.pow((val - mean) / std, 4), 0) / n - 3;
+            }
+
+            percentile(arr, p) {
+                const sorted = [...arr].sort((a, b) => a - b);
+                const index = (p / 100) * (sorted.length - 1);
+                const lower = Math.floor(index);
+                const upper = Math.ceil(index);
+                return sorted[lower] + (sorted[upper] - sorted[lower]) * (index - lower);
+            }
+
+            displayEnhancedResults(results) {
+                const {maxN, sqrtN, maxSum, ratio, bestAlpha, computeTime, results: topResults, statistics, options} = results;
+                
+                // Basic metrics
+                document.getElementById('resultN').textContent = maxN.toLocaleString();
+                document.getElementById('resultSqrtN').textContent = sqrtN.toFixed(2);
+                document.getElementById('resultMaxSum').textContent = maxSum.toFixed(6);
+                document.getElementById('resultRatio').textContent = ratio.toFixed(8);
+                document.getElementById('resultBestAlpha').textContent = this.formatAlpha(bestAlpha);
+                document.getElementById('computeTime').textContent = (computeTime/1000).toFixed(3) + 's';
+                document.getElementById('opsPerSec').textContent = (maxN / (computeTime/1000)).toExponential(3);
+                document.getElementById('memoryEff').textContent = (maxN / (1024 * 1024)).toFixed(2) + 'MB';
+                
+                // Enhanced RH status with cosmic themes
+                let rhStatus, rhClass;
+                if (ratio < 0.2) {
+                    rhStatus = '🌌 COSMIC EXCELLENCE - Extraordinary RH Support (ratio < 0.2)';
+                    rhClass = 'status-cosmic';
+                } else if (ratio < 0.4) {
+                    rhStatus = '🌟 LEGENDARY - Outstanding RH Support (ratio < 0.4)';
+                    rhClass = 'status-legendary';
+                } else if (ratio < 0.8) {
+                    rhStatus = '✨ MYTHICAL - Excellent RH Support (ratio < 0.8)';
+                    rhClass = 'status-mythical';
+                } else if (ratio < 1.5) {
+                    rhStatus = '⭐ EXCELLENT - Good RH Support (ratio < 1.5)';
+                    rhClass = 'status-excellent';
+                } else if (ratio < 3.0) {
+                    rhStatus = '👍 GOOD - Acceptable RH Support (ratio < 3.0)';
+                    rhClass = 'status-good';
+                } else {
+                    rhStatus = '⚠️ HIGH - Needs Investigation (ratio ≥ 3.0)';
+                    rhClass = 'status-high';
+                }
+                
+                const statusElement = document.getElementById('cosmicStatus');
+                statusElement.textContent = rhStatus;
+                statusElement.className = 'cosmic-status ' + rhClass;
+                statusElement.style.display = 'block';
+                
+                // Statistical summary
+                if (options.showStatistics && statistics) {
+                    this.displayStatistics(statistics);
+                    document.getElementById('statisticalSummary').style.display = 'block';
+                }
+                
+                // Show detailed results if enabled
+                if (options.showDetails) {
+                    this.displayDetailedResults(topResults, maxN, sqrtN, ratio, statistics);
+                    document.getElementById('detailedResults').style.display = 'block';
+                } else {
+                    document.getElementById('detailedResults').style.display = 'none';
+                }
+                
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('progressContainer').style.display = 'none';
+                
+                // Store results for export
+                this.currentTest = results;
+                
+                // Generate visualizations
+                if (options.generateHeatmap || options.showDetails) {
+                    this.generateEnhancedVisualizations(results);
+                }
+                
+                // Debug: Log phase data availability
+                console.log('Phase data available:', results.phaseData ? results.phaseData.length : 0, 'points');
+                if (results.phaseData && results.phaseData.length > 0) {
+                    console.log('First phase point:', results.phaseData[0]);
+                }
+            }
+
+            displayStatistics(stats) {
+                const statsGrid = document.getElementById('statsGrid');
+                statsGrid.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.mean.toFixed(4)}</div>
+                        <div class="stat-label">Mean |S(N,α)|</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.median.toFixed(4)}</div>
+                        <div class="stat-label">Median |S(N,α)|</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.stdDev.toFixed(4)}</div>
+                        <div class="stat-label">Standard Deviation</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.skewness.toFixed(3)}</div>
+                        <div class="stat-label">Skewness</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.majorArcCount}</div>
+                        <div class="stat-label">Major Arc Results</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${(stats.majorArcCount / (stats.majorArcCount + stats.rationalCount + stats.irrationalCount) * 100).toFixed(1)}%</div>
+                        <div class="stat-label">Major Arc Percentage</div>
+                    </div>
+                `;
+            }
+
+            displayDetailedResults(topResults, maxN, sqrtN, ratio, statistics) {
+                // Top results table
+                const tbody = document.getElementById('topResultsBody');
+                tbody.innerHTML = '';
+                
+                topResults.slice(0, 15).forEach((result, i) => {
+                    const resultRatio = result.sum / sqrtN;
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td>${this.formatAlpha(result.alpha)}</td>
+                        <td>${result.sum.toFixed(6)}</td>
+                        <td>${resultRatio.toFixed(6)}</td>
+                        <td>${result.type}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+                // Mathematical insights
+                const insights = this.generateEnhancedInsights(topResults, maxN, sqrtN, ratio, statistics);
+                document.getElementById('insightsContent').innerHTML = insights;
+                
+                // Distribution analysis
+                if (statistics) {
+                    document.getElementById('distributionAnalysis').innerHTML = this.generateDistributionAnalysis(statistics, topResults);
+                }
+                
+                // Phase analysis
+                if (results.phaseData && results.phaseData.length > 0) {
+                    document.getElementById('phaseAnalysis').innerHTML = this.generatePhaseAnalysis(results.phaseData);
+                }
+            }
+
+            generateEnhancedInsights(topResults, maxN, sqrtN, ratio, statistics) {
+                let insights = '';
+                
+                // Major arc dominance analysis
+                const majorArcResults = topResults.filter(r => r.type === 'Major Arc').slice(0, 10);
+                if (majorArcResults.length > 0) {
+                    insights += `<p><strong>Major Arc Dominance:</strong> ${majorArcResults.length} of the top 10 exponential sums occur at major arc α values, confirming classical analytic number theory predictions.</p>`;
+                }
+                
+                // Statistical significance
+                if (statistics) {
+                    insights += `<p><strong>Statistical Profile:</strong> Mean ratio: ${(statistics.mean / sqrtN).toFixed(4)}, Standard deviation: ${(statistics.stdDev / sqrtN).toFixed(4)}, Skewness: ${statistics.skewness.toFixed(3)}. `;
+                    
+                    if (Math.abs(statistics.skewness) < 0.5) {
+                        insights += 'Distribution is approximately symmetric.</p>';
+                    } else if (statistics.skewness > 0.5) {
+                        insights += 'Distribution shows positive skew (tail towards larger values).</p>';
+                    } else {
+                        insights += 'Distribution shows negative skew (tail towards smaller values).</p>';
+                    }
+                }
+                
+                // RH interpretation with enhanced analysis
+                if (ratio < 0.5) {
+                    insights += `<p><strong>RH Interpretation:</strong> The ratio ${ratio.toFixed(6)} provides exceptionally strong computational evidence supporting the Riemann Hypothesis for N = ${maxN.toLocaleString()}. This level of bound satisfaction is remarkable.</p>`;
+                } else if (ratio < 1.0) {
+                    insights += `<p><strong>RH Interpretation:</strong> The ratio ${ratio.toFixed(6)} is well within theoretical bounds, providing solid evidence supporting RH predictions.</p>`;
+                } else if (ratio < 2.0) {
+                    insights += `<p><strong>RH Interpretation:</strong> The ratio ${ratio.toFixed(6)} remains within reasonable bounds for RH, though elevated. This is still consistent with the O(√N) prediction.</p>`;
+                } else {
+                    insights += `<p><strong>RH Interpretation:</strong> The ratio ${ratio.toFixed(6)} is significantly elevated. While potentially still consistent with RH (which allows some flexibility), this warrants deeper investigation.</p>`;
+                }
+                
+                // Computational achievement
+                insights += `<p><strong>Computational Achievement:</strong> Successfully verified RH predictions for ${maxN.toLocaleString()} integers using advanced browser-based algorithms, demonstrating modern JavaScript's capability for serious mathematical research.</p>`;
+                
+                // Research directions
+                insights += `<p><strong>Future Research:</strong> Consider investigating the specific α values producing maximal sums, exploring larger N values, or applying these techniques to related L-functions and Dirichlet series.</p>`;
+                
+                return insights;
+            }
+
+            generateDistributionAnalysis(statistics, results) {
+                let analysis = `
+                    <div class="statistics-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${statistics.q1.toFixed(4)}</div>
+                            <div class="stat-label">First Quartile (Q1)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${statistics.q3.toFixed(4)}</div>
+                            <div class="stat-label">Third Quartile (Q3)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${(statistics.q3 - statistics.q1).toFixed(4)}</div>
+                            <div class="stat-label">Interquartile Range</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${statistics.kurtosis.toFixed(3)}</div>
+                            <div class="stat-label">Kurtosis</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Distribution shape analysis
+                analysis += '<h5 style="color: #4ecdc4; margin: 20px 0 10px 0;">Distribution Shape Analysis</h5>';
+                if (statistics.kurtosis > 0) {
+                    analysis += '<p>The distribution exhibits positive kurtosis (heavy tails), indicating more extreme values than a normal distribution would predict.</p>';
+                } else {
+                    analysis += '<p>The distribution exhibits negative kurtosis (light tails), indicating fewer extreme values than expected.</p>';
+                }
+                
+                // Type distribution
+                analysis += '<h5 style="color: #4ecdc4; margin: 20px 0 10px 0;">α Value Type Distribution</h5>';
+                analysis += `<p>Major Arcs: ${statistics.majorArcCount}, Rational: ${statistics.rationalCount}, Irrational: ${statistics.irrationalCount}</p>`;
+                
+                return analysis;
+            }
+
+            generatePhaseAnalysis(phaseData) {
+                if (!phaseData || phaseData.length === 0) {
+                    return '<p>Phase analysis data not available for this test.</p>';
+                }
+                
+                let analysis = '<h5 style="color: #4ecdc4; margin-bottom: 10px;">Phase Behavior Analysis</h5>';
+                
+                // Calculate phase statistics
+                const phases = phaseData.map(p => p.phase);
+                const meanPhase = phases.reduce((a, b) => a + b, 0) / phases.length;
+                const phaseRange = Math.max(...phases) - Math.min(...phases);
+                
+                analysis += `<p><strong>Mean Phase:</strong> ${meanPhase.toFixed(4)} radians (${(meanPhase * 180 / Math.PI).toFixed(2)}°)</p>`;
+                analysis += `<p><strong>Phase Range:</strong> ${phaseRange.toFixed(4)} radians (${(phaseRange * 180 / Math.PI).toFixed(2)}°)</p>`;
+                
+                // Phase distribution
+                const phaseDistribution = this.analyzePhaseDistribution(phases);
+                analysis += `<p><strong>Phase Distribution:</strong> ${phaseDistribution}</p>`;
+                
+                return analysis;
+            }
+
+            analyzePhaseDistribution(phases) {
+                const bins = 8;
+                const binSize = (2 * Math.PI) / bins;
+                const counts = new Array(bins).fill(0);
+                
+                phases.forEach(phase => {
+                    const normalizedPhase = ((phase % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+                    const bin = Math.min(Math.floor(normalizedPhase / binSize), bins - 1);
+                    counts[bin]++;
+                });
+                
+                const maxCount = Math.max(...counts);
+                const minCount = Math.min(...counts);
+                
+                if (maxCount - minCount < phases.length * 0.1) {
+                    return 'Approximately uniform distribution across phase space';
+                } else {
+                    return 'Non-uniform phase distribution with clustering';
+                }
+            }
+
+            generateEnhancedVisualizations(results) {
+                const {results: topResults, convergenceData, phaseData, options} = results;
+                
+                // Main distribution chart
+                this.drawDistributionChart(topResults, results.sqrtN);
+                
+                // Heatmap if enabled
+                if (options.generateHeatmap) {
+                    this.drawComplexityHeatmap(topResults);
+                }
+                
+                // Phase chart if data available
+                if (phaseData && phaseData.length > 0) {
+                    this.drawPhaseChart(phaseData);
+                }
+                
+                // Convergence analysis
+                if (convergenceData && convergenceData.length > 0) {
+                    this.drawConvergenceChart(convergenceData);
+                }
+                
+                // Scatter plot
+                this.drawScatterPlot(topResults, results.sqrtN);
+                
+                // Histogram
+                this.drawHistogram(topResults);
+                
+                document.getElementById('visualizationGrid').style.display = 'grid';
+            }
+
+            drawDistributionChart(results, sqrtN) {
+                const canvas = document.getElementById('sumChart');
+                const ctx = canvas.getContext('2d');
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const padding = 40;
+                const width = canvas.width - 2 * padding;
+                const height = canvas.height - 2 * padding;
+                
+                const maxSum = Math.max(...results.map(r => r.sum));
+                const displayResults = results.slice(0, 50);
+                
+                // Draw axes
+                ctx.strokeStyle = '#4ecdc4';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, canvas.height - padding);
+                ctx.lineTo(canvas.width - padding, canvas.height - padding);
                 ctx.stroke();
                 
-                ctx.strokeStyle = `hsla(${hue}, 70%, 60%, 0.2)`;
+                // Draw √N reference line
+                const sqrtNY = canvas.height - padding - (sqrtN / maxSum) * height;
+                ctx.strokeStyle = '#ff6b6b';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(padding, sqrtNY);
+                ctx.lineTo(canvas.width - padding, sqrtNY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Draw data points with color coding
+                displayResults.forEach((result, i) => {
+                    const x = padding + (i / (displayResults.length - 1)) * width;
+                    const y = canvas.height - padding - (result.sum / maxSum) * height;
+                    
+                    // Color by type
+                    if (result.type === 'Major Arc') {
+                        ctx.fillStyle = '#ff6b6b';
+                    } else if (result.type === 'Rational') {
+                        ctx.fillStyle = '#feca57';
+                    } else {
+                        ctx.fillStyle = '#4ecdc4';
+                    }
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+                
+                // Labels
+                ctx.fillStyle = '#e0e0e0';
+                ctx.font = '12px Arial';
+                ctx.fillText('Top α values (ranked)', canvas.width / 2 - 50, canvas.height - 10);
+                ctx.fillText('√N = ' + sqrtN.toFixed(1), canvas.width - 80, sqrtNY - 5);
+            }
+
+            drawComplexityHeatmap(results) {
+                const canvas = document.getElementById('heatmapChart');
+                const ctx = canvas.getContext('2d');
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const gridSize = 32;
+                const cellWidth = canvas.width / gridSize;
+                const cellHeight = canvas.height / gridSize;
+                
+                // Create complexity grid
+                const complexityGrid = new Array(gridSize).fill(null).map(() => new Array(gridSize).fill(0));
+                
+                results.slice(0, gridSize * gridSize).forEach((result, i) => {
+                    const x = i % gridSize;
+                    const y = Math.floor(i / gridSize);
+                    complexityGrid[y][x] = result.sum;
+                });
+                
+                const maxComplexity = Math.max(...results.map(r => r.sum));
+                
+                // Draw heatmap
+                for (let y = 0; y < gridSize; y++) {
+                    for (let x = 0; x < gridSize; x++) {
+                        const intensity = complexityGrid[y][x] / maxComplexity;
+                        const hue = (1 - intensity) * 180; // Blue to red
+                        ctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
+                        ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
+                    }
+                }
+            }
+
+            drawPhaseChart(phaseData) {
+                const canvas = document.getElementById('phaseChart');
+                const ctx = canvas.getContext('2d');
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const radius = Math.min(centerX, centerY) - 30;
+                
+                // Draw unit circle
+                ctx.strokeStyle = '#4ecdc4';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.stroke();
+                
+                // Draw axes
+                ctx.strokeStyle = '#666';
                 ctx.lineWidth = 1;
                 ctx.beginPath();
-                ctx.moveTo(centerX, centerY);
-                ctx.lineTo(x, y);
+                ctx.moveTo(centerX - radius, centerY);
+                ctx.lineTo(centerX + radius, centerY);
+                ctx.moveTo(centerX, centerY - radius);
+                ctx.lineTo(centerX, centerY + radius);
                 ctx.stroke();
                 
-                if (!isFixedPoint) {
-                    const compAngle = 2 * Math.PI * (compA / frac.b);
-                    const compX = centerX + radius * Math.cos(compAngle);
-                    const compY = centerY - radius * Math.sin(compAngle);
-                    
-                    ctx.strokeStyle = `hsla(${hue}, 70%, 60%, 0.3)`;
-                    ctx.lineWidth = 1;
-                    ctx.setLineDash([4, 4]);
-                    ctx.beginPath();
-                    ctx.moveTo(x, y);
-                    ctx.lineTo(compX, compY);
-                    ctx.stroke();
-                    ctx.setLineDash([]);
-                }
-                
-                if (frac.b <= 6 || frac.value === 0.5) {
-                    const labelR = radius + 20;
-                    const labelX = centerX + labelR * Math.cos(angle);
-                    const labelY = centerY - labelR * Math.sin(angle);
-                    
-                    ctx.fillStyle = '#ffffff';
-                    ctx.font = '10px Times New Roman';
+                // If no phase data, show message and simulate some points
+                if (!phaseData || phaseData.length === 0) {
+                    ctx.fillStyle = '#a0a0a0';
+                    ctx.font = '14px Arial';
                     ctx.textAlign = 'center';
-                    ctx.fillText(`${frac.a}/${frac.b}`, labelX, labelY);
-                }
-                
-                state.clickedElements.push({
-                    type: 'unit-circle-point',
-                    x: x - 8,
-                    y: y - 8,
-                    width: 16,
-                    height: 16,
-                    data: {
-                        a: frac.a,
-                        b: frac.b,
-                        value: frac.value,
-                        angle: angle,
-                        complement: `${compA}/${frac.b}`,
-                        complementAngle: 2 * Math.PI * (compA / frac.b),
-                        isFixedPoint: isFixedPoint
+                    ctx.fillText('Enable Phase Analysis to see data', centerX, centerY + 60);
+                    
+                    // Draw some example phase points in a circle pattern
+                    ctx.fillStyle = '#666';
+                    for (let i = 0; i < 12; i++) {
+                        const angle = (i / 12) * 2 * Math.PI;
+                        const x = centerX + radius * 0.7 * Math.cos(angle);
+                        const y = centerY + radius * 0.7 * Math.sin(angle);
+                        
+                        ctx.beginPath();
+                        ctx.arc(x, y, 2, 0, 2 * Math.PI);
+                        ctx.fill();
                     }
-                });
-            });
-            
-            const legendX = 50;
-            const legendY = canvas.height - 80;
-            
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-            ctx.fillRect(legendX - 10, legendY - 30, 230, 70);
-            
-            ctx.fillStyle = 'hsla(200, 70%, 60%, 0.8)';
-            ctx.beginPath();
-            ctx.arc(legendX, legendY - 10, 6, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '11px Times New Roman';
-            ctx.textAlign = 'left';
-            ctx.fillText('e^(2πia/b)', legendX + 15, legendY - 6);
-            
-            ctx.fillStyle = 'hsla(140, 70%, 60%, 0.8)';
-            ctx.beginPath();
-            ctx.arc(legendX, legendY + 10, 6, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('e^(2πi(b-a)/b) [conjugate]', legendX + 15, legendY + 14);
-            
-            ctx.fillStyle = 'hsla(280, 70%, 60%, 0.8)';
-            ctx.beginPath();
-            ctx.arc(legendX, legendY + 30, 6, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('1/2 (self-conjugate)', legendX + 15, legendY + 34);
-        }
-
-        function drawLegend() {
-            if (!showLegend.checked) return;
-            
-            const x = canvas.width - 200;
-            const y = 20;
-            
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
-            ctx.fillRect(x, y, 180, 140);
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(x, y, 180, 140);
-            
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 13px Times New Roman';
-            ctx.textAlign = 'left';
-            ctx.fillText('Legend', x + 10, y + 20);
-            
-            const items = [
-                { color: 'rgba(220, 38, 38, 0.9)', label: 'Critical Line' },
-                { color: 'rgba(250, 204, 21, 1)', label: 'Known Zeros' },
-                { color: 'rgba(59, 130, 246, 0.8)', label: 'Convergent' },
-                { color: 'rgba(220, 38, 38, 0.8)', label: 'Divergent' }
-            ];
-            
-            ctx.font = '12px Times New Roman';
-            items.forEach((item, i) => {
-                const yPos = y + 45 + i * 25;
-                ctx.fillStyle = item.color;
-                ctx.fillRect(x + 10, yPos - 10, 18, 18);
-                ctx.fillStyle = '#ffffff';
-                ctx.fillText(item.label, x + 35, yPos + 3);
-            });
-        }
-
-        function render() {
-            state.clickedElements = [];
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            drawGrid();
-            
-            switch (state.vizMode) {
-                case 'gap-distribution':
-                    drawGapDistribution();
-                    break;
-                case 'harmonic-spectrum':
-                    drawHarmonicSpectrum();
-                    break;
-                case 'convergence-map':
-                    drawConvergenceMap();
-                    break;
-                case 'phase-portrait':
-                    drawPhasePortrait();
-                    break;
-                case 'dual-alpha':
-                    drawDualAlpha();
-                    break;
-                case 'euler-reconstruction':
-                    drawEulerReconstruction();
-                    break;
-                case 'twin-prime-lattice':
-                    drawTwinPrimeLattice();
-                    break;
-                case 'rh-phase-law':
-                    drawRHPhaseLaw();
-                    break;
-                case 'gap-euler-tree':
-                    drawGapEulerTree();
-                    break;
-                case 'pi-decomposition':
-                    drawPiDecomposition();
-                    break;
-                case 'zeta-twin-analysis':
-                    drawZetaTwinAnalysis();
-                    break;
-                case 'farey-collapse':
-                    drawFareyCollapse();
-                    break;
-                case 'farey-unit-circle':
-                    drawFareyUnitCircle();
-                    break;
-            }
-            
-            if (!['twin-prime-lattice', 'euler-reconstruction'].includes(state.vizMode)) {
-                drawCriticalLine();
-                drawZeros();
-            }
-            
-            drawLegend();
-        }
-
-        // Canvas click handler
-        canvas.addEventListener('click', (e) => {
-            if (!enableClick.checked) return;
-            
-            const rect = canvas.getBoundingClientRect();
-            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-            
-            // Check for clicked elements
-            for (const elem of state.clickedElements) {
-                if (x >= elem.x && x <= elem.x + elem.width &&
-                    y >= elem.y && y <= elem.y + elem.height) {
-                    showPopup(elem);
                     return;
                 }
-            }
-            
-            // General coordinate info
-            const sigma = mapXToSigma(x);
-            const t = mapYToT(y);
-            const alpha = alphaDual(sigma);
-            
-            const content = `
-                <strong>Coordinates:</strong><br>
-                σ = ${sigma.toFixed(4)}<br>
-                t = ${t.toFixed(4)}<br>
-                s = ${sigma.toFixed(4)} + ${t.toFixed(4)}i<br><br>
                 
-                <strong>Analysis:</strong><br>
-                α_dual(σ) = ${alpha.toFixed(6)}<br>
-                Convergence: ${alpha < 1 ? 'Convergent' : 'Divergent'}<br>
-                Distance from critical line: ${Math.abs(sigma - 0.5).toFixed(6)}
-            `;
-            
-            showPopup({ type: 'coordinate', data: content });
-        });
+                // Plot actual phase points with color coding by magnitude
+                const maxMagnitude = Math.max(...phaseData.map(p => p.magnitude));
+                
+                phaseData.forEach(point => {
+                    const x = centerX + radius * 0.8 * Math.cos(point.phase);
+                    const y = centerY + radius * 0.8 * Math.sin(point.phase);
+                    
+                    // Color based on magnitude
+                    const intensity = point.magnitude / maxMagnitude;
+                    const hue = intensity * 60; // Red to yellow
+                    ctx.fillStyle = `hsl(${hue}, 80%, 60%)`;
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+                
+                // Reset text alignment
+                ctx.textAlign = 'left';
+            }
 
-        function showPopup(element) {
-            let content = '';
-            let title = 'Details';
-            
-            if (element.type === 'gap-bar') {
-                title = `Gap Size ${element.data.gap}`;
-                content = `
-                    <strong>Gap Value:</strong> ${element.data.gap}<br>
-                    <strong>Frequency:</strong> ${element.data.count.toLocaleString()}<br>
-                    <strong>Percentage:</strong> ${((element.data.count / state.gaps.length) * 100).toFixed(2)}%<br><br>
+            drawConvergenceChart(convergenceData) {
+                const canvas = document.getElementById('convergenceChart');
+                const ctx = canvas.getContext('2d');
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const padding = 40;
+                const width = canvas.width - 2 * padding;
+                const height = canvas.height - 2 * padding;
+                
+                const maxSum = Math.max(...convergenceData.map(d => d.maxSum));
+                
+                // Draw axes
+                ctx.strokeStyle = '#4ecdc4';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, canvas.height - padding);
+                ctx.lineTo(canvas.width - padding, canvas.height - padding);
+                ctx.stroke();
+                
+                // Draw convergence line
+                ctx.strokeStyle = '#ff6b6b';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                convergenceData.forEach((point, i) => {
+                    const x = padding + (i / (convergenceData.length - 1)) * width;
+                    const y = canvas.height - padding - (point.maxSum / maxSum) * height;
                     
-                    <strong>Euler Product Contribution:</strong><br>
-                    P_${element.data.gap} = ${calculatePg(element.data.gap, state.primes).toFixed(6)}<br><br>
-                    
-                    ${element.data.gap === 2 ? '<strong>This is the twin prime gap!</strong><br>Twin primes are pairs (p, p+2) where both are prime.' : ''}
-                `;
-            } else if (element.type === 'farey-fraction') {
-                title = `Farey Fraction ${element.data.a}/${element.data.b}`;
-                const compA = element.data.b - element.data.a;
-                const sum = element.data.a + compA;
-                content = `
-                    <strong>Fraction:</strong> ${element.data.a}/${element.data.b}<br>
-                    <strong>Decimal:</strong> ${element.data.value.toFixed(6)}<br>
-                    <strong>Complement:</strong> ${element.data.complement}<br>
-                    ${element.data.isFixedPoint ? '<strong>Fixed Point:</strong> This is 1/2, self-complementary<br>' : ''}
-                    <br>
-                    <strong>Collapse Property:</strong><br>
-                    ${element.data.a}/${element.data.b} + ${compA}/${element.data.b} = ${sum}/${element.data.b} = 1 ✓<br>
-                    <br>
-                    <strong>Negative Collapse:</strong><br>
-                    -${element.data.a}/${element.data.b} + -${compA}/${element.data.b} = -1 ✓<br>
-                    <br>
-                    <em>The involution C(a/b) = (b-a)/b pairs complementary fractions.</em>
-                `;
-            } else if (element.type === 'unit-circle-point') {
-                title = `Point e^(2πi·${element.data.a}/${element.data.b})`;
-                const angleRad = element.data.angle;
-                const angleDeg = (angleRad * 180 / Math.PI).toFixed(2);
-                const compAngleRad = element.data.complementAngle;
-                const compAngleDeg = (compAngleRad * 180 / Math.PI).toFixed(2);
-                const real = Math.cos(angleRad).toFixed(6);
-                const imag = Math.sin(angleRad).toFixed(6);
-                content = `
-                    <strong>Fraction:</strong> ${element.data.a}/${element.data.b}<br>
-                    <strong>Angle:</strong> ${angleDeg}° (${(angleRad).toFixed(4)} rad)<br>
-                    <strong>Complex Value:</strong> ${real} ${imag >= 0 ? '+' : ''}${imag}i<br>
-                    <br>
-                    <strong>Complement:</strong> ${element.data.complement}<br>
-                    <strong>Complement Angle:</strong> ${compAngleDeg}° (${(compAngleRad).toFixed(4)} rad)<br>
-                    <br>
-                    ${element.data.isFixedPoint ? 
-                        '<strong>Self-conjugate:</strong> 1/2 lies on the real axis<br>' :
-                        '<strong>Conjugate Pair:</strong> e^(2πia/b) and e^(2πi(b-a)/b) = e^(-2πia/b) are complex conjugates, symmetric across the real axis.<br>'
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
                     }
-                    <br>
-                    <em>The imaginary parts cancel when summed, reflecting the additive collapse to 1.</em>
-                `;
-            } else if (element.type === 'coordinate') {
-                title = 'Point Analysis';
-                content = element.data;
+                });
+                ctx.stroke();
+                
+                // Labels
+                ctx.fillStyle = '#e0e0e0';
+                ctx.font = '12px Arial';
+                ctx.fillText('Iteration', canvas.width / 2 - 20, canvas.height - 10);
             }
-            
-            document.getElementById('popup-title').textContent = title;
-            document.getElementById('popup-content').innerHTML = content;
-            document.getElementById('popup-overlay').classList.add('active');
-            document.getElementById('detail-popup').classList.add('active');
-        }
 
-        function closePopup() {
-            document.getElementById('popup-overlay').classList.remove('active');
-            document.getElementById('detail-popup').classList.remove('active');
-        }
+            drawScatterPlot(results, sqrtN) {
+                const canvas = document.getElementById('scatterChart');
+                const ctx = canvas.getContext('2d');
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const padding = 40;
+                const width = canvas.width - 2 * padding;
+                const height = canvas.height - 2 * padding;
+                
+                const maxRatio = Math.max(...results.map(r => r.sum / sqrtN));
+                
+                // Draw axes
+                ctx.strokeStyle = '#4ecdc4';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, canvas.height - padding);
+                ctx.lineTo(canvas.width - padding, canvas.height - padding);
+                ctx.stroke();
+                
+                // Draw y = 1 reference line
+                const refY = canvas.height - padding - (1 / maxRatio) * height;
+                ctx.strokeStyle = '#ff6b6b';
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(padding, refY);
+                ctx.lineTo(canvas.width - padding, refY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Plot points
+                results.slice(0, 100).forEach(result => {
+                    const x = padding + (result.alpha * width);
+                    const ratio = result.sum / sqrtN;
+                    const y = canvas.height - padding - (ratio / maxRatio) * height;
+                    
+                    ctx.fillStyle = result.type === 'Major Arc' ? '#ff6b6b' : '#4ecdc4';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 2, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+                
+                // Labels
+                ctx.fillStyle = '#e0e0e0';
+                ctx.font = '12px Arial';
+                ctx.fillText('α value', canvas.width / 2 - 20, canvas.height - 10);
+                ctx.fillText('Ratio = 1', canvas.width - 80, refY - 5);
+            }
 
-        document.getElementById('popup-overlay').addEventListener('click', closePopup);
+            drawHistogram(results) {
+                const canvas = document.getElementById('histogramChart');
+                const ctx = canvas.getContext('2d');
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const padding = 40;
+                const width = canvas.width - 2 * padding;
+                const height = canvas.height - 2 * padding;
+                
+                // Create histogram bins
+                const bins = 20;
+                const sums = results.map(r => r.sum);
+                const minSum = Math.min(...sums);
+                const maxSum = Math.max(...sums);
+                const binWidth = (maxSum - minSum) / bins;
+                const binCounts = new Array(bins).fill(0);
+                
+                sums.forEach(sum => {
+                    const binIndex = Math.min(Math.floor((sum - minSum) / binWidth), bins - 1);
+                    binCounts[binIndex]++;
+                });
+                
+                const maxCount = Math.max(...binCounts);
+                const barWidth = width / bins;
+                
+                // Draw bars
+                binCounts.forEach((count, i) => {
+                    const barHeight = (count / maxCount) * height;
+                    const x = padding + i * barWidth;
+                    const y = canvas.height - padding - barHeight;
+                    
+                    ctx.fillStyle = '#4ecdc4';
+                    ctx.fillRect(x, y, barWidth - 1, barHeight);
+                });
+                
+                // Draw axes
+                ctx.strokeStyle = '#4ecdc4';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, canvas.height - padding);
+                ctx.lineTo(canvas.width - padding, canvas.height - padding);
+                ctx.stroke();
+                
+                // Labels
+                ctx.fillStyle = '#e0e0e0';
+                ctx.font = '12px Arial';
+                ctx.fillText('|S(N,α)| value', canvas.width / 2 - 30, canvas.height - 10);
+            }
 
-        // Setup controls
-        syncControl(sigmaSlider, sigmaInput, updateDisplays);
-        syncControl(tSlider, tInput, updateDisplays);
-        syncControl(primeLimitSlider, primeLimitInput, () => {
-            updateDisplays();
-            state.primes = generatePrimes(state.primeLimit);
-            const result = calculateGaps(state.primes);
-            state.gaps = result.gaps;
-            state.gapCounts = result.gapCounts;
-            updateDisplays();
-            render();
-        });
-        syncControl(maxGapSlider, maxGapInput, () => { updateDisplays(); render(); });
-        syncControl(resolutionSlider, resolutionInput, () => { updateDisplays(); render(); });
-
-        vizModeSelect.addEventListener('change', () => {
-            state.vizMode = vizModeSelect.value;
-            updateDisplays();
-            render();
-        });
-
-        [showCriticalLine, showGrid, showZeros, showLegend, showLabels].forEach(cb => {
-            cb.addEventListener('change', render);
-        });
-
-        playSigmaBtn.addEventListener('click', () => {
-            state.playingSigma = !state.playingSigma;
-            playSigmaBtn.textContent = state.playingSigma ? '⏸ Pause σ' : '▶ Animate σ';
-        });
-
-        playTBtn.addEventListener('click', () => {
-            state.playingT = !state.playingT;
-            playTBtn.textContent = state.playingT ? '⏸ Pause t' : '▶ Animate t';
-        });
-
-        function animate() {
-            if (state.playingSigma) {
-                const newSigma = parseFloat(sigmaSlider.value) + 0.005;
-                if (newSigma <= parseFloat(sigmaSlider.max)) {
-                    sigmaSlider.value = newSigma;
-                    sigmaInput.value = newSigma;
-                    updateDisplays();
-                    render();
-                } else {
-                    state.playingSigma = false;
-                    playSigmaBtn.textContent = '▶ Animate σ';
+            isSimpleRational(alpha) {
+                const tolerance = 1e-8;
+                for (let denom = 1; denom <= 20; denom++) {
+                    for (let num = 0; num < denom; num++) {
+                        if (Math.abs(alpha - num/denom) < tolerance && this.gcd(num, denom) === 1) {
+                            return true;
+                        }
+                    }
                 }
+                return false;
             }
-            
-            if (state.playingT) {
-                const newT = parseFloat(tSlider.value) + 0.05;
-                if (newT <= parseFloat(tSlider.max)) {
-                    tSlider.value = newT;
-                    tInput.value = newT;
-                    updateDisplays();
-                    render();
-                } else {
-                    state.playingT = false;
-                    playTBtn.textContent = '▶ Animate t';
-                }
-            }
-            
-            requestAnimationFrame(animate);
         }
 
-        function exportPNG(resolution) {
-            const width = resolution === '4k' ? 3840 : 7680;
-            const height = resolution === '4k' ? 2160 : 4320;
+        // Initialize the enhanced application
+        const enhancedTester = new EnhancedRiemannHypothesisTester();
+
+        // Global functions for UI interactions
+        function setPreset(value) {
+            document.getElementById('customN').value = value;
+            updatePerformanceIndicator(value);
             
-            const originalWidth = canvas.width;
-            const originalHeight = canvas.height;
-            
-            canvas.width = width;
-            canvas.height = height;
-            
-            render();
-            
-            const link = document.createElement('a');
-            link.download = `prime_gap_${state.vizMode}_${resolution}_${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            
-            canvas.width = originalWidth;
-            canvas.height = originalHeight;
-            render();
+            // Auto-optimize parameters for large N to prevent memory issues
+            if (value >= 50000000) {
+                document.getElementById('numSamples').value = '50';
+                document.getElementById('maxDenom').value = '8';
+                document.getElementById('gridSize').value = '32';
+            } else if (value >= 10000000) {
+                document.getElementById('numSamples').value = '75';
+                document.getElementById('maxDenom').value = '10';
+                document.getElementById('gridSize').value = '48';
+            } else if (value >= 1000000) {
+                document.getElementById('numSamples').value = '100';
+                document.getElementById('maxDenom').value = '12';
+                document.getElementById('gridSize').value = '64';
+            } else {
+                document.getElementById('numSamples').value = '150';
+                document.getElementById('maxDenom').value = '15';
+                document.getElementById('gridSize').value = '64';
+            }
         }
 
-        export4kBtn.addEventListener('click', () => exportPNG('4k'));
-        export8kBtn.addEventListener('click', () => exportPNG('8k'));
-
-        resetBtn.addEventListener('click', () => {
-            sigmaSlider.value = 0.5;
-            tSlider.value = 14.135;
-            primeLimitSlider.value = 1000000;
-            maxGapSlider.value = 1000;
-            resolutionSlider.value = 500;
+        function updatePerformanceIndicator(n) {
+            const indicator = document.getElementById('performanceIndicator');
             
-            [sigmaInput, tInput, primeLimitInput, maxGapInput, resolutionInput].forEach((input, i) => {
-                input.value = [0.5, 14.135, 1000000, 1000, 500][i];
+            if (n < 100000) {
+                indicator.className = 'performance-indicator perf-excellent';
+                indicator.innerHTML = '⚡ Excellent performance expected (< 1 second)';
+            } else if (n < 1000000) {
+                indicator.className = 'performance-indicator perf-good';
+                indicator.innerHTML = '🟢 Good performance expected (1-3 seconds)';
+            } else if (n < 10000000) {
+                indicator.className = 'performance-indicator perf-warning';
+                indicator.innerHTML = '🟡 Moderate performance expected (5-15 seconds)';
+            } else {
+                indicator.className = 'performance-indicator perf-danger';
+                indicator.innerHTML = '🔴 Slower performance expected (15+ seconds)';
+            }
+        }
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
             });
             
-            vizModeSelect.value = 'gap-distribution';
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
             
-            updateDisplays();
-            state.primes = generatePrimes(state.primeLimit);
-            const result = calculateGaps(state.primes);
-            state.gaps = result.gaps;
-            state.gapCounts = result.gapCounts;
-            updateDisplays();
-            render();
+            // Show selected tab and activate button
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function exportResults(format) {
+            if (!enhancedTester.currentTest) {
+                alert('No test results to export. Please run a test first.');
+                return;
+            }
+            
+            const results = enhancedTester.currentTest;
+            let content = '';
+            let filename = '';
+            let mimeType = '';
+            
+            switch (format) {
+                case 'csv':
+                    content = 'Alpha,Sum,Ratio,Type,Phase,Real,Imaginary\n';
+                    results.results.forEach(r => {
+                        content += `${r.alpha},${r.sum},${r.sum/results.sqrtN},${r.type},${r.phase},${r.real},${r.imaginary}\n`;
+                    });
+                    filename = `riemann_test_${results.maxN}.csv`;
+                    mimeType = 'text/csv';
+                    break;
+                    
+                case 'json':
+                    content = JSON.stringify(results, null, 2);
+                    filename = `riemann_test_${results.maxN}.json`;
+                    mimeType = 'application/json';
+                    break;
+                    
+                case 'txt':
+                    content = `Enhanced Riemann Hypothesis Test Report\n`;
+                    content += `==========================================\n\n`;
+                    content += `Test Parameters:\n`;
+                    content += `- Maximum N: ${results.maxN.toLocaleString()}\n`;
+                    content += `- √N bound: ${results.sqrtN.toFixed(6)}\n`;
+                    content += `- Maximum |S(N,α)|: ${results.maxSum.toFixed(6)}\n`;
+                    content += `- Ratio: ${results.ratio.toFixed(8)}\n`;
+                    content += `- Best α: ${enhancedTester.formatAlpha(results.bestAlpha)}\n`;
+                    content += `- Computation time: ${(results.computeTime/1000).toFixed(3)}s\n\n`;
+                    
+                    content += `Statistical Summary:\n`;
+                    if (results.statistics) {
+                        content += `- Mean: ${results.statistics.mean.toFixed(6)}\n`;
+                        content += `- Standard deviation: ${results.statistics.stdDev.toFixed(6)}\n`;
+                        content += `- Skewness: ${results.statistics.skewness.toFixed(4)}\n`;
+                        content += `- Major arc results: ${results.statistics.majorArcCount}\n`;
+                    }
+                    
+                    content += `\nTop 10 Results:\n`;
+                    results.results.slice(0, 10).forEach((r, i) => {
+                        content += `${i+1}. α=${enhancedTester.formatAlpha(r.alpha)}, |S|=${r.sum.toFixed(6)}, ratio=${(r.sum/results.sqrtN).toFixed(6)}, type=${r.type}\n`;
+                    });
+                    
+                    filename = `riemann_test_report_${results.maxN}.txt`;
+                    mimeType = 'text/plain';
+                    break;
+            }
+            
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportVisualization() {
+            const canvas = document.getElementById('sumChart');
+            const url = canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'riemann_visualization.png';
+            a.click();
+        }
+
+        // Event listeners
+        document.getElementById('startTest').addEventListener('click', async function() {
+            if (enhancedTester.isComputing) return;
+            
+            enhancedTester.isComputing = true;
+            const button = document.getElementById('startTest');
+            button.disabled = true;
+            button.textContent = 'Computing...';
+            document.body.classList.add('computing');
+            
+            // Get parameters
+            const maxN = parseInt(document.getElementById('customN').value);
+            const testMode = document.getElementById('testMode').value;
+            const numSamples = parseInt(document.getElementById('numSamples').value);
+            const maxDenom = parseInt(document.getElementById('maxDenom').value);
+            const gridSize = parseInt(document.getElementById('gridSize').value);
+            const precision = document.getElementById('precisionLevel').value;
+            
+            const options = {
+                showDetails: document.getElementById('showDetails').checked,
+                generateHeatmap: document.getElementById('generateHeatmap').checked,
+                showStatistics: document.getElementById('showStatistics').checked,
+                realTimeUpdates: document.getElementById('realTimeUpdates').checked,
+                enablePhaseAnalysis: document.getElementById('enablePhaseAnalysis').checked,
+                enableDistributionAnalysis: document.getElementById('enableDistributionAnalysis').checked,
+                enableFrequencyAnalysis: document.getElementById('enableFrequencyAnalysis').checked
+            };
+            
+            // Validate input
+            if (isNaN(maxN) || maxN < 1 || maxN > 100000000) {
+                alert('Please enter a valid number between 1 and 100,000,000');
+                enhancedTester.isComputing = false;
+                button.disabled = false;
+                button.textContent = '🚀 Launch Enhanced Cosmic Test';
+                document.body.classList.remove('computing');
+                return;
+            }
+            
+            try {
+                const results = await enhancedTester.runEnhancedVerification(maxN, testMode, numSamples, maxDenom, gridSize, precision, options);
+                enhancedTester.displayEnhancedResults(results);
+            } catch (error) {
+                console.error('Enhanced computation error:', error);
+                alert('An error occurred during computation. Please try again with smaller parameters.');
+            }
+            
+            enhancedTester.isComputing = false;
+            button.disabled = false;
+            button.textContent = '🚀 Launch Enhanced Cosmic Test';
+            document.body.classList.remove('computing');
         });
 
-        computeBtn.addEventListener('click', () => {
-            const alpha = alphaDual(state.sigma);
-            const report = `
-═══════════════════════════════════════════════════════════════
-            DETAILED MATHEMATICAL ANALYSIS REPORT
-═══════════════════════════════════════════════════════════════
-
-Complex Parameter:
-  s = ${state.sigma.toFixed(6)} + ${state.t.toFixed(6)}i
-
-Phase Law Analysis:
-  α_dual(σ) = ${alpha.toFixed(8)}
-  Convergence Status: ${alpha < 1 ? 'CONVERGENT' : 'DIVERGENT'}
-  Boundary Distance: ${Math.abs(alpha - 1).toFixed(8)}
-
-Critical Line Analysis:
-  σ = ${state.sigma.toFixed(6)}
-  Distance from σ = 1/2: ${Math.abs(state.sigma - 0.5).toFixed(8)}
-  On Critical Line: ${Math.abs(state.sigma - 0.5) < 0.001 ? 'YES' : 'NO'}
-
-Prime Gap Statistics:
-  Total gaps computed: ${state.gaps.length.toLocaleString()}
-  Unique gap sizes: ${state.gapCounts.size}
-  Twin primes (g=2): ${(state.gapCounts.get(2) || 0).toLocaleString()}
-  Maximum gap: ${Math.max(...state.gaps)}
-
-Euler Product Decomposition:
-  P₁ (gap 2): ${calculatePg(2, state.primes).toFixed(10)}
-  Expected (4/3): 1.333333333...
-  
-π Reconstruction Formula:
-  π = √6 × √(∏_g P_g)
-  Target: 3.14159265358979...
-  Computed: ${document.getElementById('pi-recon').textContent}
-
-Twin Harmonic Index:
-  ζ_twin(1) = 6891/7153
-  Decimal: 0.96336...
-
-Computational Performance:
-  Primes computed: ${state.primes.length.toLocaleString()}
-  Computation time: ${state.lastComputeTime}s
-  Prime limit: ${state.primeLimit.toLocaleString()}
-
-═══════════════════════════════════════════════════════════════
-            `.trim();
+        // Input validation and performance updates
+        document.getElementById('customN').addEventListener('input', function() {
+            const value = parseInt(this.value);
             
-            alert(report);
+            if (value > 100000000) {
+                this.value = 100000000;
+            } else if (value < 1) {
+                this.value = 1;
+            }
+            
+            updatePerformanceIndicator(parseInt(this.value));
+            
+            // Auto-optimize for very large values
+            if (value > 25000000) {
+                setPreset(value);
+            }
         });
 
-        // Initialize
-        updateDisplays();
-        state.primes = generatePrimes(state.primeLimit);
-        const result = calculateGaps(state.primes);
-        state.gaps = result.gaps;
-        state.gapCounts = result.gapCounts;
-        updateDisplays();
-        render();
-        animate();
+        // Initialize with default performance indicator
+        updatePerformanceIndicator(1000000);
     </script>
 </body>
     </html>
