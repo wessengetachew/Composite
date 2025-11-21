@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Farey Chandelier - Modular Rings</title>
+    <title>Composite Channel Projection Corollary</title>
     <style>
         * {
             margin: 0;
@@ -15,51 +15,132 @@
             font-family: 'Segoe UI', Arial, sans-serif;
             background: #000000;
             color: #ffffff;
-            overflow: hidden;
+            overflow-x: hidden;
         }
         
-        #canvas3d {
-            display: block;
-            width: 100vw;
-            height: 100vh;
-            cursor: grab;
+        .container {
+            max-width: 2560px;
+            margin: 0 auto;
+            padding: 15px;
         }
         
-        #canvas3d:active {
-            cursor: grabbing;
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+        }
+        
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+        
+        .subtitle {
+            font-size: 1.1em;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+        
+        .author {
+            font-size: 0.95em;
+            color: #00ffff;
+            margin-top: 10px;
+        }
+        
+        .repo-links {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 8px;
+        }
+        
+        .repo-links a {
+            color: #00aaff;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+        
+        .repo-links a:hover {
+            color: #00ffff;
+            text-decoration: underline;
+        }
+        
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 15px;
+        }
+        
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         
         .controls {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(10, 10, 10, 0.9);
-            padding: 20px;
+            background: #111111;
+            padding: 15px;
             border-radius: 8px;
             border: 1px solid #333;
-            max-width: 320px;
-            max-height: 90vh;
-            overflow-y: auto;
+        }
+        
+        .control-section {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .control-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            font-size: 1em;
+            margin-bottom: 8px;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
         }
         
         .control-group {
-            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
         
-        .control-group label {
-            display: block;
+        label {
+            font-weight: 600;
             font-size: 0.85em;
-            color: #00ffff;
-            margin-bottom: 5px;
-            font-weight: bold;
+            color: #cccccc;
+        }
+        
+        input[type="number"], input[type="text"], select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background: #222222;
+            color: #ffffff;
+            font-size: 0.9em;
         }
         
         input[type="range"] {
             width: 100%;
-            height: 4px;
+            height: 6px;
             background: #333;
             outline: none;
-            border-radius: 2px;
+            border-radius: 3px;
         }
         
         input[type="range"]::-webkit-slider-thumb {
@@ -80,27 +161,22 @@
             border: none;
         }
         
-        input[type="number"], select {
-            width: 100%;
-            padding: 6px;
-            background: #1a1a1a;
-            border: 1px solid #444;
-            color: white;
-            border-radius: 4px;
-            font-size: 0.9em;
+        .button-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
         }
         
         button {
-            width: 100%;
-            padding: 10px;
-            background: linear-gradient(135deg, #00ffff 0%, #0088ff 100%);
+            padding: 8px 14px;
             border: none;
             border-radius: 4px;
+            background: linear-gradient(135deg, #00ffff 0%, #0088ff 100%);
             color: #000;
+            font-size: 0.85em;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 5px;
-            font-size: 0.9em;
+            transition: all 0.2s;
         }
         
         button:hover {
@@ -108,35 +184,89 @@
             box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
         }
         
-        .slider-value {
-            float: right;
-            color: #ffaa00;
-            font-weight: normal;
+        button.preset-btn {
+            background: linear-gradient(135deg, #666 0%, #888 100%);
+            color: #fff;
+            padding: 6px 12px;
+            font-size: 0.8em;
+        }
+        
+        button.preset-btn:hover {
+            background: linear-gradient(135deg, #777 0%, #999 100%);
+        }
+        
+        .canvas-container {
+            background: #000000;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #333;
+            position: relative;
+            min-height: 600px;
+        }
+        
+        canvas {
+            border: 2px solid #333333;
+            border-radius: 4px;
+            background: #000000;
+            cursor: crosshair;
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         
         .info-box {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(10, 10, 10, 0.9);
+            background: #111111;
             padding: 15px;
             border-radius: 8px;
             border: 1px solid #333;
-            max-width: 300px;
-            font-size: 0.85em;
         }
         
         .info-box h3 {
             color: #00ffff;
-            margin-bottom: 8px;
-            font-size: 1em;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .stat-item {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #333;
+        }
+        
+        .stat-label {
+            font-size: 0.75em;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #00ffff;
         }
         
         .checkbox-group {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin: 5px 0;
+            gap: 6px;
         }
         
         input[type="checkbox"] {
@@ -145,182 +275,357 @@
             cursor: pointer;
         }
         
-        .section-title {
-            color: #00ffff;
-            font-size: 0.9em;
-            font-weight: bold;
-            margin: 15px 0 10px 0;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #333;
+        .tooltip {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            pointer-events: none;
+            z-index: 10000;
+            display: none;
+            max-width: 300px;
+            font-size: 0.85em;
+            line-height: 1.5;
+            border: 1px solid #00ffff;
         }
         
-        .preset-btn {
-            background: linear-gradient(135deg, #666 0%, #888 100%);
-            padding: 6px;
-            font-size: 0.8em;
-            margin: 2px;
+        .legend {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85em;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid white;
+            flex-shrink: 0;
+        }
+        
+        .slider-value {
             display: inline-block;
-            width: auto;
+            min-width: 50px;
+            text-align: right;
+            color: #00ffff;
+            font-weight: bold;
+        }
+        
+        .analysis-text {
+            font-size: 0.85em;
+            line-height: 1.6;
+            color: #ccc;
+        }
+        
+        .analysis-text strong {
+            color: #00ffff;
+        }
+        
+        .click-info {
+            background: #1a1a1a;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border-left: 3px solid #00ffff;
+            font-size: 0.85em;
+            line-height: 1.6;
+        }
+        
+        .export-section {
+            background: #0a0a0a;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+        
+        .export-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 1400px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .right-panel {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                display: grid;
+            }
         }
     </style>
 </head>
 <body>
-    <canvas id="canvas3d"></canvas>
-    
-    <div class="controls">
-        <h2 style="margin-bottom: 15px; color: #00ffff;">3D Farey Chandelier</h2>
+    <div class="container">
+        <header>
+            <h1>Composite Channel Projection Corollary</h1>
+            <div class="subtitle">Every composite modulus has reducible residues projecting onto simpler Farey channels</div>
+            <div class="author">by Wessen Getachew</div>
+            <div class="repo-links">
+                For more projects: 
+                <a href="https://github.com/wessengetachew/Ethiopian" target="_blank">Epsilon</a> |
+                <a href="https://github.com/wessengetachew/GCD" target="_blank">GCD</a> |
+                <a href="https://github.com/wessengetachew/Primes" target="_blank">Primes</a> |
+                <a href="https://github.com/wessengetachew/Farey" target="_blank">Farey</a> |
+                <a href="https://github.com/wessengetachew/PI" target="_blank">PI</a>
+            </div>
+        </header>
         
-        <div class="control-group">
-            <label>Modulus (M): <span class="slider-value" id="modulusValue">12</span></label>
-            <input type="range" id="modulusSlider" min="4" max="100" value="12">
-            <input type="number" id="modulusInput" min="2" max="200" value="12" style="margin-top: 5px;">
+        <div class="main-layout">
+            <div class="left-panel">
+                <div class="controls">
+                    <div class="control-section">
+                        <div class="section-title">Modulus Selection</div>
+                        <div class="control-grid">
+                            <div class="control-group">
+                                <label>Modulus (M): <span class="slider-value" id="modulusValue">30</span></label>
+                                <input type="range" id="modulusSlider" min="4" max="500" value="30">
+                            </div>
+                            <div class="control-group">
+                                <label for="modulusInput">Custom Input (2-5000):</label>
+                                <input type="number" id="modulusInput" min="2" max="5000" value="30">
+                            </div>
+                        </div>
+                        <div class="button-group" style="margin-top: 8px;">
+                            <button class="preset-btn" onclick="setModulus(6)">M=6</button>
+                            <button class="preset-btn" onclick="setModulus(12)">M=12</button>
+                            <button class="preset-btn" onclick="setModulus(30)">M=30</button>
+                            <button class="preset-btn" onclick="setModulus(60)">M=60</button>
+                            <button class="preset-btn" onclick="setModulus(210)">M=210</button>
+                            <button class="preset-btn" onclick="setModulus(2310)">M=2310</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-section">
+                        <div class="section-title">Display Mode</div>
+                        <div class="control-grid">
+                            <div class="control-group">
+                                <label for="displayMode">View Mode:</label>
+                                <select id="displayMode">
+                                    <option value="projection">Projection Lines</option>
+                                    <option value="ring">Ring View</option>
+                                    <option value="coprime-only">Coprime Only</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="colorScheme">Color Scheme:</label>
+                                <select id="colorScheme">
+                                    <option value="channel">Channel Type</option>
+                                    <option value="gcd">GCD Value</option>
+                                    <option value="spf">Smallest Prime Factor</option>
+                                    <option value="lpf">Largest Prime Factor</option>
+                                    <option value="depth">Channel Depth (M')</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control-grid" style="margin-top: 8px;">
+                            <div class="control-group checkbox-group">
+                                <input type="checkbox" id="showFareyLines" checked>
+                                <label for="showFareyLines">Show Farey Lines</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="control-section">
+                        <div class="section-title">Visual Controls</div>
+                        <div class="control-grid">
+                            <div class="control-group">
+                                <label>Point Size: <span class="slider-value" id="pointSizeValue">6</span></label>
+                                <input type="range" id="pointSize" min="3" max="12" value="6">
+                            </div>
+                            <div class="control-group">
+                                <label>Projection Opacity: <span class="slider-value" id="opacityValue">0.15</span></label>
+                                <input type="range" id="projectionOpacity" min="5" max="100" value="15">
+                            </div>
+                            <div class="control-group">
+                                <label>Zoom: <span class="slider-value" id="zoomValue">100%</span></label>
+                                <input type="range" id="zoom" min="50" max="300" value="100">
+                            </div>
+                            <div class="control-group">
+                                <label>Rotation: <span class="slider-value" id="rotationValue">0°</span></label>
+                                <input type="range" id="rotation" min="0" max="360" value="0">
+                            </div>
+                        </div>
+                        <div class="control-grid" style="margin-top: 8px;">
+                            <div class="control-group checkbox-group">
+                                <input type="checkbox" id="showChannelLabels" checked>
+                                <label for="showChannelLabels">Show Channel Labels</label>
+                            </div>
+                            <div class="control-group checkbox-group">
+                                <input type="checkbox" id="showMultiplicity">
+                                <label for="showMultiplicity">Show Multiplicity (d)</label>
+                            </div>
+                            <div class="control-group checkbox-group">
+                                <input type="checkbox" id="animateRotation">
+                                <label for="animateRotation">Animate Rotation</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="control-section">
+                        <div class="section-title">Coprime Sweep Animation</div>
+                        <div class="control-grid">
+                            <div class="control-group">
+                                <label>Speed: <span class="slider-value" id="sweepSpeedValue">1.0</span></label>
+                                <input type="range" id="sweepSpeed" min="10" max="500" value="100">
+                            </div>
+                            <div class="control-group">
+                                <label>Current: <span class="slider-value" id="currentCoprime">-</span></label>
+                            </div>
+                        </div>
+                        <div class="button-group" style="margin-top: 8px;">
+                            <button id="playSweepBtn" onclick="toggleSweep()">Play Sweep</button>
+                            <button onclick="resetSweep()">Reset</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-section">
+                        <div class="section-title">Export Options</div>
+                        <div class="export-section">
+                            <div class="control-group">
+                                <label for="exportTitle">Export Title:</label>
+                                <input type="text" id="exportTitle" value="Composite Channel Projection">
+                            </div>
+                            <div class="control-grid" style="margin-top: 8px;">
+                                <div class="control-group checkbox-group">
+                                    <input type="checkbox" id="includeLegend" checked>
+                                    <label for="includeLegend">Include Legend</label>
+                                </div>
+                                <div class="control-group checkbox-group">
+                                    <input type="checkbox" id="includeStats" checked>
+                                    <label for="includeStats">Include Stats</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="button-group" style="margin-top: 8px;">
+                            <button onclick="exportPNG('1080p')">PNG (1080p)</button>
+                            <button onclick="exportPNG('4K')">PNG (4K)</button>
+                            <button onclick="exportPNG('8K')">PNG (8K)</button>
+                            <button onclick="exportCSV()">CSV Data</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-section">
+                        <div class="button-group">
+                            <button onclick="updateVisualization()">Update View</button>
+                            <button onclick="randomComposite()">Random Composite</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="canvas-container">
+                    <canvas id="mainCanvas" width="1400" height="1400"></canvas>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="info-box">
+                    <h3>Configuration</h3>
+                    <div class="analysis-text">
+                        <strong>Modulus M = <span id="configM">30</span></strong><br>
+                        <span id="configPrime">Prime Factorization: 2×3×5</span><br>
+                        <span id="configDisplay">Display Mode: Projection Lines</span><br>
+                        <span id="configColor">Color Scheme: Channel Type</span>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h3>Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">φ(M)</div>
+                            <div class="stat-value" id="statPhi">8</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Reducible Residues</div>
+                            <div class="stat-value" id="statReducible">22</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Reducibility Ratio</div>
+                            <div class="stat-value" id="statRatio">73.3%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Farey Channels</div>
+                            <div class="stat-value" id="statChannels">7</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h3>Color Key</h3>
+                    <div class="legend" id="colorLegend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #00ffff;"></div>
+                            <span>Cyan = Irreducible (gcd=1)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ff0066;"></div>
+                            <span>Red = Reducible (gcd>1)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ffd700;"></div>
+                            <span>Gold = Farey Channels & Lines</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ffffff;"></div>
+                            <span>White = Outer ring (M circle)</span>
+                        </div>
+                    </div>
+                    <div class="analysis-text" style="margin-top: 10px; font-size: 0.8em;">
+                        <strong>Farey Lines:</strong> Curved gold lines connect each reducible residue r/M on the outer ring to its reduced form r'/M' on the corresponding inner channel ring.
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h3>Analysis</h3>
+                    <div class="analysis-text" id="analysisText">
+                        Click Update to see analysis...
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h3>Key Result</h3>
+                    <div class="analysis-text">
+                        Every composite M has reducible residues projecting onto simpler Farey channels. The number projecting to channel M' is exactly <strong>d = M/M'</strong> (multiplicity).
+                        <br><br>
+                        <strong>Note:</strong> r=0 (with gcd(0,M)=M) is always placed at the top of the circle (12 o'clock position). All points are plotted at angle <strong>θ = 2πr/M</strong> measured clockwise from the top.
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h3>Click Interaction</h3>
+                    <div class="click-info" id="clickInfo">
+                        Click any point to see detailed projection information...
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px;">
-            <button class="preset-btn" onclick="setModulus(6)">M=6</button>
-            <button class="preset-btn" onclick="setModulus(12)">M=12</button>
-            <button class="preset-btn" onclick="setModulus(24)">M=24</button>
-            <button class="preset-btn" onclick="setModulus(30)">M=30</button>
-            <button class="preset-btn" onclick="setModulus(60)">M=60</button>
-        </div>
-        
-        <div class="section-title">3D View Controls</div>
-        
-        <div class="control-group">
-            <label>Camera Distance: <span class="slider-value" id="cameraDistValue">3.5</span></label>
-            <input type="range" id="cameraDist" min="20" max="80" value="35">
-        </div>
-        
-        <div class="control-group">
-            <label>Vertical Spacing: <span class="slider-value" id="vertSpacingValue">0.8</span></label>
-            <input type="range" id="vertSpacing" min="20" max="200" value="80">
-        </div>
-        
-        <div class="control-group">
-            <label>Ring Size Scale: <span class="slider-value" id="ringSizeValue">1.0</span></label>
-            <input type="range" id="ringSize" min="30" max="150" value="100">
-        </div>
-        
-        <div class="control-group">
-            <label>Perspective: <span class="slider-value" id="perspectiveValue">800</span></label>
-            <input type="range" id="perspective" min="400" max="2000" value="800">
-        </div>
-        
-        <div class="section-title">Rotation</div>
-        
-        <div class="control-group">
-            <label>X-Axis Tilt: <span class="slider-value" id="rotXValue">20°</span></label>
-            <input type="range" id="rotX" min="-90" max="90" value="20">
-        </div>
-        
-        <div class="control-group">
-            <label>Y-Axis Spin: <span class="slider-value" id="rotYValue">0°</span></label>
-            <input type="range" id="rotY" min="0" max="360" value="0">
-        </div>
-        
-        <div class="control-group">
-            <label>Z-Axis Roll: <span class="slider-value" id="rotZValue">0°</span></label>
-            <input type="range" id="rotZ" min="-90" max="90" value="0">
-        </div>
-        
-        <div class="checkbox-group">
-            <input type="checkbox" id="autoRotate">
-            <label for="autoRotate">Auto-Rotate</label>
-        </div>
-        
-        <div class="section-title">Display</div>
-        
-        <div class="checkbox-group">
-            <input type="checkbox" id="showFareyChains" checked>
-            <label for="showFareyChains">Farey Chains (Gold)</label>
-        </div>
-        
-        <div class="checkbox-group">
-            <input type="checkbox" id="showZeroChains" checked>
-            <label for="showZeroChains">r=0 Chains (Red)</label>
-        </div>
-        
-        <div class="checkbox-group">
-            <input type="checkbox" id="showPoints" checked>
-            <label for="showPoints">Points</label>
-        </div>
-        
-        <div class="checkbox-group">
-            <input type="checkbox" id="showRings" checked>
-            <label for="showRings">Ring Circles</label>
-        </div>
-        
-        <div class="control-group">
-            <label>Point Size: <span class="slider-value" id="pointSizeValue">4</span></label>
-            <input type="range" id="pointSize" min="1" max="15" value="4">
-        </div>
-        
-        <div class="control-group">
-            <label>Chain Opacity: <span class="slider-value" id="chainOpacityValue">0.6</span></label>
-            <input type="range" id="chainOpacity" min="10" max="100" value="60">
-        </div>
-        
-        <div class="control-group">
-            <label for="colorScheme">Color Scheme:</label>
-            <select id="colorScheme">
-                <option value="coprime">Coprime vs Reducible</option>
-                <option value="gcd">GCD Value</option>
-                <option value="ring">By Ring Level</option>
-                <option value="rainbow">Rainbow</option>
-            </select>
-        </div>
-        
-        <button onclick="resetView()">Reset View</button>
     </div>
     
-    <div class="info-box">
-        <h3>3D Chandelier View</h3>
-        <p style="margin-bottom: 8px;">
-            <strong>M = <span id="infoM">12</span></strong> (<span id="infoType">COMPOSITE</span>)
-        </p>
-        <p style="font-size: 0.8em; line-height: 1.4;">
-            φ(M) = <span id="infoPhi">4</span><br>
-            Rings: <span id="infoRings">6</span><br>
-            Points: <span id="infoPoints">28</span><br>
-            <br>
-            <strong>Controls:</strong><br>
-            • Drag to rotate<br>
-            • Scroll to zoom<br>
-            • M'=1 at bottom<br>
-            • M at top
-        </p>
-    </div>
+    <div class="tooltip" id="tooltip"></div>
     
     <script>
-        const canvas = document.getElementById('canvas3d');
+        const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
+        const tooltip = document.getElementById('tooltip');
+        
         let currentData = null;
         let animationFrame = null;
+        let sweepFrame = null;
+        let sweepIndex = 0;
+        let sweepActive = false;
         
-        // Camera state
-        let camera = {
-            distance: 3.5,
-            rotX: 20,
-            rotY: 0,
-            rotZ: 0,
-            perspective: 800
-        };
-        
-        // Mouse interaction
-        let isDragging = false;
-        let lastMouseX = 0;
-        let lastMouseY = 0;
-        
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            if (currentData) render();
-        }
-        
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-        
-        // Math functions
         function gcd(a, b) {
             while (b !== 0) [a, b] = [b, a % b];
             return a;
@@ -339,14 +644,17 @@
             return Math.floor(result);
         }
         
-        function isPrime(n) {
-            if (n < 2) return false;
-            if (n === 2) return true;
-            if (n % 2 === 0) return false;
-            for (let i = 3; i <= Math.sqrt(n); i += 2) {
-                if (n % i === 0) return false;
+        function primeFactorization(n) {
+            const factors = {};
+            let temp = n;
+            for (let i = 2; i * i <= temp; i++) {
+                while (temp % i === 0) {
+                    factors[i] = (factors[i] || 0) + 1;
+                    temp /= i;
+                }
             }
-            return true;
+            if (temp > 1) factors[temp] = 1;
+            return Object.entries(factors).map(([p, e]) => e > 1 ? `${p}^${e}` : p).join('×') || n.toString();
         }
         
         function getDivisors(n) {
@@ -357,6 +665,37 @@
             return divisors;
         }
         
+        function smallestPrimeFactor(n) {
+            if (n <= 1) return 1;
+            for (let i = 2; i * i <= n; i++) {
+                if (n % i === 0) return i;
+            }
+            return n;
+        }
+        
+        function largestPrimeFactor(n) {
+            if (n <= 1) return 1;
+            let largest = 1;
+            for (let i = 2; i * i <= n; i++) {
+                while (n % i === 0) {
+                    largest = i;
+                    n /= i;
+                }
+            }
+            if (n > 1) largest = n;
+            return largest;
+        }
+        
+        function isPrime(n) {
+            if (n < 2) return false;
+            if (n === 2) return true;
+            if (n % 2 === 0) return false;
+            for (let i = 3; i <= Math.sqrt(n); i += 2) {
+                if (n % i === 0) return false;
+            }
+            return true;
+        }
+        
         function lowestTerms(r, m) {
             if (r === 0) return [0, 1];
             const d = gcd(r, m);
@@ -364,242 +703,279 @@
         }
         
         function computeData(M) {
-            const divisors = getDivisors(M).sort((a, b) => a - b); // Ascending: 1, 2, ..., M
             const data = {
                 M: M,
                 isPrime: isPrime(M),
-                divisors: divisors,
                 phi: eulerPhi(M),
-                rings: new Map(),
-                allPoints: []
+                factorization: primeFactorization(M),
+                divisors: getDivisors(M),
+                residues: [],
+                coprimes: [],
+                channels: new Map(),
+                channelMultiplicity: new Map()
             };
             
-            divisors.forEach((m, levelIndex) => {
-                const ring = [];
-                for (let r = 0; r < m; r++) {
-                    const d = gcd(r, m);
-                    const [rRed, mRed] = lowestTerms(r, m);
-                    
-                    const pt = {
-                        r: r,
-                        M: m,
-                        level: levelIndex, // 0 = bottom (M'=1), max = top (M)
-                        d: d,
-                        rRed: rRed,
-                        mRed: mRed,
-                        isIrreducible: (d === 1 || r === 0),
-                        theta: (2 * Math.PI * r) / m
-                    };
-                    
-                    ring.push(pt);
-                    data.allPoints.push(pt);
+            for (let r = 0; r < M; r++) {
+                const d = gcd(r, M);
+                const [rRed, mRed] = lowestTerms(r, M);
+                const isIrreducible = (d === 1);
+                
+                const pt = {
+                    r: r,
+                    d: d,
+                    rRed: rRed,
+                    mRed: mRed,
+                    isIrreducible: isIrreducible,
+                    theta: (2 * Math.PI * r) / M - Math.PI / 2, // r=0 at top (12 o'clock)
+                    spf: smallestPrimeFactor(d),
+                    lpf: largestPrimeFactor(d)
+                };
+                
+                data.residues.push(pt);
+                if (isIrreducible && r !== 0) data.coprimes.push(pt);
+                
+                const key = `${rRed}/${mRed}`;
+                if (!data.channels.has(key)) {
+                    data.channels.set(key, []);
                 }
-                data.rings.set(m, ring);
-            });
+                data.channels.get(key).push(pt);
+                
+                if (!isIrreducible && mRed < M) {
+                    data.channelMultiplicity.set(mRed, (data.channelMultiplicity.get(mRed) || 0) + 1);
+                }
+            }
             
             return data;
         }
         
         function getColor(pt, scheme) {
-            if (scheme === 'coprime') {
-                if (pt.r === 0) return '#888888';
+            if (scheme === 'channel') {
                 return pt.isIrreducible ? '#00ffff' : '#ff0066';
             } else if (scheme === 'gcd') {
-                if (pt.r === 0) return '#888888';
-                const hue = (pt.d * 60) % 360;
+                const hue = (pt.d * 50) % 360;
                 return `hsl(${hue}, 100%, 50%)`;
-            } else if (scheme === 'ring') {
-                const hue = (pt.level * 40) % 360;
-                return `hsl(${hue}, 80%, 60%)`;
-            } else if (scheme === 'rainbow') {
-                const hue = (pt.theta * 180 / Math.PI) % 360;
-                return `hsl(${hue}, 90%, 60%)`;
+            } else if (scheme === 'spf') {
+                const primeColors = {2: '#ff0000', 3: '#00ff00', 5: '#0000ff', 7: '#ffff00', 
+                                    11: '#ff00ff', 13: '#00ffff', 17: '#ff8800', 19: '#88ff00'};
+                return primeColors[pt.spf] || '#ffffff';
+            } else if (scheme === 'lpf') {
+                const primeColors = {2: '#ff0000', 3: '#00ff00', 5: '#0000ff', 7: '#ffff00', 
+                                    11: '#ff00ff', 13: '#00ffff', 17: '#ff8800', 19: '#88ff00'};
+                return primeColors[pt.lpf] || '#ffffff';
+            } else if (scheme === 'depth') {
+                const hue = (pt.mRed * 137.5) % 360;
+                return `hsl(${hue}, 100%, 50%)`;
             }
-            return '#ffffff';
+            return '#00ffff';
         }
         
-        // 3D projection
-        function project3D(x, y, z) {
-            // Apply rotations
-            const rotXRad = camera.rotX * Math.PI / 180;
-            const rotYRad = camera.rotY * Math.PI / 180;
-            const rotZRad = camera.rotZ * Math.PI / 180;
-            
-            // Rotate X
-            let y1 = y * Math.cos(rotXRad) - z * Math.sin(rotXRad);
-            let z1 = y * Math.sin(rotXRad) + z * Math.cos(rotXRad);
-            
-            // Rotate Y
-            let x2 = x * Math.cos(rotYRad) + z1 * Math.sin(rotYRad);
-            let z2 = -x * Math.sin(rotYRad) + z1 * Math.cos(rotYRad);
-            
-            // Rotate Z
-            let x3 = x2 * Math.cos(rotZRad) - y1 * Math.sin(rotZRad);
-            let y3 = x2 * Math.sin(rotZRad) + y1 * Math.cos(rotZRad);
-            
-            // Apply camera distance
-            z2 += camera.distance;
-            
-            // Perspective projection
-            const scale = camera.perspective / (camera.perspective + z2);
-            
-            return {
-                x: x3 * scale + canvas.width / 2,
-                y: y3 * scale + canvas.height / 2,
-                z: z2,
-                scale: scale
-            };
-        }
-        
-        function render() {
+        function drawVisualization() {
             if (!currentData) return;
             
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            const vertSpacing = parseFloat(document.getElementById('vertSpacing').value) / 100;
-            const ringScale = parseFloat(document.getElementById('ringSize').value) / 100;
-            const showFarey = document.getElementById('showFareyChains').checked;
-            const showZero = document.getElementById('showZeroChains').checked;
-            const showPoints = document.getElementById('showPoints').checked;
-            const showRings = document.getElementById('showRings').checked;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const zoom = parseFloat(document.getElementById('zoom').value) / 100;
+            const baseRadius = Math.min(canvas.width, canvas.height) * 0.4 * zoom;
             const pointSize = parseFloat(document.getElementById('pointSize').value);
-            const chainOpacity = parseFloat(document.getElementById('chainOpacity').value) / 100;
+            const opacity = parseFloat(document.getElementById('projectionOpacity').value) / 100;
+            const rotation = parseFloat(document.getElementById('rotation').value) * Math.PI / 180;
+            const displayMode = document.getElementById('displayMode').value;
             const colorScheme = document.getElementById('colorScheme').value;
+            const showLabels = document.getElementById('showChannelLabels').checked;
+            const showMult = document.getElementById('showMultiplicity').checked;
             
-            const numLevels = currentData.divisors.length;
-            
-            // Calculate 3D positions for all points
-            const points3D = currentData.allPoints.map(pt => {
-                const radius = (pt.M / currentData.M) * ringScale;
-                const height = (pt.level / (numLevels - 1)) * 2 * vertSpacing;
-                
-                return {
-                    pt: pt,
-                    x: radius * Math.cos(pt.theta),
-                    y: height,
-                    z: radius * Math.sin(pt.theta),
-                    radius: radius
-                };
+            const divisors = currentData.divisors.filter(d => d < currentData.M).reverse();
+            const radiusMap = new Map();
+            divisors.forEach((d, idx) => {
+                radiusMap.set(d, baseRadius * (1 - (idx + 1) * 0.12));
             });
             
-            // Project to 2D
-            const projected = points3D.map(p3d => ({
-                ...p3d,
-                proj: project3D(p3d.x, p3d.y, p3d.z)
-            }));
+            const showFareyLines = document.getElementById('showFareyLines').checked;
             
-            // Sort by depth for proper occlusion
-            projected.sort((a, b) => b.proj.z - a.proj.z);
-            
-            // Draw Farey chains (gold)
-            if (showFarey) {
-                ctx.globalAlpha = chainOpacity;
-                ctx.lineWidth = 1.5;
-                
-                projected.forEach(p => {
-                    if (p.pt.r === 0 || p.pt.mRed === 1) return;
-                    
-                    // Find target point
-                    const target = projected.find(t => 
-                        t.pt.M === p.pt.mRed && t.pt.r === p.pt.rRed
-                    );
-                    
-                    if (target && target.proj.z < camera.distance + 5) {
+            // Draw Farey lines connecting reducible points to their channel targets
+            if (showFareyLines && displayMode !== 'coprime-only') {
+                ctx.globalAlpha = opacity * 1.5;
+                currentData.residues.forEach(pt => {
+                    if (!pt.isIrreducible && pt.mRed < currentData.M && pt.r !== 0) {
+                        const outerR = baseRadius;
+                        const innerR = radiusMap.get(pt.mRed) || baseRadius * 0.3;
+                        const outerAngle = pt.theta + rotation;
+                        
+                        // Find target point on inner ring with same reduced fraction
+                        const targetAngle = (2 * Math.PI * pt.rRed) / pt.mRed - Math.PI / 2 + rotation;
+                        
+                        // Draw curved Farey line
                         ctx.strokeStyle = '#ffd700';
+                        ctx.lineWidth = 1.5;
                         ctx.beginPath();
-                        ctx.moveTo(p.proj.x, p.proj.y);
-                        ctx.lineTo(target.proj.x, target.proj.y);
+                        ctx.moveTo(
+                            centerX + outerR * Math.cos(outerAngle), 
+                            centerY + outerR * Math.sin(outerAngle)
+                        );
+                        
+                        // Control point for quadratic curve
+                        const midR = (outerR + innerR) / 2;
+                        const midAngle = (outerAngle + targetAngle) / 2;
+                        ctx.quadraticCurveTo(
+                            centerX + midR * Math.cos(midAngle),
+                            centerY + midR * Math.sin(midAngle),
+                            centerX + innerR * Math.cos(targetAngle),
+                            centerY + innerR * Math.sin(targetAngle)
+                        );
                         ctx.stroke();
                     }
                 });
                 ctx.globalAlpha = 1.0;
             }
             
-            // Draw r=0 chains (red, to center bottom)
-            if (showZero) {
-                ctx.globalAlpha = chainOpacity;
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = '#ff0000';
-                
-                const centerBottom = project3D(0, 0, 0);
-                
-                projected.forEach(p => {
-                    if (p.pt.r === 0 && p.pt.M > 1) {
-                        ctx.beginPath();
-                        ctx.moveTo(p.proj.x, p.proj.y);
-                        ctx.lineTo(centerBottom.x, centerBottom.y);
-                        ctx.stroke();
+            // Draw projection lines
+            if (displayMode === 'projection' && !showFareyLines) {
+                ctx.globalAlpha = opacity;
+                currentData.channels.forEach((points, key) => {
+                    if (points.length > 1 && key !== '0/1') {
+                        ctx.strokeStyle = '#ffd700';
+                        ctx.lineWidth = 1;
+                        points.forEach(pt => {
+                            const outerR = baseRadius;
+                            const innerR = radiusMap.get(pt.mRed) || baseRadius * 0.3;
+                            const angle = pt.theta + rotation;
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(centerX + outerR * Math.cos(angle), centerY + outerR * Math.sin(angle));
+                            ctx.lineTo(centerX + innerR * Math.cos(angle), centerY + innerR * Math.sin(angle));
+                            ctx.stroke();
+                        });
                     }
                 });
                 ctx.globalAlpha = 1.0;
             }
             
             // Draw rings
-            if (showRings) {
-                ctx.globalAlpha = 0.3;
-                ctx.strokeStyle = '#444444';
+            divisors.forEach(d => {
+                const r = radiusMap.get(d);
+                ctx.strokeStyle = 'rgba(255, 215, 0, 0.2)';
                 ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, r, 0, 2 * Math.PI);
+                ctx.stroke();
                 
-                currentData.divisors.forEach((m, levelIndex) => {
-                    const radius = (m / currentData.M) * ringScale;
-                    const height = (levelIndex / (numLevels - 1)) * 2 * vertSpacing;
+                if (showLabels && d !== currentData.M) {
+                    ctx.fillStyle = '#ffd700';
+                    ctx.font = 'bold 11px monospace';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(`M'=${d}`, centerX + r + 5, centerY);
                     
-                    // Draw circle as many line segments
-                    const segments = 64;
-                    ctx.beginPath();
-                    for (let i = 0; i <= segments; i++) {
-                        const angle = (i / segments) * Math.PI * 2;
-                        const x = radius * Math.cos(angle);
-                        const z = radius * Math.sin(angle);
-                        const p = project3D(x, height, z);
-                        if (i === 0) ctx.moveTo(p.x, p.y);
-                        else ctx.lineTo(p.x, p.y);
+                    if (showMult && currentData.channelMultiplicity.has(d)) {
+                        const mult = currentData.M / d;
+                        ctx.fillStyle = '#ffaa00';
+                        ctx.font = '9px monospace';
+                        ctx.fillText(`d=${mult}`, centerX + r + 5, centerY + 12);
                     }
-                    ctx.stroke();
-                });
-                ctx.globalAlpha = 1.0;
-            }
+                }
+            });
+            
+            // Draw outer ring
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, baseRadius, 0, 2 * Math.PI);
+            ctx.stroke();
             
             // Draw points
-            if (showPoints) {
-                projected.forEach(p => {
-                    const color = getColor(p.pt, colorScheme);
-                    const size = pointSize * p.proj.scale;
-                    
-                    ctx.fillStyle = color;
+            currentData.residues.forEach((pt, idx) => {
+                if (displayMode === 'coprime-only' && !pt.isIrreducible) return;
+                
+                const isHighlighted = sweepActive && sweepIndex < currentData.coprimes.length && 
+                                      pt.r === currentData.coprimes[sweepIndex].r;
+                
+                let radius = displayMode === 'ring' ? radiusMap.get(pt.mRed) || baseRadius : baseRadius;
+                const angle = pt.theta + rotation; // theta already has -π/2 offset
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                const color = getColor(pt, colorScheme);
+                let size = pointSize;
+                
+                if (isHighlighted) {
+                    ctx.strokeStyle = '#ffff00';
+                    ctx.lineWidth = 3;
                     ctx.beginPath();
-                    ctx.arc(p.proj.x, p.proj.y, size, 0, 2 * Math.PI);
-                    ctx.fill();
-                    
-                    if (p.pt.r === 0) {
-                        ctx.strokeStyle = '#ffff00';
-                        ctx.lineWidth = 2;
-                        ctx.stroke();
-                    }
-                });
-            }
+                    ctx.arc(x, y, size + 5, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    size *= 1.3;
+                }
+                
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // Label r=0 at top
+                if (pt.r === 0 && currentData.M <= 100) {
+                    ctx.fillStyle = '#00ffff';
+                    ctx.font = 'bold 12px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('r=0', x, y - size - 8);
+                    ctx.fillText('gcd=M', x, y + size + 12);
+                }
+            });
+            
+            // Center text
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`M = ${currentData.M}`, centerX, centerY - 10);
+            ctx.font = '16px sans-serif';
+            ctx.fillText(`φ(M) = ${currentData.phi}`, centerX, centerY + 15);
         }
         
         function updateVisualization() {
             let M = parseInt(document.getElementById('modulusInput').value);
-            if (M < 2) M = 2;
-            if (M > 200) M = 200;
+            if (isPrime(M) && M > 2) M++;
+            while (isPrime(M) && M > 2) M++;
             
             document.getElementById('modulusInput').value = M;
-            document.getElementById('modulusSlider').value = Math.min(M, 100);
+            document.getElementById('modulusSlider').value = Math.min(M, 500);
             document.getElementById('modulusValue').textContent = M;
             
             currentData = computeData(M);
             
-            // Update info
-            document.getElementById('infoM').textContent = M;
-            document.getElementById('infoType').textContent = currentData.isPrime ? 'PRIME' : 'COMPOSITE';
-            document.getElementById('infoPhi').textContent = currentData.phi;
-            document.getElementById('infoRings').textContent = currentData.divisors.length;
-            document.getElementById('infoPoints').textContent = currentData.allPoints.length;
+            // Update stats
+            document.getElementById('configM').textContent = M;
+            document.getElementById('configPrime').textContent = 'Prime Factorization: ' + currentData.factorization;
+            document.getElementById('statPhi').textContent = currentData.phi;
+            document.getElementById('statReducible').textContent = M - currentData.phi;
+            document.getElementById('statRatio').textContent = ((M - currentData.phi) / M * 100).toFixed(1) + '%';
+            document.getElementById('statChannels').textContent = currentData.channels.size - 1;
             
-            render();
+            // Update analysis
+            let analysis = `<strong>Modulus M = ${M}</strong> = ${currentData.factorization}<br><br>`;
+            analysis += `<strong>Coprime:</strong> ${currentData.phi} residues (φ(M))<br>`;
+            analysis += `<strong>Reducible:</strong> ${M - currentData.phi} residues<br>`;
+            analysis += `<strong>Ratio:</strong> ${((M - currentData.phi) / M * 100).toFixed(1)}% reducible<br><br>`;
+            analysis += `<strong>Farey Channels:</strong><br>`;
+            
+            const channelDivs = Array.from(currentData.channelMultiplicity.entries())
+                .sort((a, b) => b[0] - a[0]);
+            channelDivs.forEach(([mPrime, count]) => {
+                const mult = M / mPrime;
+                analysis += `M' = ${mPrime}: ${count} residues (d = ${mult})<br>`;
+            });
+            
+            document.getElementById('analysisText').innerHTML = analysis;
+            
+            sweepIndex = 0;
+            sweepActive = false;
+            document.getElementById('playSweepBtn').textContent = 'Play Sweep';
+            document.getElementById('currentCoprime').textContent = '-';
+            
+            drawVisualization();
         }
         
         function setModulus(M) {
@@ -607,124 +983,244 @@
             updateVisualization();
         }
         
-        function resetView() {
-            camera.distance = 3.5;
-            camera.rotX = 20;
-            camera.rotY = 0;
-            camera.rotZ = 0;
-            
-            document.getElementById('cameraDist').value = 35;
-            document.getElementById('rotX').value = 20;
-            document.getElementById('rotY').value = 0;
-            document.getElementById('rotZ').value = 0;
-            
-            updateSliderDisplays();
-            render();
+        function randomComposite() {
+            let M = Math.floor(Math.random() * 498) + 4;
+            while (isPrime(M)) M++;
+            setModulus(M);
         }
         
-        function updateSliderDisplays() {
-            document.getElementById('cameraDistValue').textContent = camera.distance.toFixed(1);
-            document.getElementById('vertSpacingValue').textContent = (parseFloat(document.getElementById('vertSpacing').value) / 100).toFixed(1);
-            document.getElementById('ringSizeValue').textContent = (parseFloat(document.getElementById('ringSize').value) / 100).toFixed(1);
-            document.getElementById('perspectiveValue').textContent = camera.perspective;
-            document.getElementById('rotXValue').textContent = camera.rotX.toFixed(0) + '°';
-            document.getElementById('rotYValue').textContent = camera.rotY.toFixed(0) + '°';
-            document.getElementById('rotZValue').textContent = camera.rotZ.toFixed(0) + '°';
-            document.getElementById('pointSizeValue').textContent = document.getElementById('pointSize').value;
-            document.getElementById('chainOpacityValue').textContent = (parseFloat(document.getElementById('chainOpacity').value) / 100).toFixed(2);
+        function toggleSweep() {
+            sweepActive = !sweepActive;
+            document.getElementById('playSweepBtn').textContent = sweepActive ? 'Pause' : 'Play Sweep';
+            if (sweepActive) animateSweep();
+        }
+        
+        function resetSweep() {
+            sweepIndex = 0;
+            sweepActive = false;
+            document.getElementById('playSweepBtn').textContent = 'Play Sweep';
+            document.getElementById('currentCoprime').textContent = '-';
+            drawVisualization();
+        }
+        
+        function animateSweep() {
+            if (!sweepActive || !currentData) return;
+            
+            const speed = parseFloat(document.getElementById('sweepSpeed').value);
+            
+            sweepIndex = (sweepIndex + 1) % currentData.coprimes.length;
+            document.getElementById('currentCoprime').textContent = currentData.coprimes[sweepIndex].r;
+            drawVisualization();
+            
+            setTimeout(() => animateSweep(), 5000 / speed);
+        }
+        
+        function exportPNG(resolution) {
+            const resolutions = {
+                '1080p': [1920, 1080],
+                '4K': [3840, 2160],
+                '8K': [7680, 4320]
+            };
+            
+            const [width, height] = resolutions[resolution];
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            const scale = width / canvas.width;
+            tempCtx.scale(scale, scale);
+            tempCtx.drawImage(canvas, 0, 0);
+            
+            // Add title and metadata
+            tempCtx.setTransform(1, 0, 0, 1, 0, 0);
+            tempCtx.fillStyle = 'white';
+            tempCtx.font = `bold ${40 * scale}px Arial`;
+            tempCtx.textAlign = 'center';
+            const title = document.getElementById('exportTitle').value;
+            tempCtx.fillText(title, width / 2, 60 * scale);
+            
+            tempCtx.font = `${20 * scale}px Arial`;
+            tempCtx.fillText(`M = ${currentData.M} | φ(M) = ${currentData.phi} | Resolution: ${resolution} | ${new Date().toLocaleDateString()}`, 
+                width / 2, 100 * scale);
+            
+            const link = document.createElement('a');
+            link.download = `composite_projection_M${currentData.M}_${resolution}_${Date.now()}.png`;
+            link.href = tempCanvas.toDataURL();
+            link.click();
+        }
+        
+        function exportCSV() {
+            if (!currentData) return;
+            
+            let csv = 'Residue,Modulus,GCD,Channel_Status,Reduced_Numerator,Reduced_Denominator,Angle_Radians,Angle_Degrees,SPF,LPF\n';
+            currentData.residues.forEach(pt => {
+                const angleDeg = (pt.theta * 180 / Math.PI).toFixed(2);
+                csv += `${pt.r},${currentData.M},${pt.d},${pt.isIrreducible ? 'Coprime' : 'Reducible'},${pt.rRed},${pt.mRed},${pt.theta.toFixed(6)},${angleDeg},${pt.spf},${pt.lpf}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `composite_channel_M${currentData.M}_${Date.now()}.csv`;
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
         }
         
         // Event listeners
         document.getElementById('modulusSlider').addEventListener('input', (e) => {
-            document.getElementById('modulusInput').value = e.target.value;
             document.getElementById('modulusValue').textContent = e.target.value;
+            document.getElementById('modulusInput').value = e.target.value;
         });
         
         document.getElementById('modulusInput').addEventListener('change', updateVisualization);
+        document.getElementById('displayMode').addEventListener('change', () => {
+            document.getElementById('configDisplay').textContent = 'Display Mode: ' + 
+                document.getElementById('displayMode').options[document.getElementById('displayMode').selectedIndex].text;
+            drawVisualization();
+        });
+        document.getElementById('colorScheme').addEventListener('change', () => {
+            document.getElementById('configColor').textContent = 'Color Scheme: ' + 
+                document.getElementById('colorScheme').options[document.getElementById('colorScheme').selectedIndex].text;
+            drawVisualization();
+        });
+        document.getElementById('showChannelLabels').addEventListener('change', drawVisualization);
+        document.getElementById('showMultiplicity').addEventListener('change', drawVisualization);
+        document.getElementById('showFareyLines').addEventListener('change', drawVisualization);
         
-        ['cameraDist', 'vertSpacing', 'ringSize', 'perspective', 'rotX', 'rotY', 'rotZ', 'pointSize', 'chainOpacity'].forEach(id => {
+        ['pointSize', 'projectionOpacity', 'zoom', 'rotation'].forEach(id => {
             document.getElementById(id).addEventListener('input', (e) => {
-                if (id === 'cameraDist') camera.distance = parseFloat(e.target.value) / 10;
-                else if (id === 'rotX') camera.rotX = parseFloat(e.target.value);
-                else if (id === 'rotY') camera.rotY = parseFloat(e.target.value);
-                else if (id === 'rotZ') camera.rotZ = parseFloat(e.target.value);
-                else if (id === 'perspective') camera.perspective = parseFloat(e.target.value);
-                
-                updateSliderDisplays();
-                render();
+                const valueId = id + 'Value';
+                let value = e.target.value;
+                if (id === 'projectionOpacity') value = (value / 100).toFixed(2);
+                else if (id === 'zoom') value = value + '%';
+                else if (id === 'rotation') value = value + '°';
+                else if (id === 'sweepSpeed') value = (value / 100).toFixed(1);
+                document.getElementById(valueId).textContent = value;
+                drawVisualization();
             });
         });
         
-        ['showFareyChains', 'showZeroChains', 'showPoints', 'showRings', 'colorScheme'].forEach(id => {
-            document.getElementById(id).addEventListener('change', render);
+        document.getElementById('sweepSpeed').addEventListener('input', (e) => {
+            document.getElementById('sweepSpeedValue').textContent = (e.target.value / 100).toFixed(1);
         });
         
-        // Mouse interaction
-        canvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            lastMouseX = e.clientX;
-            lastMouseY = e.clientY;
-        });
-        
-        canvas.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            
-            const deltaX = e.clientX - lastMouseX;
-            const deltaY = e.clientY - lastMouseY;
-            
-            camera.rotY += deltaX * 0.5;
-            camera.rotX -= deltaY * 0.5;
-            
-            camera.rotX = Math.max(-90, Math.min(90, camera.rotX));
-            camera.rotY = camera.rotY % 360;
-            
-            document.getElementById('rotX').value = camera.rotX;
-            document.getElementById('rotY').value = camera.rotY;
-            
-            updateSliderDisplays();
-            render();
-            
-            lastMouseX = e.clientX;
-            lastMouseY = e.clientY;
-        });
-        
-        canvas.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-        
-        canvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            camera.distance += e.deltaY * 0.001;
-            camera.distance = Math.max(2, Math.min(8, camera.distance));
-            
-            document.getElementById('cameraDist').value = camera.distance * 10;
-            updateSliderDisplays();
-            render();
-        });
-        
-        // Auto-rotate
-        document.getElementById('autoRotate').addEventListener('change', (e) => {
+        document.getElementById('animateRotation').addEventListener('change', (e) => {
             if (e.target.checked) {
-                function animate() {
-                    if (!document.getElementById('autoRotate').checked) return;
-                    
-                    camera.rotY += 0.5;
-                    camera.rotY = camera.rotY % 360;
-                    document.getElementById('rotY').value = camera.rotY;
-                    updateSliderDisplays();
-                    render();
-                    
+                const animate = () => {
+                    if (!document.getElementById('animateRotation').checked) return;
+                    const rotation = (parseFloat(document.getElementById('rotation').value) + 1) % 360;
+                    document.getElementById('rotation').value = rotation;
+                    document.getElementById('rotationValue').textContent = rotation + '°';
+                    drawVisualization();
                     animationFrame = requestAnimationFrame(animate);
-                }
+                };
                 animate();
             } else if (animationFrame) {
                 cancelAnimationFrame(animationFrame);
             }
         });
         
+        // Mouse events
+        canvas.addEventListener('mousemove', (e) => {
+            if (!currentData) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const zoom = parseFloat(document.getElementById('zoom').value) / 100;
+            const baseRadius = Math.min(canvas.width, canvas.height) * 0.4 * zoom;
+            const rotation = parseFloat(document.getElementById('rotation').value) * Math.PI / 180;
+            
+            let hoveredPoint = null;
+            let minDist = Infinity;
+            
+            currentData.residues.forEach(pt => {
+                const angle = pt.theta + rotation; // theta already includes -π/2
+                const x = centerX + baseRadius * Math.cos(angle);
+                const y = centerY + baseRadius * Math.sin(angle);
+                const dist = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+                
+                if (dist < minDist && dist < 15) {
+                    minDist = dist;
+                    hoveredPoint = pt;
+                }
+            });
+            
+            if (hoveredPoint) {
+                tooltip.style.display = 'block';
+                tooltip.style.left = (e.clientX + 15) + 'px';
+                tooltip.style.top = (e.clientY + 15) + 'px';
+                
+                const angleDeg = ((hoveredPoint.theta + Math.PI / 2) * 180 / Math.PI).toFixed(1);
+                
+                tooltip.innerHTML = `
+                    <strong>r = ${hoveredPoint.r}</strong><br>
+                    θ = 2πr/M = 2π(${hoveredPoint.r})/${currentData.M}<br>
+                    θ = ${angleDeg}° (from top)<br>
+                    gcd(${hoveredPoint.r}, ${currentData.M}) = ${hoveredPoint.d}<br>
+                    Status: ${hoveredPoint.isIrreducible ? 'Coprime' : 'Reducible'}<br>
+                    ${hoveredPoint.r === 0 ? '<strong>r=0 at 12 o\'clock (gcd=M)</strong><br>' : ''}
+                    ${!hoveredPoint.isIrreducible && hoveredPoint.r !== 0 ? `${hoveredPoint.r}/${currentData.M} → ${hoveredPoint.rRed}/${hoveredPoint.mRed}<br>Projects to M' = ${hoveredPoint.mRed}` : ''}
+                `;
+            } else {
+                tooltip.style.display = 'none';
+            }
+        });
+        
+        canvas.addEventListener('click', (e) => {
+            if (!currentData) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const zoom = parseFloat(document.getElementById('zoom').value) / 100;
+            const baseRadius = Math.min(canvas.width, canvas.height) * 0.4 * zoom;
+            const rotation = parseFloat(document.getElementById('rotation').value) * Math.PI / 180;
+            
+            let clickedPoint = null;
+            let minDist = Infinity;
+            
+            currentData.residues.forEach(pt => {
+                const angle = pt.theta + rotation; // theta already includes -π/2
+                const x = centerX + baseRadius * Math.cos(angle);
+                const y = centerY + baseRadius * Math.sin(angle);
+                const dist = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+                
+                if (dist < minDist && dist < 15) {
+                    minDist = dist;
+                    clickedPoint = pt;
+                }
+            });
+            
+            if (clickedPoint) {
+                let info = `<strong>Residue r = ${clickedPoint.r} in M = ${currentData.M}</strong><br><br>`;
+                info += `gcd(${clickedPoint.r}, ${currentData.M}) = ${clickedPoint.d}<br><br>`;
+                
+                if (clickedPoint.isIrreducible) {
+                    info += `<strong>Status: COPRIME</strong><br>`;
+                    info += `Already in lowest terms: ${clickedPoint.r}/${currentData.M}`;
+                } else {
+                    info += `<strong>Status: REDUCIBLE</strong><br>`;
+                    info += `Dividing by gcd = ${clickedPoint.d}:<br><br>`;
+                    info += `<strong>${clickedPoint.r}/${currentData.M} = ${clickedPoint.rRed}/${clickedPoint.mRed}</strong><br><br>`;
+                    info += `Projects to Farey channel M' = ${clickedPoint.mRed}<br>`;
+                    info += `Channel multiplicity: d = ${currentData.M}/${clickedPoint.mRed} = ${currentData.M / clickedPoint.mRed}`;
+                }
+                
+                document.getElementById('clickInfo').innerHTML = info;
+            }
+        });
+        
         // Initialize
         updateVisualization();
-        updateSliderDisplays();
     </script>
 </body>
 </html>
