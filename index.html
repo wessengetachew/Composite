@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Composite Channel Projection | Research Suite</title>
+    <title>Composite Channel Projection | Pro Analysis Suite</title>
     <style>
         :root {
             --bg: #0d1117;
@@ -12,8 +12,7 @@
             --text-primary: #f0f6fc;
             --text-secondary: #8b949e;
             --accent: #58a6ff;
-            --success: #3fb950;
-            --danger: #f85149;
+            --accent-dim: rgba(88, 166, 255, 0.15);
             --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
         }
@@ -24,233 +23,219 @@
             color: var(--text-primary);
             font-family: var(--font-ui);
             display: grid;
-            grid-template-columns: 1fr 380px;
+            grid-template-columns: 1fr 360px;
             height: 100vh;
             overflow: hidden;
         }
 
-        /* LEFT: Visualization Stage */
+        /* LEFT: STAGE */
         #stage {
             position: relative;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border);
-        }
-
-        #header-overlay {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            pointer-events: none;
-            z-index: 10;
+            background: #050505; /* Deep black for contrast */
+            overflow: hidden;
+            cursor: default;
         }
         
-        h1 { margin: 0; font-size: 1.5rem; letter-spacing: -0.5px; }
-        .subtitle { color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.9rem; margin-top: 4px; }
+        canvas { display: block; width: 100%; height: 100%; }
 
-        canvas { width: 100%; height: 100%; display: block; }
+        /* Overlay UI on Stage */
+        #overlay-header {
+            position: absolute;
+            top: 20px; left: 20px;
+            pointer-events: none;
+            text-shadow: 0 2px 4px #000;
+        }
+        h1 { margin: 0; font-size: 1.4rem; letter-spacing: -0.5px; }
+        .subtitle { color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.85rem; margin-top: 4px; }
 
-        /* RIGHT: Analysis Panel */
+        #zoom-controls {
+            position: absolute;
+            bottom: 20px; left: 20px;
+            display: flex; gap: 5px;
+            background: rgba(22, 27, 34, 0.8);
+            padding: 5px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .icon-btn {
+            background: transparent; border: none; color: var(--text-primary);
+            width: 28px; height: 28px; cursor: pointer; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.2rem;
+        }
+        .icon-btn:hover { background: var(--border); }
+
+        /* RIGHT: PANEL */
         #panel {
             background: var(--panel);
+            border-left: 1px solid var(--border);
+            display: flex; flex-direction: column;
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1px; /* Borders between sections */
-            background-color: var(--border); 
         }
 
-        .section {
-            background: var(--panel);
-            padding: 20px;
-        }
-
+        .section { padding: 15px 20px; border-bottom: 1px solid var(--border); }
         .section-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: var(--text-secondary);
-            margin-bottom: 15px;
-            font-weight: 700;
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-secondary); margin-bottom: 12px; font-weight: 700;
         }
 
-        /* Controls */
-        .input-group { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        /* Form Elements */
+        .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .control-row label { font-size: 0.85rem; color: var(--text-secondary); }
         
-        input[type="number"] {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            color: white;
-            padding: 8px;
-            border-radius: 4px;
-            font-family: var(--font-mono);
-            width: 80px;
+        select, input[type="number"] {
+            background: var(--bg); border: 1px solid var(--border);
+            color: var(--text-primary); padding: 4px 8px; border-radius: 4px;
+            font-family: var(--font-mono); font-size: 0.85rem;
         }
-
-        input[type="range"] { flex-grow: 1; accent-color: var(--accent); }
-
-        .btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px; }
         
-        button {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            padding: 6px;
-            font-size: 0.8rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        button:hover { border-color: var(--text-secondary); color: white; }
-        button.active { background: rgba(88, 166, 255, 0.15); color: var(--accent); border-color: var(--accent); }
-        button.primary { background: var(--success); color: white; border: none; font-weight: 600; }
-        button.primary:hover { opacity: 0.9; }
+        input[type="range"] { width: 100%; accent-color: var(--accent); margin: 10px 0; }
 
-        /* Stats Table */
-        .data-table { width: 100%; font-size: 0.85rem; border-collapse: collapse; }
-        .data-table td { padding: 4px 0; color: var(--text-secondary); }
-        .data-table .val { text-align: right; color: var(--text-primary); font-family: var(--font-mono); }
+        .btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 8px; }
+        .btn-pill {
+            background: var(--bg); border: 1px solid var(--border);
+            color: var(--text-secondary); padding: 6px; font-size: 0.75rem;
+            border-radius: 4px; cursor: pointer; transition: 0.1s;
+        }
+        .btn-pill:hover { border-color: var(--text-primary); color: var(--text-primary); }
+        .btn-pill.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+
+        .action-btn {
+            width: 100%; background: var(--bg); border: 1px solid var(--border);
+            color: var(--text-primary); padding: 8px; border-radius: 4px;
+            cursor: pointer; margin-bottom: 8px; font-size: 0.85rem;
+        }
+        .action-btn:hover { background: var(--border); }
+        .action-btn.primary { background: #238636; border-color: #238636; color: white; font-weight: 600; }
+
+        /* Data Tables */
+        .stat-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px; }
+        .stat-val { font-family: var(--font-mono); color: var(--accent); }
 
         /* Legend */
-        .legend-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.85rem; }
-        .swatch { width: 12px; height: 12px; border-radius: 2px; }
-
-        /* Export Section */
-        .export-box {
-            background: rgba(255,255,255,0.03);
-            padding: 15px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-        }
-        .export-options { display: flex; gap: 10px; margin-top: 10px; }
-        .export-options button { flex: 1; }
-
-        /* Footer */
-        .footer {
-            margin-top: auto;
-            padding: 20px;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            border-top: 1px solid var(--border);
-            text-align: center;
-        }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; margin-bottom: 6px; color: var(--text-secondary); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
 
         #tooltip {
-            position: absolute;
-            background: rgba(13, 17, 23, 0.95);
-            border: 1px solid var(--border);
-            padding: 12px;
-            border-radius: 6px;
-            pointer-events: none;
-            font-size: 0.85rem;
-            display: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            z-index: 100;
+            position: absolute; pointer-events: none;
+            background: rgba(22, 27, 34, 0.95);
+            border: 1px solid var(--accent);
+            padding: 8px 12px; border-radius: 4px;
+            font-size: 0.8rem; display: none; z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
     </style>
 </head>
 <body>
 
-    <div id="stage">
-        <canvas id="vizCanvas"></canvas>
-        <div id="header-overlay">
-            <h1 id="disp-title">Modulus Projection</h1>
-            <div id="disp-subtitle" class="subtitle">Initialize...</div>
-        </div>
-        <div id="tooltip"></div>
+<div id="stage">
+    <canvas id="vizCanvas"></canvas>
+    
+    <div id="overlay-header">
+        <h1 id="disp-title">M = 60</h1>
+        <div id="disp-subtitle" class="subtitle">2² × 3 × 5</div>
+        <div id="disp-zoom" class="subtitle" style="color:var(--accent); margin-top:2px;">Zoom: 100%</div>
     </div>
 
-    <div id="panel">
-        <div class="section">
-            <div class="section-title">Configuration</div>
-            <div class="input-group">
-                <label>M =</label>
-                <input type="number" id="input-m" value="60">
-                <input type="range" id="slider-m" min="4" max="2520" value="60">
-            </div>
-            <div class="btn-grid">
-                <button onclick="setM(12)">12</button>
-                <button onclick="setM(60)">60</button>
-                <button onclick="setM(210)">210</button>
-                <button onclick="setM(360)">360</button>
-                <button onclick="setM(840)">840</button>
-                <button onclick="setM(2310)">2310</button>
-                <button onclick="setM(2520)">2520</button>
-                <button onclick="setM(5040)">5040</button>
-            </div>
-            <div style="display: flex; gap:10px; margin-top:15px;">
-                <button id="btn-anim" style="flex:1" onclick="toggleAnim()">▶ Sequence</button>
-                <button style="flex:1" onclick="toggleView()">Mode: <span id="lbl-view">Projection</span></button>
-            </div>
-        </div>
+    <div id="zoom-controls">
+        <button class="icon-btn" onclick="adjustZoom(-0.1)">-</button>
+        <button class="icon-btn" onclick="resetView()">⟲</button>
+        <button class="icon-btn" onclick="adjustZoom(0.1)">+</button>
+    </div>
 
-        <div class="section">
-            <div class="section-title">Analysis</div>
-            <table class="data-table">
-                <tr><td>Euler Totient φ(M)</td><td class="val" id="stat-phi">-</td></tr>
-                <tr><td>Active Channels</td><td class="val" id="stat-channels">-</td></tr>
-                <tr><td>Prime Factors</td><td class="val" id="stat-factors">-</td></tr>
-                <tr><td>Reduction Depth</td><td class="val" id="stat-depth">-</td></tr>
-            </table>
-        </div>
+    <div id="tooltip"></div>
+</div>
 
-        <div class="section">
-            <div class="section-title">Legend</div>
-            <div class="legend-row">
-                <div class="swatch" style="background:#58a6ff"></div>
-                <div>Irreducible (Coprime)</div>
-            </div>
-            <div class="legend-row">
-                <div class="swatch" style="background:#ff6b6b"></div>
-                <div>Reducible Residues</div>
-            </div>
-            <div class="legend-row">
-                <div class="swatch" style="background:#ffd700"></div>
-                <div>Center Well (M' = 1)</div>
-            </div>
-            <div class="legend-row">
-                <div class="swatch" style="border: 1px solid #30363d; background: transparent"></div>
-                <div>Farey Channel Rings</div>
-            </div>
-            <div style="margin-top:10px; font-size: 0.75rem; color: #8b949e; line-height: 1.4;">
-                <strong>d = gcd(r, M)</strong>: Reduction Factor<br>
-                <strong>M' = M/d</strong>: Target Channel<br>
-                <strong>Pop = φ(M')</strong>: Channel Capacity
-            </div>
+<div id="panel">
+    <div class="section">
+        <div class="section-title">Modulus Configuration</div>
+        <div class="control-row">
+            <input type="number" id="input-m" value="60" min="2" max="5000">
+            <button class="btn-pill" style="width:auto; padding:4px 12px;" onclick="toggleAnim()" id="btn-anim">▶ Play Sequence</button>
         </div>
-
-        <div class="section">
-            <div class="section-title">Export Data</div>
-            <div class="export-box">
-                <div style="margin-bottom:8px; font-weight:600; font-size:0.9rem;">Generate Figure</div>
-                <div class="export-options">
-                    <button onclick="exportPNG('2k')">PNG 2K</button>
-                    <button class="primary" onclick="exportPNG('4k')">PNG 4K</button>
-                </div>
-                <div style="margin-top:15px; font-weight:600; font-size:0.9rem;">Dataset</div>
-                <div class="export-options">
-                    <button onclick="exportCSV()">Download CSV</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            Tool by Wessen Getachew<br>
-            Composite Channel Projection Corollary
+        <input type="range" id="slider-m" min="4" max="2520" value="60">
+        <div class="btn-grid">
+            <button class="btn-pill" onclick="setM(12)">12</button>
+            <button class="btn-pill" onclick="setM(30)">30</button>
+            <button class="btn-pill" onclick="setM(60)">60</button>
+            <button class="btn-pill" onclick="setM(120)">120</button>
+            <button class="btn-pill" onclick="setM(360)">360</button>
+            <button class="btn-pill" onclick="setM(840)">840</button>
+            <button class="btn-pill" onclick="setM(2520)">2520</button>
+            <button class="btn-pill" onclick="setM(5040)">5k</button>
         </div>
     </div>
+
+    <div class="section">
+        <div class="section-title">Visualization Parameters</div>
+        
+        <div class="control-row">
+            <label>Color Mode</label>
+            <select id="sel-color" onchange="updateConfig()">
+                <option value="spectral">Spectral Channels</option>
+                <option value="type">Residue Type</option>
+                <option value="gcd">Gradient by GCD</option>
+            </select>
+        </div>
+
+        <div class="control-row">
+            <label>Data Labels</label>
+            <select id="sel-label" onchange="updateConfig()">
+                <option value="none">None</option>
+                <option value="gcd">Integer (GCD)</option>
+                <option value="frac">Fraction (r'/M')</option>
+                <option value="theta">Angle (θ)</option>
+            </select>
+        </div>
+
+        <div class="control-row">
+            <label>Opacity</label>
+            <input type="range" style="width:80px" min="0.1" max="1" step="0.1" value="0.4" id="rng-opacity" oninput="updateConfig()">
+        </div>
+
+        <button class="action-btn" onclick="toggleView()" id="btn-view">Switch to Ring View</button>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Channel Analytics</div>
+        <div class="stat-row"><span>Euler Totient φ(M)</span><span class="stat-val" id="val-phi">-</span></div>
+        <div class="stat-row"><span>Active Channels</span><span class="stat-val" id="val-channels">-</span></div>
+        <div class="stat-row"><span>Projection Depth</span><span class="stat-val" id="val-depth">-</span></div>
+        <div style="margin-top:10px; font-size:0.75rem; color:#666;">
+            Click any ring to isolate that specific Farey channel.
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Legend</div>
+        <div id="legend-dynamic">
+            </div>
+    </div>
+
+    <div class="section" style="border-bottom:none">
+        <div class="section-title">Export Research Data</div>
+        <div style="display:flex; gap:5px;">
+            <button class="action-btn" onclick="exportPNG('2k')">PNG 2K</button>
+            <button class="action-btn primary" onclick="exportPNG('4k')">PNG 4K</button>
+        </div>
+        <button class="action-btn" onclick="exportCSV()">Download Dataset (CSV)</button>
+    </div>
+
+    <div style="margin-top:auto; padding:20px; text-align:center; font-size:0.7rem; color:var(--text-secondary); border-top:1px solid var(--border);">
+        <strong>Composite Channel Projection</strong><br>
+        Analysis Tool by Wessen Getachew
+    </div>
+</div>
 
 <script>
 /**
- * MATHEMATICAL KERNEL
+ * ----------------------------------------
+ * CORE LOGIC
+ * ----------------------------------------
  */
 const MathCore = {
-    gcd: (a, b) => {
-        while (b) { [a, b] = [b, a % b]; }
-        return a;
-    },
-
+    gcd: (a, b) => { while (b) [a, b] = [b, a % b]; return a; },
     phi: (n) => {
         let result = n;
         for (let i = 2; i * i <= n; i++) {
@@ -262,7 +247,6 @@ const MathCore = {
         if (n > 1) result -= result / n;
         return result;
     },
-
     getFactors: (n) => {
         const f = new Set();
         let d = 2, temp = n;
@@ -275,28 +259,46 @@ const MathCore = {
 };
 
 /**
- * STATE MANAGEMENT
+ * ----------------------------------------
+ * APP STATE
+ * ----------------------------------------
  */
 const State = {
     M: 60,
-    viewMode: 'projection', // 'projection' | 'rings'
-    isAnimating: false,
     residues: [],
     channels: [],
-    stats: {}
+    
+    // View Config
+    viewMode: 'projection',
+    colorMode: 'spectral',
+    labelMode: 'none',
+    opacity: 0.4,
+    
+    // Camera / Navigation
+    zoom: 1,
+    panX: 0,
+    panY: 0,
+    isDragging: false,
+    lastMouse: {x:0, y:0},
+    
+    // Interaction
+    hovered: null,
+    isolatedChannel: null,
+    isAnimating: false,
+    animTimer: null
 };
 
 /**
- * DATA PROCESSING
+ * ----------------------------------------
+ * DATA GENERATION
+ * ----------------------------------------
  */
 function computeData() {
     const M = State.M;
     State.residues = [];
     const channelMap = {};
 
-    // Generate Residues
     for (let r = 0; r < M; r++) {
-        // Correct handling for r=0 mapping to r=M effectively in modular rings
         const effectiveR = r === 0 ? M : r;
         const d = MathCore.gcd(effectiveR, M);
         const m_prime = M / d;
@@ -305,347 +307,429 @@ function computeData() {
             channelMap[m_prime] = {
                 val: m_prime,
                 d: d,
-                pop: MathCore.phi(m_prime),
-                residues: []
+                count: 0,
+                color: null
             };
         }
 
-        const res = {
+        channelMap[m_prime].count++;
+
+        State.residues.push({
             r: r,
-            r_eff: effectiveR,
             d: d,
             m_prime: m_prime,
-            angle: (r / M) * Math.PI * 2 - (Math.PI/2),
-            isCoprime: d === 1
-        };
-
-        State.residues.push(res);
-        channelMap[m_prime].residues.push(res);
+            r_prime: effectiveR / d,
+            angle: (r / M) * Math.PI * 2 - (Math.PI / 2),
+            type: d === 1 ? 'coprime' : 'reducible'
+        });
     }
 
-    // Sort Channels (Center M'=1 to Outer M'=M)
     State.channels = Object.values(channelMap).sort((a,b) => a.val - b.val);
 
-    // Update Text UI
-    document.getElementById('disp-title').innerText = `Modulus M = ${M}`;
-    document.getElementById('disp-subtitle').innerText = `Prime Factorization: ${MathCore.getFactors(M)}`;
-    
-    document.getElementById('stat-phi').innerText = MathCore.phi(M);
-    document.getElementById('stat-channels').innerText = State.channels.length;
-    document.getElementById('stat-factors').innerText = MathCore.getFactors(M);
-    document.getElementById('stat-depth').innerText = "Max " + State.channels[0].d;
+    // Assign Spectral Colors to Channels
+    State.channels.forEach((ch, index) => {
+        const hue = ((index * 0.618033988749895) % 1) * 360;
+        ch.color = `hsl(${hue}, 75%, 60%)`;
+    });
 
-    // Trigger Render
-    requestAnimationFrame(() => renderScreen());
+    updateStats();
+    render();
 }
 
 /**
- * RENDERING ENGINE (Abstracted)
- * Draws to ANY context (Screen or Export)
- */
-function drawScene(ctx, width, height, isExport = false) {
-    const cx = width / 2;
-    const cy = height / 2;
-    // Export needs padding for title/legend, screen is tight
-    const size = Math.min(width, height);
-    const maxR = isExport ? size * 0.35 : size * 0.42; 
-    
-    // Background
-    ctx.fillStyle = isExport ? '#0d1117' : '#000000'; // Slightly lighter black for print
-    ctx.fillRect(0, 0, width, height);
-
-    if (State.channels.length === 0) return;
-
-    // 1. Draw Rings
-    State.channels.forEach((ch, i) => {
-        // Calculate Radius based on index
-        // Ring 0 (M'=1) is center. Ring N (M'=M) is maxR.
-        // We use a non-linear scale to separate the inner rings better
-        const pct = (i + 1) / (State.channels.length + 1);
-        let r = pct * maxR;
-        
-        // Force M ring to edge, M'=1 ring to center
-        if (ch.val === State.M) r = maxR;
-        if (ch.val === 1) r = maxR * 0.05;
-
-        ch.renderRadius = r; // Store for point projection
-
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.strokeStyle = '#21262d';
-        ctx.lineWidth = isExport ? 2 : 1;
-        ctx.stroke();
-
-        // Ring Labels (Only on export or if sparse)
-        if (isExport || State.channels.length < 15) {
-            ctx.fillStyle = '#484f58';
-            ctx.font = isExport ? '24px monospace' : '10px monospace';
-            ctx.fillText(ch.val, cx + 5, cy - r - 5);
-        }
-    });
-
-    // 2. Draw Connections & Points
-    const opacity = Math.max(0.1, 30 / State.M); // Dynamic opacity
-    
-    State.residues.forEach(res => {
-        // Source Coords (Outer Ring)
-        const outerR = maxR;
-        const sx = cx + Math.cos(res.angle) * outerR;
-        const sy = cy + Math.sin(res.angle) * outerR;
-
-        // Dest Coords (Channel Ring)
-        const ch = State.channels.find(c => c.val === res.m_prime);
-        const dr = ch.renderRadius;
-        const dx = cx + Math.cos(res.angle) * dr;
-        const dy = cy + Math.sin(res.angle) * dr;
-
-        // Color Logic
-        let color = '#58a6ff'; // Coprime Blue
-        if (!res.isCoprime) color = '#ff6b6b'; // Reducible Red
-        if (res.m_prime === 1) color = '#ffd700'; // Gold Center
-
-        // Draw Line (Projection Mode only)
-        if (State.viewMode === 'projection' && res.d > 1) {
-            ctx.beginPath();
-            ctx.moveTo(sx, sy);
-            ctx.lineTo(dx, dy);
-            ctx.strokeStyle = color;
-            ctx.globalAlpha = isExport ? opacity * 1.5 : opacity;
-            ctx.lineWidth = isExport ? 2 : 1;
-            ctx.stroke();
-            ctx.globalAlpha = 1.0;
-        }
-
-        // Draw Point (Destination)
-        const pSize = isExport ? (res.isCoprime ? 6 : 8) : (res.isCoprime ? 2 : 3);
-        ctx.beginPath();
-        ctx.arc(dx, dy, pSize, 0, Math.PI * 2);
-        ctx.fillStyle = color;
-        ctx.fill();
-        
-        // Store hit data if screen render
-        if (!isExport) {
-            res.hit = {x: dx, y: dy, r: pSize + 2};
-        }
-    });
-}
-
-/**
- * SCREEN RENDERER
+ * ----------------------------------------
+ * RENDERING ENGINE (CANVAS 2D)
+ * ----------------------------------------
  */
 const canvas = document.getElementById('vizCanvas');
 const ctx = canvas.getContext('2d');
 
-function renderScreen() {
-    canvas.width = canvas.parentElement.offsetWidth;
-    canvas.height = canvas.parentElement.offsetHeight;
-    drawScene(ctx, canvas.width, canvas.height, false);
+function resize() {
+    canvas.width = document.getElementById('stage').clientWidth;
+    canvas.height = document.getElementById('stage').clientHeight;
+    render();
 }
+window.addEventListener('resize', resize);
 
-/**
- * EXPORT: PNG GENERATOR (High Res)
- */
-function exportPNG(res) {
-    const size = res === '4k' ? 4096 : 2048;
-    const exportCanvas = document.createElement('canvas');
-    exportCanvas.width = size;
-    exportCanvas.height = size * 0.75; // 4:3 Aspect Ratio for Papers
-    const eCtx = exportCanvas.getContext('2d');
-
-    // 1. Draw The Scene
-    // We offset the scene to the left to make room for Legend
-    const sceneWidth = size * 0.75; 
-    
-    // Fill Background
-    eCtx.fillStyle = '#0d1117';
-    eCtx.fillRect(0,0, size, size * 0.75);
-
-    // Render Viz
-    drawScene(eCtx, sceneWidth, size * 0.75, true);
-
-    // 2. Draw "Paper" Meta Data
-    const margin = size * 0.05;
-    const textX = sceneWidth; 
-    
-    // Title Block
-    eCtx.fillStyle = '#f0f6fc';
-    eCtx.font = `bold ${size*0.04}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto`;
-    eCtx.textAlign = "left";
-    eCtx.fillText(`Modulus M = ${State.M}`, textX, margin + (size*0.05));
-
-    eCtx.fillStyle = '#8b949e';
-    eCtx.font = `${size*0.02}px monospace`;
-    eCtx.fillText(`Prime Factors: ${MathCore.getFactors(State.M)}`, textX, margin + (size*0.08));
-
-    // Stats Block
-    let y = margin + (size * 0.15);
-    const lineHeight = size * 0.025;
-    
-    eCtx.fillStyle = '#58a6ff';
-    eCtx.font = `bold ${size*0.018}px sans-serif`;
-    eCtx.fillText("STATISTICS", textX, y);
-    y += lineHeight * 1.5;
-
-    eCtx.fillStyle = '#f0f6fc';
-    eCtx.font = `${size*0.018}px monospace`;
-    eCtx.fillText(`φ(M) Count: ${MathCore.phi(State.M)}`, textX, y); y += lineHeight;
-    eCtx.fillText(`Channels:   ${State.channels.length}`, textX, y); y += lineHeight;
-    eCtx.fillText(`Max Depth:  ${State.channels[0].d}`, textX, y);
-
-    // Legend Block
-    y += lineHeight * 3;
-    eCtx.fillStyle = '#58a6ff';
-    eCtx.font = `bold ${size*0.018}px sans-serif`;
-    eCtx.fillText("LEGEND", textX, y);
-    y += lineHeight * 1.5;
-
-    function drawLegendItem(color, text) {
-        eCtx.fillStyle = color;
-        eCtx.beginPath();
-        eCtx.arc(textX + (size*0.008), y - (size*0.006), size*0.008, 0, Math.PI*2);
-        eCtx.fill();
-        
-        eCtx.fillStyle = '#c9d1d9';
-        eCtx.font = `${size*0.018}px sans-serif`;
-        eCtx.fillText(text, textX + (size*0.03), y);
-        y += lineHeight * 1.5;
+function getPointColor(res) {
+    if (State.colorMode === 'type') {
+        if (res.d === 1) return '#58a6ff';
+        if (res.m_prime === 1) return '#ffd700';
+        return '#ff6b6b';
     }
-
-    drawLegendItem('#58a6ff', `Irreducible (Coprime)`);
-    drawLegendItem('#ff6b6b', `Reducible Residue`);
-    drawLegendItem('#ffd700', `Center (M'=1)`);
-    
-    y += lineHeight;
-    eCtx.fillStyle = '#8b949e';
-    eCtx.font = `italic ${size*0.015}px sans-serif`;
-    eCtx.fillText("Projection logic based on", textX, y); y += lineHeight;
-    eCtx.fillText("Composite Channel Corollary.", textX, y);
-
-    // Footer / Signature
-    eCtx.fillStyle = '#30363d';
-    eCtx.fillRect(textX, size*0.75 - margin - (size*0.04), size*0.2, 2);
-    
-    eCtx.fillStyle = '#8b949e';
-    eCtx.font = `${size*0.018}px sans-serif`;
-    eCtx.fillText("Analysis by", textX, size*0.75 - margin);
-    eCtx.fillStyle = '#f0f6fc';
-    eCtx.font = `bold ${size*0.02}px sans-serif`;
-    eCtx.fillText("Wessen Getachew", textX, size*0.75 - margin + (size*0.025));
-
-    // 3. Download
-    const link = document.createElement('a');
-    link.download = `Projection_M${State.M}_${res}.png`;
-    link.href = exportCanvas.toDataURL('image/png');
-    link.click();
+    if (State.colorMode === 'gcd') {
+        if (res.d === 1) return '#58a6ff';
+        return `hsl(${(res.d * 15) % 360}, 70%, 60%)`;
+    }
+    // Spectral
+    const ch = State.channels.find(c => c.val === res.m_prime);
+    return ch ? ch.color : '#fff';
 }
 
-/**
- * EXPORT: CSV DATASET
- */
-function exportCSV() {
-    let csv = "Residue_r,Modulus_M,GCD_d,Channel_M_Prime,Reduced_Fraction,Angle_Rad,Type\n";
+function render(exportCtx = null, exportSize = null) {
+    const context = exportCtx || ctx;
+    const width = exportSize ? exportSize.w : canvas.width;
+    const height = exportSize ? exportSize.h : canvas.height;
     
-    State.residues.forEach(r => {
-        const type = r.isCoprime ? "Irreducible" : "Reducible";
-        const frac = `${r.r/r.d}/${r.m_prime}`;
-        csv += `${r.r},${State.M},${r.d},${r.m_prime},${frac},${r.angle.toFixed(4)},${type}\n`;
+    // Clear
+    context.fillStyle = exportCtx ? '#0d1117' : '#050505';
+    context.fillRect(0, 0, width, height);
+
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const minDim = Math.min(width, height);
+    
+    const baseRadius = exportCtx ? (minDim * 0.35) : (minDim * 0.4);
+    
+    const zoom = exportCtx ? 1 : State.zoom;
+    const panX = exportCtx ? 0 : State.panX;
+    const panY = exportCtx ? 0 : State.panY;
+
+    // Apply Transform
+    context.save();
+    context.translate(centerX + panX, centerY + panY);
+    context.scale(zoom, zoom);
+
+    // 1. Draw Channel Rings
+    State.channels.forEach((ch, i) => {
+        if (State.isolatedChannel && State.isolatedChannel !== ch.val) return;
+
+        const pct = (i + 1) / (State.channels.length + 1);
+        let r = pct * baseRadius;
+        if (ch.val === State.M) r = baseRadius;
+        if (ch.val === 1) r = baseRadius * 0.05;
+        
+        ch.renderR = r; 
+
+        context.beginPath();
+        context.arc(0, 0, r, 0, Math.PI * 2);
+        context.strokeStyle = State.isolatedChannel ? ch.color : '#30363d';
+        context.lineWidth = exportCtx ? 2 : 1 / zoom;
+        context.stroke();
     });
 
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Channel_Data_M${State.M}.csv`;
-    link.click();
+    // 2. Draw Data Points & Lines
+    const pointSize = exportCtx ? 6 : (3 / Math.sqrt(zoom));
+    const lineWidth = exportCtx ? 2 : (1 / zoom);
+
+    State.residues.forEach(res => {
+        if (State.isolatedChannel && State.isolatedChannel !== res.m_prime) return;
+
+        const color = getPointColor(res);
+        const ch = State.channels.find(c => c.val === res.m_prime);
+        const destR = ch.renderR;
+        
+        const cos = Math.cos(res.angle);
+        const sin = Math.sin(res.angle);
+
+        const x1 = cos * baseRadius;
+        const y1 = sin * baseRadius;
+        const x2 = cos * destR;
+        const y2 = sin * destR;
+
+        if (State.viewMode === 'projection' && res.d > 1) {
+            context.beginPath();
+            context.moveTo(x1, y1);
+            context.lineTo(x2, y2);
+            context.strokeStyle = color;
+            context.lineWidth = lineWidth;
+            context.globalAlpha = State.opacity;
+            context.stroke();
+            context.globalAlpha = 1.0;
+        }
+
+        context.beginPath();
+        context.arc(x2, y2, pointSize, 0, Math.PI * 2);
+        context.fillStyle = color;
+        context.fill();
+
+        // 3. Draw Labels (Smart LOD)
+        const showLabels = State.labelMode !== 'none';
+        const densityCheck = (State.M < 50) || (zoom > 3);
+
+        if (showLabels && densityCheck && !exportCtx) {
+            let labelText = '';
+            if (State.labelMode === 'gcd') labelText = res.d;
+            if (State.labelMode === 'frac') labelText = `${res.r_prime}/${res.m_prime}`;
+            if (State.labelMode === 'theta') labelText = (res.angle * 180 / Math.PI).toFixed(0) + '°';
+
+            context.fillStyle = '#fff';
+            context.font = `${10/zoom}px monospace`;
+            
+            const lx = x2 + cos * (15/zoom);
+            const ly = y2 + sin * (15/zoom);
+            
+            context.fillText(labelText, lx, ly);
+        }
+    });
+
+    context.restore();
 }
 
 /**
- * UI INTERACTION
+ * ----------------------------------------
+ * INTERACTION & NAVIGATION
+ * ----------------------------------------
  */
-function setM(val) {
-    State.M = parseInt(val);
+const stage = document.getElementById('stage');
+
+stage.addEventListener('wheel', e => {
+    e.preventDefault();
+    const direction = e.deltaY > 0 ? -1 : 1;
+    adjustZoom(direction * 0.1);
+});
+
+function adjustZoom(amount) {
+    State.zoom += amount * State.zoom;
+    if (State.zoom < 0.1) State.zoom = 0.1;
+    if (State.zoom > 10) State.zoom = 10;
+    
+    document.getElementById('disp-zoom').innerText = `Zoom: ${(State.zoom*100).toFixed(0)}%`;
+    render();
+}
+
+function resetView() {
+    State.zoom = 1;
+    State.panX = 0;
+    State.panY = 0;
+    State.isolatedChannel = null;
+    document.getElementById('disp-zoom').innerText = `Zoom: 100%`;
+    render();
+}
+
+canvas.addEventListener('mousedown', e => {
+    State.isDragging = true;
+    State.lastMouse = { x: e.clientX, y: e.clientY };
+});
+
+window.addEventListener('mouseup', () => State.isDragging = false);
+
+window.addEventListener('mousemove', e => {
+    if (State.isDragging) {
+        const dx = e.clientX - State.lastMouse.x;
+        const dy = e.clientY - State.lastMouse.y;
+        State.panX += dx;
+        State.panY += dy;
+        State.lastMouse = { x: e.clientX, y: e.clientY };
+        render();
+    }
+    handleHover(e);
+});
+
+canvas.addEventListener('click', e => {
+    if (Math.abs(e.clientX - State.lastMouse.x) > 5) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const cx = rect.width/2 + State.panX;
+    const cy = rect.height/2 + State.panY;
+    
+    const mx = (e.clientX - rect.left - cx) / State.zoom;
+    const my = (e.clientY - rect.top - cy) / State.zoom;
+    const dist = Math.sqrt(mx*mx + my*my);
+    
+    const minDim = Math.min(canvas.width, canvas.height);
+    const baseR = minDim * 0.4;
+    
+    let clickedCh = null;
+    let minDiff = 10 / State.zoom;
+
+    State.channels.forEach(ch => {
+        if (Math.abs(ch.renderR - dist) < minDiff) {
+            clickedCh = ch.val;
+            minDiff = Math.abs(ch.renderR - dist);
+        }
+    });
+
+    if (clickedCh) {
+        if (State.isolatedChannel === clickedCh) State.isolatedChannel = null;
+        else State.isolatedChannel = clickedCh;
+        render();
+    }
+});
+
+function handleHover(e) {
+    const rect = canvas.getBoundingClientRect();
+    const cx = rect.width/2 + State.panX;
+    const cy = rect.height/2 + State.panY;
+    const mx = (e.clientX - rect.left - cx) / State.zoom;
+    const my = (e.clientY - rect.top - cy) / State.zoom;
+
+    let minD = 10 / State.zoom;
+    let target = null;
+
+    State.residues.forEach(res => {
+        if (State.isolatedChannel && res.m_prime !== State.isolatedChannel) return;
+        
+        const ch = State.channels.find(c => c.val === res.m_prime);
+        const px = Math.cos(res.angle) * ch.renderR;
+        const py = Math.sin(res.angle) * ch.renderR;
+        
+        const dist = Math.sqrt((mx-px)**2 + (my-py)**2);
+        if (dist < minD) {
+            minD = dist;
+            target = res;
+        }
+    });
+
+    const tip = document.getElementById('tooltip');
+    if (target) {
+        tip.style.display = 'block';
+        tip.style.left = (e.clientX + 15) + 'px';
+        tip.style.top = (e.clientY + 15) + 'px';
+        
+        const color = getPointColor(target);
+        
+        tip.innerHTML = `
+            <strong style="color:${color}">Residue ${target.r}</strong>
+            <div style="margin-top:4px; color:#ccc">
+            Type: ${target.type}<br>
+            GCD: ${target.d}<br>
+            Channel: M'=${target.m_prime}<br>
+            Angle: ${(target.angle * 180 / Math.PI).toFixed(1)}°
+            </div>
+        `;
+    } else {
+        tip.style.display = 'none';
+    }
+}
+
+/**
+ * ----------------------------------------
+ * UI UPDATES & EXPORT
+ * ----------------------------------------
+ */
+function setM(m) {
+    State.M = parseInt(m);
     document.getElementById('input-m').value = State.M;
     document.getElementById('slider-m').value = State.M;
+    document.getElementById('disp-title').innerText = `M = ${State.M}`;
+    document.getElementById('disp-subtitle').innerText = MathCore.getFactors(State.M);
     computeData();
+    updateLegend();
 }
 
-document.getElementById('input-m').addEventListener('change', e => setM(e.target.value));
-document.getElementById('slider-m').addEventListener('input', e => setM(e.target.value));
+function updateConfig() {
+    State.colorMode = document.getElementById('sel-color').value;
+    State.labelMode = document.getElementById('sel-label').value;
+    State.opacity = parseFloat(document.getElementById('rng-opacity').value);
+    render();
+    updateLegend();
+}
 
-// View Toggle
 function toggleView() {
     State.viewMode = State.viewMode === 'projection' ? 'rings' : 'projection';
-    document.getElementById('lbl-view').innerText = State.viewMode === 'projection' ? 'Projection' : 'Rings';
-    renderScreen();
+    document.getElementById('btn-view').innerText = State.viewMode === 'projection' ? 'Switch to Ring View' : 'Switch to Projection View';
+    render();
 }
 
-// Animation
-let animInterval;
+function updateStats() {
+    document.getElementById('val-phi').innerText = MathCore.phi(State.M);
+    document.getElementById('val-channels').innerText = State.channels.length;
+    document.getElementById('val-depth').innerText = State.channels[0].d;
+}
+
+function updateLegend() {
+    const el = document.getElementById('legend-dynamic');
+    el.innerHTML = '';
+    
+    if (State.colorMode === 'spectral') {
+        el.innerHTML = '<div style="font-style:italic; font-size:0.75rem; margin-bottom:5px">Colors represent distinct Farey Channels (Moduli Rings)</div>';
+        State.channels.slice(0, 5).forEach(ch => {
+            el.innerHTML += `<div class="legend-item"><div class="dot" style="background:${ch.color}"></div>M' = ${ch.val}</div>`;
+        });
+        if (State.channels.length > 5) el.innerHTML += `<div class="legend-item">... (${State.channels.length - 5} more)</div>`;
+    } else if (State.colorMode === 'type') {
+        el.innerHTML += `<div class="legend-item"><div class="dot" style="background:#58a6ff"></div>Coprime (Irreducible)</div>`;
+        el.innerHTML += `<div class="legend-item"><div class="dot" style="background:#ff6b6b"></div>Reducible</div>`;
+        el.innerHTML += `<div class="legend-item"><div class="dot" style="background:#ffd700"></div>Center (M'=1)</div>`;
+    }
+}
+
 function toggleAnim() {
-    const btn = document.getElementById('btn-anim');
     if (State.isAnimating) {
-        clearInterval(animInterval);
+        clearInterval(State.animTimer);
         State.isAnimating = false;
-        btn.innerHTML = "▶ Sequence";
-        btn.classList.remove('active');
+        document.getElementById('btn-anim').classList.remove('active');
     } else {
         State.isAnimating = true;
-        btn.innerHTML = "⏹ Stop";
-        btn.classList.add('active');
-        animInterval = setInterval(() => {
+        document.getElementById('btn-anim').classList.add('active');
+        State.animTimer = setInterval(() => {
             let next = State.M + 1;
-            if (next > 2520) next = 4;
+            if (next > 1000) next = 4;
             setM(next);
         }, 100);
     }
 }
 
-// Tooltip Interaction
-canvas.addEventListener('mousemove', e => {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+// FIXED EXPORT FUNCTION
+function exportPNG(res) {
+    const size = res === '4k' ? 4096 : 2048;
+    const expCvs = document.createElement('canvas');
+    expCvs.width = size;
+    expCvs.height = size * 0.75;
+    const eCtx = expCvs.getContext('2d');
     
-    // Find nearest point
-    let minD = 1000;
-    let target = null;
-    
-    // Reverse search for layers on top
-    for(let i=State.residues.length-1; i>=0; i--) {
-        const r = State.residues[i];
-        if (!r.hit) continue;
-        const dist = Math.sqrt(Math.pow(x - r.hit.x, 2) + Math.pow(y - r.hit.y, 2));
-        if (dist < r.hit.r + 2 && dist < minD) {
-            minD = dist;
-            target = r;
-        }
-    }
+    // Draw Scene (Full View)
+    render(eCtx, {w: size * 0.75, h: size * 0.75}); 
 
-    const tt = document.getElementById('tooltip');
-    if (target) {
-        tt.style.display = 'block';
-        tt.style.left = (e.clientX + 15) + 'px';
-        tt.style.top = (e.clientY + 15) + 'px';
-        tt.innerHTML = `
-            <div style="color:${target.isCoprime?'#58a6ff':'#ff6b6b'}; font-weight:bold; margin-bottom:4px;">
-                Residue r = ${target.r}
-            </div>
-            <div style="font-family:monospace; font-size:0.8em; color:#8b949e">
-                Fraction: ${target.r}/${State.M}<br>
-                Reduces:  ${target.r/target.d}/${target.m_prime}<br>
-                GCD (d):  ${target.d}
-            </div>
-            <div style="margin-top:4px; border-top:1px solid #30363d; padding-top:4px; color:#f0f6fc">
-                Channel M' = ${target.m_prime}
-            </div>
-        `;
-    } else {
-        tt.style.display = 'none';
-    }
-});
+    // Draw Legend/Meta on Right Strip
+    // Safe Zone Calculations
+    const margin = size * 0.03; 
+    const sidebarX = size * 0.75;
+    const sidebarW = size * 0.25;
+    const textX = sidebarX + margin;
+    const maxTextWidth = sidebarW - (margin * 2);
+    
+    eCtx.fillStyle = '#0d1117';
+    eCtx.fillRect(sidebarX, 0, sidebarW, size * 0.75); // Sidebar BG
+    
+    // Text Config - Smaller fonts to fit
+    eCtx.fillStyle = '#f0f6fc';
+    eCtx.font = `bold ${size*0.025}px sans-serif`; // Reduced from 0.03
+    eCtx.fillText(`M = ${State.M}`, textX, margin + size*0.05);
+    
+    eCtx.font = `${size*0.012}px monospace`; // Reduced from 0.015
+    eCtx.fillStyle = '#8b949e';
+    // Ensure Prime Factors doesn't overflow
+    const factors = MathCore.getFactors(State.M);
+    eCtx.fillText(factors, textX, margin + size*0.08, maxTextWidth);
+
+    // Signature
+    const bottomY = size * 0.75 - margin;
+    eCtx.fillStyle = '#30363d';
+    eCtx.fillRect(textX, bottomY - size*0.05, size*0.1, 2);
+    
+    eCtx.fillStyle = '#f0f6fc';
+    eCtx.font = `bold ${size*0.015}px sans-serif`;
+    eCtx.fillText("Wessen Getachew", textX, bottomY);
+    
+    eCtx.fillStyle = '#8b949e';
+    eCtx.font = `${size*0.012}px sans-serif`;
+    eCtx.fillText("Composite Channel Projection", textX, bottomY + size*0.02);
+
+    const link = document.createElement('a');
+    link.download = `Projection_M${State.M}_${res}.png`;
+    link.href = expCvs.toDataURL();
+    link.click();
+}
+
+function exportCSV() {
+    let csv = "Residue,Modulus,GCD,Channel,Fraction,Angle_Deg,Color_Hex\n";
+    State.residues.forEach(r => {
+        const c = State.channels.find(ch => ch.val === r.m_prime);
+        csv += `${r.r},${State.M},${r.d},${r.m_prime},${r.r_prime}/${r.m_prime},${(r.angle*180/Math.PI).toFixed(2)},${c.color}\n`;
+    });
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `data_m${State.M}.csv`;
+    link.click();
+}
 
 // Init
-window.addEventListener('resize', renderScreen);
+document.getElementById('input-m').addEventListener('change', e=>setM(e.target.value));
+document.getElementById('slider-m').addEventListener('input', e=>setM(e.target.value));
 computeData();
 
 </script>
