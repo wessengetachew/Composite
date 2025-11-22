@@ -338,6 +338,51 @@
                 </select>
             </div>
 
+            <h2>Ring Display</h2>
+            <div class="checkbox-group">
+                <input type="checkbox" id="showAllRings" checked>
+                <label for="showAllRings">Show All Divisor Rings</label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="colorAllRings">
+                <label for="colorAllRings">Apply Color Scheme to All Rings</label>
+            </div>
+
+            <div class="control-group">
+                <label>Select Specific Rings (comma-separated divisors)</label>
+                <input type="text" id="selectedRings" placeholder="e.g., 1,2,3,6,12">
+            </div>
+
+            <h2>Number Theory Features</h2>
+            <div class="checkbox-group">
+                <input type="checkbox" id="showTwinResidues">
+                <label for="showTwinResidues">Highlight Twin Residues (r, r+2)</label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="showCousinResidues">
+                <label for="showCousinResidues">Highlight Cousin Residues (r, r+4)</label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="showSexyResidues">
+                <label for="showSexyResidues">Highlight Sexy Residues (r, r+6)</label>
+            </div>
+
+            <div class="control-group">
+                <label>Gap Type to Highlight</label>
+                <select id="gapType">
+                    <option value="none">None</option>
+                    <option value="2">Gap 2 (Twins)</option>
+                    <option value="4">Gap 4 (Cousins)</option>
+                    <option value="6">Gap 6 (Sexy)</option>
+                    <option value="8">Gap 8</option>
+                    <option value="10">Gap 10</option>
+                    <option value="12">Gap 12</option>
+                </select>
+            </div>
+
             <div class="checkbox-group">
                 <input type="checkbox" id="showProjections" checked>
                 <label for="showProjections">Show Projection Lines</label>
@@ -351,6 +396,11 @@
                 <div><strong>Reducibility:</strong> <span id="reducibilityRatio">73.3%</span></div>
                 <div><strong>Farey Channels:</strong> <span id="channelCount">15</span></div>
                 <div><strong>Prime Factorization:</strong> <span id="factorization">2³×3×5</span></div>
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #333;">
+                    <strong>Twin Pairs (r, r+2):</strong> <span id="twinCount">0</span>
+                </div>
+                <div><strong>Cousin Pairs (r, r+4):</strong> <span id="cousinCount">0</span></div>
+                <div><strong>Sexy Pairs (r, r+6):</strong> <span id="sexyCount">0</span></div>
             </div>
 
             <div class="color-legend" id="colorLegend">
@@ -504,6 +554,13 @@
             labelType: 'farey',
             pointLabelType: 'none',
             showProjections: true,
+            showAllRings: true,
+            colorAllRings: false,
+            selectedRings: null,
+            showTwinResidues: false,
+            showCousinResidues: false,
+            showSexyResidues: false,
+            gapType: 'none',
             zoom: 1.0
         };
 
@@ -511,6 +568,10 @@
         let points = [];
         let channels = [];
         let hoveredPoint = null;
+        let allRingPoints = new Map(); // Map of divisor -> points array
+        let twinPairs = [];
+        let cousinPairs = [];
+        let sexyPairs = [];
 
         // Color schemes
         const colorSchemes = {
@@ -561,8 +622,13 @@
             const M = config.modulus;
             points = [];
             channels = new Map();
+            allRingPoints.clear();
+            twinPairs = [];
+            cousinPairs = [];
+            sexyPairs = [];
 
-            // Calculate all points
+            // Calculate outer ring (M)
+            const coprimeSet = new Set();
             for (let r = 0; r < M; r++) {
                 const g = gcd(r, M);
                 const isOpen = g === 1;
@@ -571,6 +637,8 @@
                 const angle = (2 * Math.PI * r) / M;
                 const spf = isOpen ? 1 : smallestPrimeFactor(g);
                 const lpf = isOpen ? 1 : largestPrimeFactor(g);
+
+                if (isOpen) coprimeSet.add(r);
 
                 points.push({
                     r, M, gcd: g, isOpen,
@@ -591,6 +659,48 @@
                 channels.get(reducedM).count++;
             }
 
+            // Calculate points for all divisor rings
+            const divisors = getDivisors(M);
+            divisors.forEach(d => {
+                const ringPoints = [];
+                for (let r = 0; r < d; r++) {
+                    const g = gcd(r, d);
+                    const isOpen = g === 1;
+                    const angle = (2 * Math.PI * r) / d;
+                    const spf = isOpen ? 1 : smallestPrimeFactor(g);
+                    const lpf = isOpen ? 1 : largestPrimeFactor(g);
+                    
+                    ringPoints.push({
+                        r, M: d, gcd: g, isOpen,
+                        reducedR: r / g,
+                        reducedM: d / g,
+                        angle, spf, lpf
+                    });
+                }
+                allRingPoints.set(d, ringPoints);
+            });
+
+            // Find twin residue pairs (r, r+2) both coprime to M
+            for (let r = 0; r < M - 2; r++) {
+                if (coprimeSet.has(r) && coprimeSet.has(r + 2)) {
+                    twinPairs.push([r, r + 2]);
+                }
+            }
+
+            // Find cousin pairs (r, r+4)
+            for (let r = 0; r < M - 4; r++) {
+                if (coprimeSet.has(r) && coprimeSet.has(r + 4)) {
+                    cousinPairs.push([r, r + 4]);
+                }
+            }
+
+            // Find sexy pairs (r, r+6)
+            for (let r = 0; r < M - 6; r++) {
+                if (coprimeSet.has(r) && coprimeSet.has(r + 6)) {
+                    sexyPairs.push([r, r + 6]);
+                }
+            }
+
             updateStatistics();
         }
 
@@ -609,6 +719,15 @@
             document.getElementById('reducibilityRatio').textContent = reducibilityRatio + '%';
             document.getElementById('channelCount').textContent = channelCount;
             document.getElementById('factorization').textContent = formatFactorization(factors);
+            
+            // Update constellation counts if elements exist
+            const twinCount = document.getElementById('twinCount');
+            const cousinCount = document.getElementById('cousinCount');
+            const sexyCount = document.getElementById('sexyCount');
+            
+            if (twinCount) twinCount.textContent = twinPairs.length;
+            if (cousinCount) cousinCount.textContent = cousinPairs.length;
+            if (sexyCount) sexyCount.textContent = sexyPairs.length;
         }
 
         function draw() {
@@ -680,22 +799,69 @@
                 }
             });
 
-            // Draw channel points (inner rings)
-            channels.forEach((channel, M_prime) => {
-                const radius = baseRadius * (M_prime / config.modulus);
-                for (let r = 0; r < M_prime; r++) {
-                    if (gcd(r, M_prime) === 1) {
-                        const angle = (2 * Math.PI * r) / M_prime;
-                        const x = centerX + radius * Math.cos(angle - Math.PI / 2);
-                        const y = centerY + radius * Math.sin(angle - Math.PI / 2);
+            // Draw channel points (inner rings) with optional coloring
+            if (config.showAllRings) {
+                const divisors = getDivisors(config.modulus);
+                const selectedRingsSet = config.selectedRings ? 
+                    new Set(config.selectedRings.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n))) : 
+                    null;
+
+                divisors.forEach(d => {
+                    if (d === config.modulus) return; // Skip outer ring
+                    if (selectedRingsSet && !selectedRingsSet.has(d)) return;
+                    
+                    const ringPoints = allRingPoints.get(d);
+                    if (!ringPoints) return;
+                    
+                    const radius = baseRadius * (d / config.modulus);
+                    
+                    ringPoints.forEach(p => {
+                        if (!p.isOpen && !config.colorAllRings) return; // Only show coprime unless coloring all
+                        
+                        const x = centerX + radius * Math.cos(p.angle - Math.PI / 2);
+                        const y = centerY + radius * Math.sin(p.angle - Math.PI / 2);
+
+                        let color = '#ffd700'; // Default gold for coprime
+                        
+                        if (config.colorAllRings) {
+                            // Apply color scheme to inner rings
+                            if (config.colorScheme === 'channel-type') {
+                                color = p.isOpen ? '#00ffff' : '#ff1493';
+                            } else if (config.colorScheme === 'spf') {
+                                color = p.isOpen ? '#00ffff' : colorSchemes.spf(p.spf);
+                            } else if (config.colorScheme === 'lpf') {
+                                color = p.isOpen ? '#00ffff' : colorSchemes.lpf(p.lpf);
+                            } else if (config.colorScheme === 'gcd') {
+                                color = colorSchemes.gcd(p.gcd);
+                            } else if (config.colorScheme === 'depth') {
+                                color = colorSchemes.depth(p.M);
+                            }
+                        }
 
                         ctx.beginPath();
                         ctx.arc(x, y, config.pointSize * 0.7, 0, 2 * Math.PI);
-                        ctx.fillStyle = '#ffd700';
+                        ctx.fillStyle = color;
                         ctx.fill();
+                    });
+                });
+            } else {
+                // Original behavior: only gold coprime points
+                channels.forEach((channel, M_prime) => {
+                    const radius = baseRadius * (M_prime / config.modulus);
+                    for (let r = 0; r < M_prime; r++) {
+                        if (gcd(r, M_prime) === 1) {
+                            const angle = (2 * Math.PI * r) / M_prime;
+                            const x = centerX + radius * Math.cos(angle - Math.PI / 2);
+                            const y = centerY + radius * Math.sin(angle - Math.PI / 2);
+
+                            ctx.beginPath();
+                            ctx.arc(x, y, config.pointSize * 0.7, 0, 2 * Math.PI);
+                            ctx.fillStyle = '#ffd700';
+                            ctx.fill();
+                        }
                     }
-                }
-            });
+                });
+            }
 
             // Draw outer ring points
             points.forEach(p => {
@@ -753,6 +919,63 @@
                 p.screenY = y;
             });
 
+            // Draw constellation pair connections
+            ctx.globalAlpha = 0.5;
+            
+            if (config.showTwinResidues || config.gapType === '2') {
+                twinPairs.forEach(([r1, r2]) => {
+                    const p1 = points[r1];
+                    const p2 = points[r2];
+                    ctx.beginPath();
+                    ctx.moveTo(p1.screenX, p1.screenY);
+                    ctx.lineTo(p2.screenX, p2.screenY);
+                    ctx.strokeStyle = '#00ff00'; // Green for twins
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Highlight the points
+                    ctx.beginPath();
+                    ctx.arc(p1.screenX, p1.screenY, config.pointSize + 2, 0, 2 * Math.PI);
+                    ctx.strokeStyle = '#ff0000'; // Red
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.arc(p2.screenX, p2.screenY, config.pointSize + 2, 0, 2 * Math.PI);
+                    ctx.strokeStyle = '#0000ff'; // Blue
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                });
+            }
+            
+            if (config.showCousinResidues || config.gapType === '4') {
+                cousinPairs.forEach(([r1, r2]) => {
+                    const p1 = points[r1];
+                    const p2 = points[r2];
+                    ctx.beginPath();
+                    ctx.moveTo(p1.screenX, p1.screenY);
+                    ctx.lineTo(p2.screenX, p2.screenY);
+                    ctx.strokeStyle = '#ffff00'; // Yellow for cousins
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                });
+            }
+            
+            if (config.showSexyResidues || config.gapType === '6') {
+                sexyPairs.forEach(([r1, r2]) => {
+                    const p1 = points[r1];
+                    const p2 = points[r2];
+                    ctx.beginPath();
+                    ctx.moveTo(p1.screenX, p1.screenY);
+                    ctx.lineTo(p2.screenX, p2.screenY);
+                    ctx.strokeStyle = '#ff00ff'; // Magenta for sexy
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                });
+            }
+            
+            ctx.globalAlpha = 1.0;
+
             ctx.restore();
         }
 
@@ -789,15 +1012,29 @@
                 tooltip.style.left = (x + 15) + 'px';
                 tooltip.style.top = (y + 15) + 'px';
                 
-                const reduction = hoveredPoint.isOpen ? 
+                const p = hoveredPoint;
+                const reduction = p.isOpen ? 
                     'Irreducible' : 
-                    `${hoveredPoint.r}/${hoveredPoint.M} → ${hoveredPoint.reducedR}/${hoveredPoint.reducedM}`;
+                    `${p.r}/${p.M} → ${p.reducedR}/${p.reducedM}`;
+                
+                // Check constellation membership
+                const isTwin = twinPairs.some(([r1, r2]) => r1 === p.r || r2 === p.r);
+                const isCousin = cousinPairs.some(([r1, r2]) => r1 === p.r || r2 === p.r);
+                const isSexy = sexyPairs.some(([r1, r2]) => r1 === p.r || r2 === p.r);
+                
+                let constellations = [];
+                if (isTwin) constellations.push('Twin');
+                if (isCousin) constellations.push('Cousin');
+                if (isSexy) constellations.push('Sexy');
                 
                 tooltip.innerHTML = `
-                    <div class="tooltip-line"><strong>r = ${hoveredPoint.r}</strong></div>
-                    <div class="tooltip-line">gcd(${hoveredPoint.r}, ${hoveredPoint.M}) = ${hoveredPoint.gcd}</div>
+                    <div class="tooltip-line"><strong>Residue: r = ${p.r}</strong></div>
+                    <div class="tooltip-line">Modulus: M = ${p.M}</div>
+                    <div class="tooltip-line">gcd(${p.r}, ${p.M}) = ${p.gcd}</div>
                     <div class="tooltip-line">${reduction}</div>
-                    ${!hoveredPoint.isOpen ? `<div class="tooltip-line">Channel M' = ${hoveredPoint.reducedM}</div>` : ''}
+                    ${!p.isOpen ? `<div class="tooltip-line">Channel M' = ${p.reducedM}</div>` : ''}
+                    ${p.spf > 1 ? `<div class="tooltip-line">SPF = ${p.spf}, LPF = ${p.lpf}</div>` : ''}
+                    ${constellations.length > 0 ? `<div class="tooltip-line" style="color: #0f0;">${constellations.join(', ')} pair member</div>` : ''}
                 `;
             } else {
                 tooltip.style.display = 'none';
@@ -1147,6 +1384,41 @@
 
         document.getElementById('showProjections').addEventListener('change', (e) => {
             config.showProjections = e.target.checked;
+            draw();
+        });
+
+        document.getElementById('showAllRings').addEventListener('change', (e) => {
+            config.showAllRings = e.target.checked;
+            draw();
+        });
+
+        document.getElementById('colorAllRings').addEventListener('change', (e) => {
+            config.colorAllRings = e.target.checked;
+            draw();
+        });
+
+        document.getElementById('selectedRings').addEventListener('input', (e) => {
+            config.selectedRings = e.target.value || null;
+            draw();
+        });
+
+        document.getElementById('showTwinResidues').addEventListener('change', (e) => {
+            config.showTwinResidues = e.target.checked;
+            draw();
+        });
+
+        document.getElementById('showCousinResidues').addEventListener('change', (e) => {
+            config.showCousinResidues = e.target.checked;
+            draw();
+        });
+
+        document.getElementById('showSexyResidues').addEventListener('change', (e) => {
+            config.showSexyResidues = e.target.checked;
+            draw();
+        });
+
+        document.getElementById('gapType').addEventListener('change', (e) => {
+            config.gapType = e.target.value;
             draw();
         });
 
