@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Composite Channel Projection | Pro Analysis Suite</title>
+    <title>Composite Channel Projection | Master Suite</title>
     <style>
         :root {
             --bg: #0d1117;
@@ -31,31 +31,25 @@
         /* LEFT: STAGE */
         #stage {
             position: relative;
-            background: #050505; /* Deep black for contrast */
+            background: #050505;
             overflow: hidden;
-            cursor: default;
+            cursor: default; /* Changed from crosshair */
         }
         
         canvas { display: block; width: 100%; height: 100%; }
 
-        /* Overlay UI on Stage */
+        /* Overlay UI */
         #overlay-header {
-            position: absolute;
-            top: 20px; left: 20px;
-            pointer-events: none;
+            position: absolute; top: 20px; left: 20px; pointer-events: none;
             text-shadow: 0 2px 4px #000;
         }
         h1 { margin: 0; font-size: 1.4rem; letter-spacing: -0.5px; }
         .subtitle { color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.85rem; margin-top: 4px; }
 
         #zoom-controls {
-            position: absolute;
-            bottom: 20px; left: 20px;
-            display: flex; gap: 5px;
-            background: rgba(22, 27, 34, 0.8);
-            padding: 5px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
+            position: absolute; bottom: 20px; left: 20px;
+            display: flex; gap: 5px; background: rgba(22, 27, 34, 0.8);
+            padding: 5px; border-radius: 6px; border: 1px solid var(--border);
         }
 
         .icon-btn {
@@ -80,7 +74,7 @@
             color: var(--text-secondary); margin-bottom: 12px; font-weight: 700;
         }
 
-        /* Form Elements */
+        /* Controls */
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
         .control-row label { font-size: 0.85rem; color: var(--text-secondary); }
         
@@ -101,6 +95,18 @@
         .btn-pill:hover { border-color: var(--text-primary); color: var(--text-primary); }
         .btn-pill.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
 
+        /* View Mode Switcher */
+        .view-switcher {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 15px;
+        }
+        .view-btn {
+            background: var(--bg); border: 1px solid var(--border);
+            color: var(--text-secondary); padding: 8px; font-size: 0.75rem;
+            border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+        }
+        .view-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .view-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
         .action-btn {
             width: 100%; background: var(--bg); border: 1px solid var(--border);
             color: var(--text-primary); padding: 8px; border-radius: 4px;
@@ -109,11 +115,9 @@
         .action-btn:hover { background: var(--border); }
         .action-btn.primary { background: #238636; border-color: #238636; color: white; font-weight: 600; }
 
-        /* Data Tables */
         .stat-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px; }
         .stat-val { font-family: var(--font-mono); color: var(--accent); }
 
-        /* Legend */
         .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; margin-bottom: 6px; color: var(--text-secondary); }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
 
@@ -157,21 +161,32 @@
         <input type="range" id="slider-m" min="4" max="2520" value="60">
         <div class="btn-grid">
             <button class="btn-pill" onclick="setM(12)">12</button>
-            <button class="btn-pill" onclick="setM(30)">30</button>
             <button class="btn-pill" onclick="setM(60)">60</button>
-            <button class="btn-pill" onclick="setM(120)">120</button>
-            <button class="btn-pill" onclick="setM(360)">360</button>
-            <button class="btn-pill" onclick="setM(840)">840</button>
+            <button class="btn-pill" onclick="setM(210)">210</button>
             <button class="btn-pill" onclick="setM(2520)">2520</button>
-            <button class="btn-pill" onclick="setM(5040)">5k</button>
         </div>
     </div>
 
     <div class="section">
-        <div class="section-title">Visualization Parameters</div>
+        <div class="section-title">Projection Mode</div>
         
+        <div class="view-switcher">
+            <button class="view-btn active" onclick="setView('projection')" id="btn-v-projection">
+                <span>Projection</span>
+            </button>
+            <button class="view-btn" onclick="setView('rings')" id="btn-v-rings">
+                <span>Ring Channels</span>
+            </button>
+            <button class="view-btn" onclick="setView('ford')" id="btn-v-ford">
+                <span>Ford Horizon</span>
+            </button>
+            <button class="view-btn" onclick="setView('lattice')" id="btn-v-lattice">
+                <span>Lattice Map</span>
+            </button>
+        </div>
+
         <div class="control-row">
-            <label>Color Mode</label>
+            <label>Color</label>
             <select id="sel-color" onchange="updateConfig()">
                 <option value="spectral">Spectral Channels</option>
                 <option value="type">Residue Type</option>
@@ -180,37 +195,30 @@
         </div>
 
         <div class="control-row">
-            <label>Data Labels</label>
+            <label>Labels</label>
             <select id="sel-label" onchange="updateConfig()">
                 <option value="none">None</option>
                 <option value="gcd">Integer (GCD)</option>
-                <option value="frac">Fraction (r'/M')</option>
-                <option value="theta">Angle (θ)</option>
+                <option value="frac">Fraction (r/M)</option>
             </select>
         </div>
 
         <div class="control-row">
             <label>Opacity</label>
-            <input type="range" style="width:80px" min="0.1" max="1" step="0.1" value="0.4" id="rng-opacity" oninput="updateConfig()">
+            <input type="range" style="width:80px" min="0.1" max="1" step="0.1" value="0.5" id="rng-opacity" oninput="updateConfig()">
         </div>
-
-        <button class="action-btn" onclick="toggleView()" id="btn-view">Switch to Ring View</button>
     </div>
 
     <div class="section">
         <div class="section-title">Channel Analytics</div>
         <div class="stat-row"><span>Euler Totient φ(M)</span><span class="stat-val" id="val-phi">-</span></div>
         <div class="stat-row"><span>Active Channels</span><span class="stat-val" id="val-channels">-</span></div>
-        <div class="stat-row"><span>Projection Depth</span><span class="stat-val" id="val-depth">-</span></div>
-        <div style="margin-top:10px; font-size:0.75rem; color:#666;">
-            Click any ring to isolate that specific Farey channel.
-        </div>
+        <div class="stat-row"><span>Max Depth (GCD)</span><span class="stat-val" id="val-depth">-</span></div>
     </div>
 
     <div class="section">
         <div class="section-title">Legend</div>
-        <div id="legend-dynamic">
-            </div>
+        <div id="legend-dynamic"></div>
     </div>
 
     <div class="section" style="border-bottom:none">
@@ -229,11 +237,7 @@
 </div>
 
 <script>
-/**
- * ----------------------------------------
- * CORE LOGIC
- * ----------------------------------------
- */
+/** CORE LOGIC **/
 const MathCore = {
     gcd: (a, b) => { while (b) [a, b] = [b, a % b]; return a; },
     phi: (n) => {
@@ -258,67 +262,52 @@ const MathCore = {
     }
 };
 
-/**
- * ----------------------------------------
- * APP STATE
- * ----------------------------------------
- */
+/** APP STATE **/
 const State = {
     M: 60,
     residues: [],
     channels: [],
-    
-    // View Config
-    viewMode: 'projection',
+    viewMode: 'projection', // projection, rings, ford, lattice
     colorMode: 'spectral',
     labelMode: 'none',
-    opacity: 0.4,
-    
-    // Camera / Navigation
+    opacity: 0.5,
     zoom: 1,
     panX: 0,
     panY: 0,
     isDragging: false,
     lastMouse: {x:0, y:0},
-    
-    // Interaction
-    hovered: null,
     isolatedChannel: null,
     isAnimating: false,
     animTimer: null
 };
 
-/**
- * ----------------------------------------
- * DATA GENERATION
- * ----------------------------------------
- */
+/** DATA ENGINE **/
 function computeData() {
     const M = State.M;
     State.residues = [];
     const channelMap = {};
 
-    for (let r = 0; r < M; r++) {
+    for (let r = 0; r <= M; r++) { // Include 0 and M for Ford Circles
         const effectiveR = r === 0 ? M : r;
         const d = MathCore.gcd(effectiveR, M);
         const m_prime = M / d;
+        const r_prime = effectiveR / d;
 
-        if (!channelMap[m_prime]) {
-            channelMap[m_prime] = {
-                val: m_prime,
-                d: d,
-                count: 0,
-                color: null
-            };
+        if (r > 0 && r < M) { // Stats only count 1 to M-1 typically for analysis
+            if (!channelMap[m_prime]) {
+                channelMap[m_prime] = { val: m_prime, d: d, count: 0, color: null };
+            }
+            channelMap[m_prime].count++;
         }
-
-        channelMap[m_prime].count++;
+        
+        // Ensure channel exists even if only edges hit it (rare)
+        if (!channelMap[m_prime]) channelMap[m_prime] = { val: m_prime, d: d, count: 0, color: null };
 
         State.residues.push({
             r: r,
             d: d,
             m_prime: m_prime,
-            r_prime: effectiveR / d,
+            r_prime: r_prime,
             angle: (r / M) * Math.PI * 2 - (Math.PI / 2),
             type: d === 1 ? 'coprime' : 'reducible'
         });
@@ -326,7 +315,7 @@ function computeData() {
 
     State.channels = Object.values(channelMap).sort((a,b) => a.val - b.val);
 
-    // Assign Spectral Colors to Channels
+    // Golden Ratio Color Assignment
     State.channels.forEach((ch, index) => {
         const hue = ((index * 0.618033988749895) % 1) * 360;
         ch.color = `hsl(${hue}, 75%, 60%)`;
@@ -336,11 +325,7 @@ function computeData() {
     render();
 }
 
-/**
- * ----------------------------------------
- * RENDERING ENGINE (CANVAS 2D)
- * ----------------------------------------
- */
+/** RENDERER **/
 const canvas = document.getElementById('vizCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -361,7 +346,6 @@ function getPointColor(res) {
         if (res.d === 1) return '#58a6ff';
         return `hsl(${(res.d * 15) % 360}, 70%, 60%)`;
     }
-    // Spectral
     const ch = State.channels.find(c => c.val === res.m_prime);
     return ch ? ch.color : '#fff';
 }
@@ -375,180 +359,204 @@ function render(exportCtx = null, exportSize = null) {
     context.fillStyle = exportCtx ? '#0d1117' : '#050505';
     context.fillRect(0, 0, width, height);
 
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const minDim = Math.min(width, height);
-    
-    const baseRadius = exportCtx ? (minDim * 0.35) : (minDim * 0.4);
-    
     const zoom = exportCtx ? 1 : State.zoom;
     const panX = exportCtx ? 0 : State.panX;
     const panY = exportCtx ? 0 : State.panY;
 
-    // Apply Transform
     context.save();
-    context.translate(centerX + panX, centerY + panY);
+    context.translate(width/2 + panX, height/2 + panY);
     context.scale(zoom, zoom);
-
-    // 1. Draw Channel Rings
-    State.channels.forEach((ch, i) => {
-        if (State.isolatedChannel && State.isolatedChannel !== ch.val) return;
-
-        const pct = (i + 1) / (State.channels.length + 1);
-        let r = pct * baseRadius;
-        if (ch.val === State.M) r = baseRadius;
-        if (ch.val === 1) r = baseRadius * 0.05;
-        
-        ch.renderR = r; 
-
-        context.beginPath();
-        context.arc(0, 0, r, 0, Math.PI * 2);
-        context.strokeStyle = State.isolatedChannel ? ch.color : '#30363d';
-        context.lineWidth = exportCtx ? 2 : 1 / zoom;
-        context.stroke();
-    });
-
-    // 2. Draw Data Points & Lines
-    const pointSize = exportCtx ? 6 : (3 / Math.sqrt(zoom));
-    const lineWidth = exportCtx ? 2 : (1 / zoom);
-
-    State.residues.forEach(res => {
-        if (State.isolatedChannel && State.isolatedChannel !== res.m_prime) return;
-
-        const color = getPointColor(res);
-        const ch = State.channels.find(c => c.val === res.m_prime);
-        const destR = ch.renderR;
-        
-        const cos = Math.cos(res.angle);
-        const sin = Math.sin(res.angle);
-
-        const x1 = cos * baseRadius;
-        const y1 = sin * baseRadius;
-        const x2 = cos * destR;
-        const y2 = sin * destR;
-
-        if (State.viewMode === 'projection' && res.d > 1) {
-            context.beginPath();
-            context.moveTo(x1, y1);
-            context.lineTo(x2, y2);
-            context.strokeStyle = color;
-            context.lineWidth = lineWidth;
-            context.globalAlpha = State.opacity;
-            context.stroke();
-            context.globalAlpha = 1.0;
-        }
-
-        context.beginPath();
-        context.arc(x2, y2, pointSize, 0, Math.PI * 2);
-        context.fillStyle = color;
-        context.fill();
-
-        // 3. Draw Labels (Smart LOD)
-        const showLabels = State.labelMode !== 'none';
-        const densityCheck = (State.M < 50) || (zoom > 3);
-
-        if (showLabels && densityCheck && !exportCtx) {
-            let labelText = '';
-            if (State.labelMode === 'gcd') labelText = res.d;
-            if (State.labelMode === 'frac') labelText = `${res.r_prime}/${res.m_prime}`;
-            if (State.labelMode === 'theta') labelText = (res.angle * 180 / Math.PI).toFixed(0) + '°';
-
-            context.fillStyle = '#fff';
-            context.font = `${10/zoom}px monospace`;
-            
-            const lx = x2 + cos * (15/zoom);
-            const ly = y2 + sin * (15/zoom);
-            
-            context.fillText(labelText, lx, ly);
-        }
-    });
+    
+    // Dispatch Render Mode
+    if (State.viewMode === 'ford') renderFord(context, width, height, zoom, !!exportCtx);
+    else if (State.viewMode === 'lattice') renderLattice(context, width, height, zoom, !!exportCtx);
+    else renderRadial(context, width, height, zoom, !!exportCtx); // Projection or Rings
 
     context.restore();
 }
 
-/**
- * ----------------------------------------
- * INTERACTION & NAVIGATION
- * ----------------------------------------
- */
-const stage = document.getElementById('stage');
-
-stage.addEventListener('wheel', e => {
-    e.preventDefault();
-    const direction = e.deltaY > 0 ? -1 : 1;
-    adjustZoom(direction * 0.1);
-});
-
-function adjustZoom(amount) {
-    State.zoom += amount * State.zoom;
-    if (State.zoom < 0.1) State.zoom = 0.1;
-    if (State.zoom > 10) State.zoom = 10;
+// MODE 1 & 2: Radial (Projection / Rings)
+function renderRadial(ctx, w, h, zoom, isExport) {
+    const minDim = Math.min(w, h) / (isExport ? 1 : zoom); // Cancel zoom for base calc
+    const baseRadius = minDim * (isExport ? 0.35 : 0.4);
     
+    // Draw Rings
+    State.channels.forEach((ch, i) => {
+        if (State.isolatedChannel && State.isolatedChannel !== ch.val) return;
+        const pct = (i + 1) / (State.channels.length + 1);
+        let r = pct * baseRadius;
+        if (ch.val === State.M) r = baseRadius;
+        if (ch.val === 1) r = baseRadius * 0.05;
+        ch.renderR = r; 
+
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.strokeStyle = State.isolatedChannel ? ch.color : '#30363d';
+        ctx.lineWidth = isExport ? 2 : 1/zoom;
+        ctx.stroke();
+    });
+
+    // Draw Points
+    State.residues.forEach(res => {
+        if (res.r === 0 || res.r === State.M) return; // Skip 0/M for radial
+        if (State.isolatedChannel && State.isolatedChannel !== res.m_prime) return;
+
+        const color = getPointColor(res);
+        const ch = State.channels.find(c => c.val === res.m_prime);
+        const x2 = Math.cos(res.angle) * ch.renderR;
+        const y2 = Math.sin(res.angle) * ch.renderR;
+
+        // Projection Lines
+        if (State.viewMode === 'projection' && res.d > 1) {
+            const x1 = Math.cos(res.angle) * baseRadius;
+            const y1 = Math.sin(res.angle) * baseRadius;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = isExport ? 1.5 : 1/zoom;
+            ctx.globalAlpha = State.opacity;
+            ctx.stroke();
+            ctx.globalAlpha = 1.0;
+        }
+
+        ctx.beginPath();
+        ctx.arc(x2, y2, (isExport?5:3)/Math.sqrt(zoom), 0, Math.PI*2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        
+        // Hit data
+        if (!isExport) res.hit = { x: x2, y: y2, r: 5/zoom };
+    });
+}
+
+// MODE 3: Ford Horizon (Geometric Number Theory)
+function renderFord(ctx, w, h, zoom, isExport) {
+    const scale = w * 0.8; 
+    const offsetX = -w * 0.4;
+    const groundY = h * 0.3; // Lower third
+
+    // Draw Ground
+    ctx.beginPath();
+    ctx.moveTo(-w, groundY);
+    ctx.lineTo(w, groundY);
+    ctx.strokeStyle = '#8b949e';
+    ctx.lineWidth = 2/zoom;
+    ctx.stroke();
+
+    const drawnFractions = new Set(); // Avoid overdraw
+
+    State.residues.forEach(res => {
+        if (State.isolatedChannel && State.isolatedChannel !== res.m_prime) return;
+
+        const key = `${res.r_prime}/${res.m_prime}`;
+        if (drawnFractions.has(key)) return;
+        drawnFractions.add(key);
+
+        const q = res.m_prime;
+        const p = res.r_prime;
+
+        // Ford Radius Formula: R = 1 / (2 * q^2)
+        // Scaled up for visibility
+        const radius = (1 / (2 * q * q)) * scale;
+        
+        // Position: x = p/q
+        const x = offsetX + (p/q) * scale;
+        const y = groundY - radius;
+
+        if (radius * zoom < 0.5) return; // Culling
+
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI*2);
+        
+        const ch = State.channels.find(c => c.val === q);
+        ctx.fillStyle = ch.color + '80'; // Add transparency
+        ctx.fill();
+        ctx.strokeStyle = ch.color;
+        ctx.lineWidth = 1/zoom;
+        ctx.stroke();
+
+        if (!isExport) res.hit = { x: x, y: y, r: radius };
+    });
+}
+
+// MODE 4: Lattice Map (Divisor Skyline)
+function renderLattice(ctx, w, h, zoom, isExport) {
+    const margin = 40/zoom;
+    const plotW = w * 0.8;
+    const plotH = h * 0.6;
+    const startX = -plotW/2;
+    const startY = plotH/2;
+
+    // Grid Axes
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(startX + plotW, startY); // X Axis
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(startX, startY - plotH); // Y Axis
+    ctx.strokeStyle = '#30363d';
+    ctx.lineWidth = 2/zoom;
+    ctx.stroke();
+
+    State.residues.forEach(res => {
+        if (res.r === 0) return;
+        if (State.isolatedChannel && State.isolatedChannel !== res.m_prime) return;
+
+        // X = Residue Index, Y = GCD Value
+        const x = startX + (res.r / State.M) * plotW;
+        const normY = res.d / State.M; // GCD relative to M
+        // Logarithmic scale for Y usually looks better, but Linear shows the towers better
+        const y = startY - (res.d / State.channels[State.channels.length-1].d) * plotH;
+
+        const color = getPointColor(res);
+
+        // Draw Stick (Skyline)
+        ctx.beginPath();
+        ctx.moveTo(x, startY);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = color;
+        ctx.globalAlpha = 0.3;
+        ctx.lineWidth = Math.max(1, (plotW/State.M))/zoom;
+        ctx.stroke();
+        ctx.globalAlpha = 1.0;
+
+        // Draw Dot
+        ctx.beginPath();
+        ctx.arc(x, y, (isExport?4:2)/Math.sqrt(zoom), 0, Math.PI*2);
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        if (!isExport) res.hit = { x: x, y: y, r: 5/zoom };
+    });
+}
+
+/** INTERACTION **/
+// Mouse & Zoom Logic (Identical to Pro Suite, updated for hit detection offset)
+const stage = document.getElementById('stage');
+stage.addEventListener('wheel', e => { e.preventDefault(); adjustZoom(e.deltaY>0?-0.1:0.1); });
+
+function adjustZoom(amt) {
+    State.zoom = Math.max(0.1, Math.min(10, State.zoom + amt*State.zoom));
     document.getElementById('disp-zoom').innerText = `Zoom: ${(State.zoom*100).toFixed(0)}%`;
     render();
 }
+function resetView() { State.zoom=1; State.panX=0; State.panY=0; render(); }
 
-function resetView() {
-    State.zoom = 1;
-    State.panX = 0;
-    State.panY = 0;
-    State.isolatedChannel = null;
-    document.getElementById('disp-zoom').innerText = `Zoom: 100%`;
-    render();
-}
-
-canvas.addEventListener('mousedown', e => {
-    State.isDragging = true;
-    State.lastMouse = { x: e.clientX, y: e.clientY };
-});
-
-window.addEventListener('mouseup', () => State.isDragging = false);
-
+canvas.addEventListener('mousedown', e => { State.isDragging=true; State.lastMouse={x:e.clientX, y:e.clientY}; });
+window.addEventListener('mouseup', () => State.isDragging=false);
 window.addEventListener('mousemove', e => {
-    if (State.isDragging) {
-        const dx = e.clientX - State.lastMouse.x;
-        const dy = e.clientY - State.lastMouse.y;
-        State.panX += dx;
-        State.panY += dy;
-        State.lastMouse = { x: e.clientX, y: e.clientY };
+    if(State.isDragging) {
+        State.panX += e.clientX - State.lastMouse.x;
+        State.panY += e.clientY - State.lastMouse.y;
+        State.lastMouse = {x:e.clientX, y:e.clientY};
         render();
     }
     handleHover(e);
 });
 
-canvas.addEventListener('click', e => {
-    if (Math.abs(e.clientX - State.lastMouse.x) > 5) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const cx = rect.width/2 + State.panX;
-    const cy = rect.height/2 + State.panY;
-    
-    const mx = (e.clientX - rect.left - cx) / State.zoom;
-    const my = (e.clientY - rect.top - cy) / State.zoom;
-    const dist = Math.sqrt(mx*mx + my*my);
-    
-    const minDim = Math.min(canvas.width, canvas.height);
-    const baseR = minDim * 0.4;
-    
-    let clickedCh = null;
-    let minDiff = 10 / State.zoom;
-
-    State.channels.forEach(ch => {
-        if (Math.abs(ch.renderR - dist) < minDiff) {
-            clickedCh = ch.val;
-            minDiff = Math.abs(ch.renderR - dist);
-        }
-    });
-
-    if (clickedCh) {
-        if (State.isolatedChannel === clickedCh) State.isolatedChannel = null;
-        else State.isolatedChannel = clickedCh;
-        render();
-    }
-});
-
 function handleHover(e) {
     const rect = canvas.getBoundingClientRect();
+    // Transform mouse into context coordinates
     const cx = rect.width/2 + State.panX;
     const cy = rect.height/2 + State.panY;
     const mx = (e.clientX - rect.left - cx) / State.zoom;
@@ -557,15 +565,15 @@ function handleHover(e) {
     let minD = 10 / State.zoom;
     let target = null;
 
+    // Check residues
     State.residues.forEach(res => {
-        if (State.isolatedChannel && res.m_prime !== State.isolatedChannel) return;
-        
-        const ch = State.channels.find(c => c.val === res.m_prime);
-        const px = Math.cos(res.angle) * ch.renderR;
-        const py = Math.sin(res.angle) * ch.renderR;
-        
-        const dist = Math.sqrt((mx-px)**2 + (my-py)**2);
-        if (dist < minD) {
+        if (!res.hit) return;
+        const dx = mx - res.hit.x;
+        const dy = my - res.hit.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        // Hit radius check depends on mode
+        const hitR = res.hit.r || 5/State.zoom;
+        if (dist < Math.max(minD, hitR)) {
             minD = dist;
             target = res;
         }
@@ -574,30 +582,19 @@ function handleHover(e) {
     const tip = document.getElementById('tooltip');
     if (target) {
         tip.style.display = 'block';
-        tip.style.left = (e.clientX + 15) + 'px';
-        tip.style.top = (e.clientY + 15) + 'px';
-        
+        tip.style.left = (e.clientX+15)+'px';
+        tip.style.top = (e.clientY+15)+'px';
         const color = getPointColor(target);
-        
         tip.innerHTML = `
-            <strong style="color:${color}">Residue ${target.r}</strong>
-            <div style="margin-top:4px; color:#ccc">
-            Type: ${target.type}<br>
-            GCD: ${target.d}<br>
-            Channel: M'=${target.m_prime}<br>
-            Angle: ${(target.angle * 180 / Math.PI).toFixed(1)}°
-            </div>
+            <strong style="color:${color}">Residue ${target.r}</strong><br>
+            <small style="color:#aaa">M'=${target.m_prime} | GCD=${target.d}</small>
         `;
     } else {
         tip.style.display = 'none';
     }
 }
 
-/**
- * ----------------------------------------
- * UI UPDATES & EXPORT
- * ----------------------------------------
- */
+/** CONTROL HANDLERS **/
 function setM(m) {
     State.M = parseInt(m);
     document.getElementById('input-m').value = State.M;
@@ -607,7 +604,12 @@ function setM(m) {
     computeData();
     updateLegend();
 }
-
+function setView(mode) {
+    State.viewMode = mode;
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`btn-v-${mode}`).classList.add('active');
+    render();
+}
 function updateConfig() {
     State.colorMode = document.getElementById('sel-color').value;
     State.labelMode = document.getElementById('sel-label').value;
@@ -615,123 +617,75 @@ function updateConfig() {
     render();
     updateLegend();
 }
-
-function toggleView() {
-    State.viewMode = State.viewMode === 'projection' ? 'rings' : 'projection';
-    document.getElementById('btn-view').innerText = State.viewMode === 'projection' ? 'Switch to Ring View' : 'Switch to Projection View';
-    render();
-}
-
 function updateStats() {
     document.getElementById('val-phi').innerText = MathCore.phi(State.M);
     document.getElementById('val-channels').innerText = State.channels.length;
-    document.getElementById('val-depth').innerText = State.channels[0].d;
+    document.getElementById('val-depth').innerText = State.channels[0] ? State.channels[State.channels.length-1].d : 0;
 }
-
 function updateLegend() {
     const el = document.getElementById('legend-dynamic');
     el.innerHTML = '';
-    
     if (State.colorMode === 'spectral') {
-        el.innerHTML = '<div style="font-style:italic; font-size:0.75rem; margin-bottom:5px">Colors represent distinct Farey Channels (Moduli Rings)</div>';
+        el.innerHTML = '<div style="font-style:italic; font-size:0.75rem; margin-bottom:5px">Distinct Farey Channels</div>';
         State.channels.slice(0, 5).forEach(ch => {
             el.innerHTML += `<div class="legend-item"><div class="dot" style="background:${ch.color}"></div>M' = ${ch.val}</div>`;
         });
-        if (State.channels.length > 5) el.innerHTML += `<div class="legend-item">... (${State.channels.length - 5} more)</div>`;
-    } else if (State.colorMode === 'type') {
-        el.innerHTML += `<div class="legend-item"><div class="dot" style="background:#58a6ff"></div>Coprime (Irreducible)</div>`;
-        el.innerHTML += `<div class="legend-item"><div class="dot" style="background:#ff6b6b"></div>Reducible</div>`;
-        el.innerHTML += `<div class="legend-item"><div class="dot" style="background:#ffd700"></div>Center (M'=1)</div>`;
+        if(State.channels.length > 5) el.innerHTML += `<div class="legend-item" style="opacity:0.5">... ${State.channels.length-5} more</div>`;
     }
 }
-
 function toggleAnim() {
-    if (State.isAnimating) {
-        clearInterval(State.animTimer);
-        State.isAnimating = false;
-        document.getElementById('btn-anim').classList.remove('active');
-    } else {
-        State.isAnimating = true;
-        document.getElementById('btn-anim').classList.add('active');
-        State.animTimer = setInterval(() => {
-            let next = State.M + 1;
-            if (next > 1000) next = 4;
-            setM(next);
-        }, 100);
-    }
+    if(State.isAnimating) { clearInterval(State.animTimer); State.isAnimating=false; }
+    else { State.isAnimating=true; State.animTimer = setInterval(() => {
+        let n = State.M+1; if(n>2520) n=4; setM(n);
+    }, 100); }
 }
 
-// FIXED EXPORT FUNCTION
+// Export logic remains mostly same, just pass context
 function exportPNG(res) {
-    const size = res === '4k' ? 4096 : 2048;
-    const expCvs = document.createElement('canvas');
-    expCvs.width = size;
-    expCvs.height = size * 0.75;
-    const eCtx = expCvs.getContext('2d');
+    const size = res==='4k'?4096:2048;
+    const cvs = document.createElement('canvas');
+    cvs.width = size; cvs.height = size*0.75;
+    const ctx = cvs.getContext('2d');
     
-    // Draw Scene (Full View)
-    render(eCtx, {w: size * 0.75, h: size * 0.75}); 
-
-    // Draw Legend/Meta on Right Strip
-    // Safe Zone Calculations
-    const margin = size * 0.03; 
-    const sidebarX = size * 0.75;
-    const sidebarW = size * 0.25;
-    const textX = sidebarX + margin;
-    const maxTextWidth = sidebarW - (margin * 2);
+    // Draw Background
+    ctx.fillStyle = '#0d1117'; ctx.fillRect(0,0,size,size*0.75);
     
-    eCtx.fillStyle = '#0d1117';
-    eCtx.fillRect(sidebarX, 0, sidebarW, size * 0.75); // Sidebar BG
+    // Render Scene (Left 75%)
+    render(ctx, {w:size*0.75, h:size*0.75});
     
-    // Text Config - Smaller fonts to fit
-    eCtx.fillStyle = '#f0f6fc';
-    eCtx.font = `bold ${size*0.025}px sans-serif`; // Reduced from 0.03
-    eCtx.fillText(`M = ${State.M}`, textX, margin + size*0.05);
+    // Sidebar
+    const margin = size*0.03; const sx = size*0.75;
+    ctx.fillStyle = '#0d1117'; ctx.fillRect(sx,0,size*0.25,size*0.75);
+    ctx.fillStyle = '#f0f6fc'; ctx.font = `bold ${size*0.025}px sans-serif`;
+    ctx.fillText(`M = ${State.M}`, sx+margin, margin+size*0.05);
+    ctx.font = `${size*0.012}px monospace`; ctx.fillStyle = '#8b949e';
+    ctx.fillText(MathCore.getFactors(State.M), sx+margin, margin+size*0.08, size*0.22);
     
-    eCtx.font = `${size*0.012}px monospace`; // Reduced from 0.015
-    eCtx.fillStyle = '#8b949e';
-    // Ensure Prime Factors doesn't overflow
-    const factors = MathCore.getFactors(State.M);
-    eCtx.fillText(factors, textX, margin + size*0.08, maxTextWidth);
-
     // Signature
-    const bottomY = size * 0.75 - margin;
-    eCtx.fillStyle = '#30363d';
-    eCtx.fillRect(textX, bottomY - size*0.05, size*0.1, 2);
-    
-    eCtx.fillStyle = '#f0f6fc';
-    eCtx.font = `bold ${size*0.015}px sans-serif`;
-    eCtx.fillText("Wessen Getachew", textX, bottomY);
-    
-    eCtx.fillStyle = '#8b949e';
-    eCtx.font = `${size*0.012}px sans-serif`;
-    eCtx.fillText("Composite Channel Projection", textX, bottomY + size*0.02);
+    const by = size*0.75 - margin;
+    ctx.fillStyle = '#f0f6fc'; ctx.font=`bold ${size*0.015}px sans-serif`;
+    ctx.fillText("Wessen Getachew", sx+margin, by);
+    ctx.fillStyle = '#8b949e'; ctx.font=`${size*0.012}px sans-serif`;
+    ctx.fillText("Composite Channel Projection", sx+margin, by+size*0.02);
 
-    const link = document.createElement('a');
-    link.download = `Projection_M${State.M}_${res}.png`;
-    link.href = expCvs.toDataURL();
-    link.click();
+    const l = document.createElement('a');
+    l.download = `Analysis_M${State.M}_${State.viewMode}.png`;
+    l.href = cvs.toDataURL(); l.click();
 }
 
 function exportCSV() {
-    let csv = "Residue,Modulus,GCD,Channel,Fraction,Angle_Deg,Color_Hex\n";
-    State.residues.forEach(r => {
-        const c = State.channels.find(ch => ch.val === r.m_prime);
-        csv += `${r.r},${State.M},${r.d},${r.m_prime},${r.r_prime}/${r.m_prime},${(r.angle*180/Math.PI).toFixed(2)},${c.color}\n`;
-    });
-    const blob = new Blob([csv], {type:'text/csv'});
+    let csv = "Residue,Modulus,GCD,Channel,Fraction,Angle\n";
+    State.residues.forEach(r => csv+=`${r.r},${State.M},${r.d},${r.m_prime},${r.r_prime}/${r.m_prime},${r.angle}\n`);
+    const blob = new Blob([csv],{type:'text/csv'});
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `data_m${State.M}.csv`;
-    link.click();
+    const l = document.createElement('a'); l.href=url; l.download=`Data_M${State.M}.csv`; l.click();
 }
 
-// Init
+// Start
 document.getElementById('input-m').addEventListener('change', e=>setM(e.target.value));
 document.getElementById('slider-m').addEventListener('input', e=>setM(e.target.value));
 computeData();
-
 </script>
 </body>
 </html>
+
