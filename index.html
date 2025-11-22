@@ -3,1580 +3,606 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modular Reduction Projection Explorer</title>
+    <title>Composite Channel Projection Corollary</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-color: #0f1115;
+            --panel-bg: #161b22;
+            --text-main: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent-hover: #79c0ff;
+            --border: #30363d;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0a0a;
-            color: #e0e0e0;
-            overflow-x: hidden;
-        }
-
-        .container {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             height: 100vh;
         }
 
-        .sidebar {
+        /* Sidebar Controls */
+        #controls {
             width: 320px;
-            background: #1a1a1a;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border);
             padding: 20px;
             overflow-y: auto;
-            border-right: 1px solid #333;
-        }
-
-        .main-content {
-            flex: 1;
             display: flex;
             flex-direction: column;
-            position: relative;
+            gap: 15px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            z-index: 10;
         }
 
-        h1 {
-            font-size: 18px;
-            margin-bottom: 20px;
-            color: #fff;
-            font-weight: 600;
-        }
-
-        h2 {
-            font-size: 14px;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            color: #aaa;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 500;
-        }
+        h1 { font-size: 1.2rem; margin: 0 0 10px 0; color: var(--accent); }
+        h2 { font-size: 0.9rem; text-transform: uppercase; color: var(--text-muted); margin: 15px 0 5px 0; letter-spacing: 1px; }
 
         .control-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 13px;
-            color: #bbb;
-        }
-
-        input[type="number"],
-        input[type="range"],
-        select {
-            width: 100%;
-            padding: 8px;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            border-radius: 4px;
-            color: #e0e0e0;
-            font-size: 13px;
-        }
-
-        input[type="range"] {
-            padding: 0;
-            height: 6px;
-        }
-
-        input[type="number"]:focus,
-        select:focus {
-            outline: none;
-            border-color: #666;
-        }
-
-        .preset-buttons {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
-            margin-top: 10px;
-        }
-
-        .preset-btn {
-            padding: 8px;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            border-radius: 4px;
-            color: #e0e0e0;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
-        }
-
-        .preset-btn:hover {
-            background: #3a3a3a;
-            border-color: #666;
-        }
-
-        .preset-btn:active {
-            background: #4a4a4a;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        input[type="checkbox"] {
-            margin-right: 8px;
-            width: 16px;
-            height: 16px;
-        }
-
-        .stats-panel {
-            background: #1a1a1a;
-            padding: 15px;
-            border-radius: 4px;
-            margin-top: 10px;
-            font-size: 12px;
-            line-height: 1.6;
-        }
-
-        .stats-panel div {
-            margin-bottom: 5px;
-        }
-
-        .stats-panel strong {
-            color: #fff;
-        }
-
-        canvas {
-            display: block;
-            background: #000;
-            cursor: crosshair;
-        }
-
-        .export-btn {
-            padding: 12px 24px;
-            background: #2a5a2a;
-            border: none;
-            border-radius: 4px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            margin-top: 20px;
-            width: 100%;
-            transition: background 0.2s;
-        }
-
-        .export-btn:hover {
-            background: #3a7a3a;
-        }
-
-        .export-btn:active {
-            background: #4a9a4a;
-        }
-
-        .value-display {
-            display: inline-block;
-            float: right;
-            color: #fff;
-            font-weight: 500;
-        }
-
-        .canvas-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .zoom-controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(26, 26, 26, 0.9);
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: #bbb;
-        }
-
-        .color-legend {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            margin-top: 10px;
         }
 
-        .color-legend-item {
-            display: flex;
-            align-items: center;
-            font-size: 12px;
+        label { font-size: 0.85rem; display: flex; justify-content: space-between; }
+        
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+            cursor: pointer;
         }
 
-        .color-box {
-            width: 16px;
-            height: 16px;
-            border-radius: 2px;
-            margin-right: 8px;
-            border: 1px solid #444;
-        }
-
-        .info-text {
-            font-size: 11px;
-            color: #888;
-            line-height: 1.5;
-            margin-top: 15px;
-            padding: 10px;
-            background: #151515;
+        input[type="number"] {
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 4px 8px;
             border-radius: 4px;
+            width: 60px;
         }
 
-        .tooltip {
+        button {
+            background: #21262d;
+            border: 1px solid var(--border);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        button:hover { background: #30363d; color: var(--accent-hover); }
+        button.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+        
+        .stats-panel {
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Main Canvas Area */
+        #canvas-container {
+            flex-grow: 1;
+            position: relative;
+            cursor: crosshair;
+            overflow: hidden;
+        }
+
+        canvas { display: block; }
+
+        /* Floating Tooltip */
+        #tooltip {
             position: absolute;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(22, 27, 34, 0.95);
+            border: 1px solid var(--accent);
             padding: 10px;
             border-radius: 4px;
-            font-size: 11px;
             pointer-events: none;
+            font-size: 0.85rem;
             display: none;
-            border: 1px solid #444;
-            max-width: 200px;
-            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 20;
+            white-space: pre-line;
         }
 
-        .tooltip-line {
-            margin-bottom: 3px;
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(22, 27, 34, 0.8);
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            pointer-events: none;
         }
+        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="sidebar">
-            <h1>Modular Reduction Projection Explorer</h1>
-            
-            <h2>Modulus Configuration</h2>
-            <div class="control-group">
-                <label>
-                    Modulus M
-                    <span class="value-display" id="modulusValue">42</span>
-                </label>
-                <input type="range" id="modulusSlider" min="4" max="500" value="42">
-                <input type="number" id="modulusInput" min="2" max="5000" value="42">
-            </div>
 
-            <div class="preset-buttons">
-                <button class="preset-btn" onclick="setModulus(6)">6</button>
-                <button class="preset-btn" onclick="setModulus(12)">12</button>
-                <button class="preset-btn" onclick="setModulus(30)">30</button>
-                <button class="preset-btn" onclick="setModulus(60)">60</button>
-                <button class="preset-btn" onclick="setModulus(120)">120</button>
-                <button class="preset-btn" onclick="setModulus(210)">210</button>
-                <button class="preset-btn" onclick="setModulus(360)">360</button>
-                <button class="preset-btn" onclick="setModulus(840)">840</button>
-                <button class="preset-btn" onclick="setModulus(2310)">2310</button>
-            </div>
-
-            <h2>Visualization Options</h2>
-            <div class="control-group">
-                <label>
-                    Color Scheme
-                </label>
-                <select id="colorScheme">
-                    <option value="channel-type">Channel Type</option>
-                    <option value="spf">Smallest Prime Factor</option>
-                    <option value="lpf">Largest Prime Factor</option>
-                    <option value="gcd">GCD Value</option>
-                    <option value="depth">Channel Depth</option>
-                </select>
-            </div>
-
-            <div class="control-group">
-                <label>
-                    Projection Line Opacity
-                    <span class="value-display" id="opacityValue">1.00</span>
-                </label>
-                <input type="range" id="opacitySlider" min="0" max="100" value="100">
-            </div>
-
-            <div class="control-group">
-                <label>
-                    Zoom Level
-                    <span class="value-display" id="zoomValue">100%</span>
-                </label>
-                <input type="range" id="zoomSlider" min="50" max="500" value="100">
-            </div>
-
-            <div class="control-group">
-                <label>
-                    Point Size
-                    <span class="value-display" id="pointSizeValue">3</span>
-                </label>
-                <input type="range" id="pointSizeSlider" min="1" max="20" value="3" step="0.5">
-            </div>
-
-            <div class="control-group">
-                <label>
-                    Ring Spacing Factor
-                    <span class="value-display" id="spacingValue">1.00</span>
-                </label>
-                <input type="range" id="spacingSlider" min="50" max="200" value="100">
-            </div>
-
-            <div class="control-group">
-                <label>
-                    Channel Labels
-                </label>
-                <select id="labelType">
-                    <option value="farey">Farey (M')</option>
-                    <option value="gcd">GCD (d)</option>
-                    <option value="both">Both (M' and d)</option>
-                    <option value="none">None</option>
-                </select>
-            </div>
-
-            <div class="control-group">
-                <label>
-                    Point Labels
-                </label>
-                <select id="pointLabelType">
-                    <option value="none">None</option>
-                    <option value="residue">Residue (r)</option>
-                    <option value="fraction">Fraction (r/M)</option>
-                    <option value="gcd">GCD Value</option>
-                </select>
-            </div>
-
-            <h2>Ring Display</h2>
-            <div class="checkbox-group">
-                <input type="checkbox" id="showAllRings" checked>
-                <label for="showAllRings">Show All Divisor Rings</label>
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="colorAllRings">
-                <label for="colorAllRings">Apply Color Scheme to All Rings</label>
-            </div>
-
-            <div class="control-group">
-                <label>Select Specific Rings (comma-separated divisors)</label>
-                <input type="text" id="selectedRings" placeholder="e.g., 1,2,3,6,12">
-            </div>
-
-            <h2>Number Theory Features</h2>
-            <div class="checkbox-group">
-                <input type="checkbox" id="showTwinResidues">
-                <label for="showTwinResidues">Highlight Twin Residues (r, r+2)</label>
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="showCousinResidues">
-                <label for="showCousinResidues">Highlight Cousin Residues (r, r+4)</label>
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="showSexyResidues">
-                <label for="showSexyResidues">Highlight Sexy Residues (r, r+6)</label>
-            </div>
-
-            <div class="control-group">
-                <label>Gap Type to Highlight</label>
-                <select id="gapType">
-                    <option value="none">None</option>
-                    <option value="2">Gap 2 (Twins)</option>
-                    <option value="4">Gap 4 (Cousins)</option>
-                    <option value="6">Gap 6 (Sexy)</option>
-                    <option value="8">Gap 8</option>
-                    <option value="10">Gap 10</option>
-                    <option value="12">Gap 12</option>
-                </select>
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="showProjections" checked>
-                <label for="showProjections">Show Projection Lines</label>
-            </div>
-
-            <h2>Statistics</h2>
-            <div class="stats-panel" id="statsPanel">
-                <div><strong>φ(M):</strong> <span id="phiValue">32</span></div>
-                <div><strong>Irreducible:</strong> <span id="irreducibleCount">32</span></div>
-                <div><strong>Reducible:</strong> <span id="reducibleCount">88</span></div>
-                <div><strong>Reducibility:</strong> <span id="reducibilityRatio">73.3%</span></div>
-                <div><strong>Farey Channels:</strong> <span id="channelCount">15</span></div>
-                <div><strong>Prime Factorization:</strong> <span id="factorization">2³×3×5</span></div>
-                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #333;">
-                    <strong>Twin Pairs (r, r+2):</strong> <span id="twinCount">0</span>
-                </div>
-                <div><strong>Cousin Pairs (r, r+4):</strong> <span id="cousinCount">0</span></div>
-                <div><strong>Sexy Pairs (r, r+6):</strong> <span id="sexyCount">0</span></div>
-            </div>
-
-            <div class="color-legend" id="colorLegend">
-                <div class="color-legend-item">
-                    <div class="color-box" style="background: #00ffff;"></div>
-                    <span>Irreducible (gcd=1)</span>
-                </div>
-                <div class="color-legend-item">
-                    <div class="color-box" style="background: #ff1493;"></div>
-                    <span>Reducible (gcd>1)</span>
-                </div>
-                <div class="color-legend-item">
-                    <div class="color-box" style="background: #ffd700;"></div>
-                    <span>Farey Channels</span>
-                </div>
-            </div>
-
-            <h2>Export</h2>
-            <div class="control-group">
-                <label>Image Resolution</label>
-                <select id="exportResolution">
-                    <option value="2800">4K (2800×2800)</option>
-                    <option value="5600">8K (5600×5600)</option>
-                    <option value="1400">HD (1400×1400)</option>
-                </select>
-            </div>
-
-            <button class="export-btn" onclick="exportImage()">Export PNG Image</button>
-            
-            <div style="margin-top: 10px;">
-                <button class="export-btn" style="background: #2a4a5a;" onclick="exportCSV()">Export CSV Data</button>
-            </div>
-            
-            <div style="margin-top: 10px;">
-                <button class="export-btn" style="background: #4a2a5a;" onclick="exportJSON()">Export JSON Data</button>
-            </div>
-
-            <div class="info-text">
-                <strong>About:</strong> This tool visualizes the classical reduction of fractions r/M to lowest terms in modular arithmetic. It displays how residues project onto their reduced denominators (Farey sequence elements), showing the geometric structure of fraction reduction. Each reducible fraction r/M reduces to (r/d)/(M/d) where d = gcd(r,M).
-                <br><br>
-                <strong>Mathematics:</strong> All mathematical concepts are classical (Euclid's algorithm for GCD, Euler's totient function φ(M), Farey sequences). This visualization provides an interactive geometric perspective on well-established number theory.
-                <br><br>
-                <strong>Author:</strong> Wessen Getachew
+    <div id="controls">
+        <h1>Channel Projection</h1>
+        
+        <div class="control-group">
+            <label>
+                Modulus (M)
+                <input type="number" id="input-m" value="60" min="2" max="5000">
+            </label>
+            <input type="range" id="slider-m" min="2" max="1000" value="60">
+            <div class="presets">
+                <button onclick="setM(12)">12</button>
+                <button onclick="setM(30)">30</button>
+                <button onclick="setM(60)">60</button>
+                <button onclick="setM(210)">210</button>
+                <button onclick="setM(360)">360</button>
+                <button onclick="setM(2310)">2310</button>
             </div>
         </div>
 
-        <div class="main-content">
-            <div class="canvas-container">
-                <canvas id="canvas"></canvas>
-                <div class="zoom-controls">
-                    Zoom: <span id="zoomLevel">100%</span>
-                </div>
-                <div class="tooltip" id="tooltip"></div>
+        <div class="stats-panel" id="global-stats">
             </div>
+
+        <h2>Visualization</h2>
+        <div class="control-group">
+            <label>View Mode</label>
+            <div class="presets" style="grid-template-columns: 1fr 1fr;">
+                <button id="btn-view-projection" class="active" onclick="setView('projection')">Projection</button>
+                <button id="btn-view-rings" onclick="setView('rings')">Rings</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label>Color Scheme</label>
+            <select id="color-scheme" style="background:var(--bg-color); color:white; padding:5px; border:1px solid var(--border);">
+                <option value="channel">By Channel (M')</option>
+                <option value="gcd">By Reduction Factor (d)</option>
+                <option value="prime">By Smallest Prime Factor</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Line Opacity <span id="val-opacity">0.3</span></label>
+            <input type="range" id="slider-opacity" min="0" max="1" step="0.05" value="0.3">
+        </div>
+
+        <div class="control-group">
+            <label>Animation</label>
+            <button id="btn-animate" onclick="toggleAnimation()">Play Sequence</button>
+        </div>
+
+        <div style="margin-top: auto; font-size: 0.75rem; color: var(--text-muted);">
+            <strong>Corrected Math:</strong><br>
+            Channel Pop = &phi;(M')<br>
+            Reduction Factor = M/M'
         </div>
     </div>
 
-    <script>
-        // Mathematical utilities
-        function gcd(a, b) {
-            a = Math.abs(a);
-            b = Math.abs(b);
-            while (b !== 0) {
-                const temp = b;
-                b = a % b;
-                a = temp;
-            }
-            return a;
-        }
+    <div id="canvas-container">
+        <canvas id="vizCanvas"></canvas>
+        <div id="tooltip"></div>
+        <div class="legend">
+            <div class="legend-item"><div class="dot" style="background:#58a6ff"></div>Irreducible (M' = M)</div>
+            <div class="legend-item"><div class="dot" style="background:#ff6b6b"></div>Reducible</div>
+            <div class="legend-item"><div class="dot" style="background:#ffd700"></div>Center (M' = 1)</div>
+        </div>
+    </div>
 
-        function phi(n) {
-            let result = n;
-            let p = 2;
-            while (p * p <= n) {
-                if (n % p === 0) {
-                    while (n % p === 0) n /= p;
-                    result -= result / p;
-                }
-                p++;
-            }
-            if (n > 1) result -= result / n;
-            return Math.round(result);
-        }
+<script>
+/**
+ * MATHEMATICAL CORE
+ * Optimized for performance up to M=5000
+ */
 
-        function primeFactorization(n) {
-            const factors = [];
-            let d = 2;
-            while (n > 1) {
-                let count = 0;
-                while (n % d === 0) {
-                    count++;
-                    n /= d;
-                }
-                if (count > 0) {
-                    factors.push({ prime: d, power: count });
-                }
+const MathCore = {
+    gcd: (a, b) => {
+        while (b) { [a, b] = [b, a % b]; }
+        return a;
+    },
+
+    // Euler's Totient Function
+    phi: (n) => {
+        let result = n;
+        for (let i = 2; i * i <= n; i++) {
+            if (n % i === 0) {
+                while (n % i === 0) n /= i;
+                result -= result / i;
+            }
+        }
+        if (n > 1) result -= result / n;
+        return result;
+    },
+
+    getSmallestPrimeFactor: (n) => {
+        if (n === 0 || n === 1) return 0;
+        if (n % 2 === 0) return 2;
+        if (n % 3 === 0) return 3;
+        for (let i = 5; i * i <= n; i += 6) {
+            if (n % i === 0) return i;
+            if (n % (i + 2) === 0) return i + 2;
+        }
+        return n;
+    },
+
+    getPrimeFactors: (n) => {
+        const factors = new Set();
+        let d = 2;
+        let temp = n;
+        while (d * d <= temp) {
+            if (temp % d === 0) {
+                factors.add(d);
+                temp /= d;
+            } else {
                 d++;
-                if (d * d > n && n > 1) {
-                    factors.push({ prime: n, power: 1 });
-                    break;
-                }
-            }
-            return factors;
-        }
-
-        function formatFactorization(factors) {
-            return factors.map(f => {
-                if (f.power === 1) return f.prime.toString();
-                return `${f.prime}${toSuperscript(f.power)}`;
-            }).join('×');
-        }
-
-        function toSuperscript(n) {
-            const superscripts = '⁰¹²³⁴⁵⁶⁷⁸⁹';
-            return n.toString().split('').map(d => superscripts[parseInt(d)]).join('');
-        }
-
-        function getDivisors(n) {
-            const divisors = [];
-            for (let i = 1; i <= Math.sqrt(n); i++) {
-                if (n % i === 0) {
-                    divisors.push(i);
-                    if (i !== n / i) divisors.push(n / i);
-                }
-            }
-            return divisors.sort((a, b) => a - b);
-        }
-
-        function smallestPrimeFactor(n) {
-            if (n % 2 === 0) return 2;
-            for (let i = 3; i * i <= n; i += 2) {
-                if (n % i === 0) return i;
-            }
-            return n;
-        }
-
-        function largestPrimeFactor(n) {
-            let largest = -1;
-            while (n % 2 === 0) {
-                largest = 2;
-                n /= 2;
-            }
-            for (let i = 3; i * i <= n; i += 2) {
-                while (n % i === 0) {
-                    largest = i;
-                    n /= i;
-                }
-            }
-            if (n > 2) largest = n;
-            return largest;
-        }
-
-        // Visualization state
-        let config = {
-            modulus: 42,
-            colorScheme: 'channel-type',
-            opacity: 1.0,
-            pointSize: 3,
-            labelType: 'none',
-            pointLabelType: 'none',
-            showProjections: true,
-            showAllRings: true,
-            colorAllRings: false,
-            selectedRings: null,
-            showTwinResidues: false,
-            showCousinResidues: false,
-            showSexyResidues: false,
-            gapType: 'none',
-            spacingFactor: 1.0,
-            zoom: 1.0
-        };
-
-        let canvas, ctx;
-        let points = [];
-        let channels = [];
-        let hoveredPoint = null;
-        let allRingPoints = new Map(); // Map of divisor -> points array
-        let twinPairs = [];
-        let cousinPairs = [];
-        let sexyPairs = [];
-
-        // Color schemes
-        const colorSchemes = {
-            'channel-type': {
-                irreducible: '#00ffff',
-                reducible: '#ff1493',
-                channel: '#ffd700'
-            },
-            'spf': (spf) => {
-                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
-                return colors[(spf - 2) % colors.length] || '#ffffff';
-            },
-            'lpf': (lpf) => {
-                const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7'];
-                return colors[(lpf - 2) % colors.length] || '#ffffff';
-            },
-            'gcd': (g) => {
-                const intensity = Math.min(g / 10, 1);
-                return `rgb(${255 * intensity}, ${100}, ${255 * (1 - intensity)})`;
-            },
-            'depth': (depth) => {
-                const hue = (depth / 100) * 360;
-                return `hsl(${hue}, 70%, 60%)`;
-            }
-        };
-
-        function initCanvas() {
-            canvas = document.getElementById('canvas');
-            ctx = canvas.getContext('2d');
-            
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-            
-            canvas.addEventListener('mousemove', handleMouseMove);
-            canvas.addEventListener('wheel', handleWheel);
-            canvas.addEventListener('click', handleClick);
-        }
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            const size = Math.min(container.clientWidth, container.clientHeight) - 40;
-            canvas.width = size;
-            canvas.height = size;
-            draw();
-        }
-
-        function calculatePoints() {
-            const M = config.modulus;
-            points = [];
-            channels = new Map();
-            allRingPoints.clear();
-            twinPairs = [];
-            cousinPairs = [];
-            sexyPairs = [];
-
-            // Calculate outer ring (M)
-            const coprimeSet = new Set();
-            for (let r = 0; r < M; r++) {
-                const g = gcd(r, M);
-                const isOpen = g === 1;
-                const reducedR = r / g;
-                const reducedM = M / g;
-                const angle = (2 * Math.PI * r) / M;
-                const spf = isOpen ? 1 : smallestPrimeFactor(g);
-                const lpf = isOpen ? 1 : largestPrimeFactor(g);
-
-                if (isOpen) coprimeSet.add(r);
-
-                points.push({
-                    r, M, gcd: g, isOpen,
-                    reducedR, reducedM,
-                    angle, spf, lpf
-                });
-
-                // Track channels
-                if (!channels.has(reducedM)) {
-                    channels.set(reducedM, {
-                        M_prime: reducedM,
-                        multiplicity: M / reducedM,
-                        residues: [],
-                        count: 0
-                    });
-                }
-                channels.get(reducedM).residues.push(r);
-                channels.get(reducedM).count++;
-            }
-
-            // Calculate points for all divisor rings
-            const divisors = getDivisors(M);
-            divisors.forEach(d => {
-                const ringPoints = [];
-                for (let r = 0; r < d; r++) {
-                    const g = gcd(r, d);
-                    const isOpen = g === 1;
-                    const angle = (2 * Math.PI * r) / d;
-                    const spf = isOpen ? 1 : smallestPrimeFactor(g);
-                    const lpf = isOpen ? 1 : largestPrimeFactor(g);
-                    
-                    ringPoints.push({
-                        r, M: d, gcd: g, isOpen,
-                        reducedR: r / g,
-                        reducedM: d / g,
-                        angle, spf, lpf
-                    });
-                }
-                allRingPoints.set(d, ringPoints);
-            });
-
-            // Find twin residue pairs (r, r+2) both coprime to M
-            for (let r = 0; r < M - 2; r++) {
-                if (coprimeSet.has(r) && coprimeSet.has(r + 2)) {
-                    twinPairs.push([r, r + 2]);
-                }
-            }
-
-            // Find cousin pairs (r, r+4)
-            for (let r = 0; r < M - 4; r++) {
-                if (coprimeSet.has(r) && coprimeSet.has(r + 4)) {
-                    cousinPairs.push([r, r + 4]);
-                }
-            }
-
-            // Find sexy pairs (r, r+6)
-            for (let r = 0; r < M - 6; r++) {
-                if (coprimeSet.has(r) && coprimeSet.has(r + 6)) {
-                    sexyPairs.push([r, r + 6]);
-                }
-            }
-
-            updateStatistics();
-        }
-
-        function updateStatistics() {
-            const M = config.modulus;
-            const phiM = phi(M);
-            const irreducible = points.filter(p => p.isOpen).length;
-            const reducible = points.filter(p => !p.isOpen).length;
-            const reducibilityRatio = ((reducible / M) * 100).toFixed(1);
-            const channelCount = channels.size;
-            const factors = primeFactorization(M);
-
-            document.getElementById('phiValue').textContent = phiM;
-            document.getElementById('irreducibleCount').textContent = irreducible;
-            document.getElementById('reducibleCount').textContent = reducible;
-            document.getElementById('reducibilityRatio').textContent = reducibilityRatio + '%';
-            document.getElementById('channelCount').textContent = channelCount;
-            document.getElementById('factorization').textContent = formatFactorization(factors);
-            
-            // Update constellation counts if elements exist
-            const twinCount = document.getElementById('twinCount');
-            const cousinCount = document.getElementById('cousinCount');
-            const sexyCount = document.getElementById('sexyCount');
-            
-            if (twinCount) twinCount.textContent = twinPairs.length;
-            if (cousinCount) cousinCount.textContent = cousinPairs.length;
-            if (sexyCount) sexyCount.textContent = sexyPairs.length;
-        }
-
-        function draw() {
-            const size = canvas.width;
-            const centerX = size / 2;
-            const centerY = size / 2;
-            const baseRadius = size * 0.4;
-
-            ctx.clearRect(0, 0, size, size);
-            ctx.save();
-            ctx.translate(centerX, centerY);
-            ctx.scale(config.zoom, config.zoom);
-            ctx.translate(-centerX, -centerY);
-
-            // Draw projection lines
-            if (config.showProjections) {
-                ctx.globalAlpha = config.opacity;
-                points.forEach(p => {
-                    if (!p.isOpen) {
-                        const outerX = centerX + baseRadius * Math.cos(p.angle - Math.PI / 2);
-                        const outerY = centerY + baseRadius * Math.sin(p.angle - Math.PI / 2);
-                        
-                        const channelRadius = baseRadius * Math.pow(p.reducedM / config.modulus, config.spacingFactor);
-                        const targetAngle = (2 * Math.PI * p.reducedR) / p.reducedM;
-                        const innerX = centerX + channelRadius * Math.cos(targetAngle - Math.PI / 2);
-                        const innerY = centerY + channelRadius * Math.sin(targetAngle - Math.PI / 2);
-
-                        ctx.beginPath();
-                        ctx.moveTo(outerX, outerY);
-                        ctx.lineTo(innerX, innerY);
-                        ctx.strokeStyle = '#ff1493';
-                        ctx.lineWidth = 0.5;
-                        ctx.stroke();
-                    }
-                });
-                ctx.globalAlpha = 1.0;
-            }
-
-            // Draw channel rings
-            const divisors = getDivisors(config.modulus).filter(d => channels.has(d));
-            divisors.forEach(d => {
-                const radius = baseRadius * Math.pow(d / config.modulus, config.spacingFactor);
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                ctx.strokeStyle = '#ffd700';
-                ctx.lineWidth = 1;
-                ctx.stroke();
-
-                // Draw channel labels - improved positioning
-                if (config.labelType !== 'none' && d > 1) {
-                    const labelX = centerX + radius + 10;
-                    const labelY = centerY;
-                    
-                    ctx.fillStyle = '#ffd700';
-                    ctx.font = '11px monospace';
-                    ctx.textAlign = 'left';
-                    
-                    if (config.labelType === 'farey') {
-                        ctx.fillText(`M' = ${d}`, labelX, labelY);
-                    } else if (config.labelType === 'gcd' && channels.has(d)) {
-                        const mult = channels.get(d).multiplicity;
-                        ctx.fillText(`d = ${mult}`, labelX, labelY);
-                    } else if (config.labelType === 'both' && channels.has(d)) {
-                        const mult = channels.get(d).multiplicity;
-                        ctx.fillText(`M' = ${d}`, labelX, labelY - 6);
-                        ctx.fillStyle = '#aaa';
-                        ctx.fillText(`d = ${mult}`, labelX, labelY + 6);
-                    }
-                }
-            });
-
-            // Draw channel points (inner rings) with optional coloring
-            if (config.showAllRings) {
-                const divisors = getDivisors(config.modulus);
-                const selectedRingsSet = config.selectedRings ? 
-                    new Set(config.selectedRings.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n))) : 
-                    null;
-
-                divisors.forEach(d => {
-                    if (d === config.modulus) return; // Skip outer ring
-                    if (selectedRingsSet && !selectedRingsSet.has(d)) return;
-                    
-                    const ringPoints = allRingPoints.get(d);
-                    if (!ringPoints) return;
-                    
-                    const radius = baseRadius * Math.pow(d / config.modulus, config.spacingFactor);
-                    
-                    ringPoints.forEach(p => {
-                        if (!p.isOpen && !config.colorAllRings) return; // Only show coprime unless coloring all
-                        
-                        const x = centerX + radius * Math.cos(p.angle - Math.PI / 2);
-                        const y = centerY + radius * Math.sin(p.angle - Math.PI / 2);
-
-                        let color = '#ffd700'; // Default gold for coprime
-                        
-                        if (config.colorAllRings) {
-                            // Apply color scheme to inner rings
-                            if (config.colorScheme === 'channel-type') {
-                                color = p.isOpen ? '#00ffff' : '#ff1493';
-                            } else if (config.colorScheme === 'spf') {
-                                color = p.isOpen ? '#00ffff' : colorSchemes.spf(p.spf);
-                            } else if (config.colorScheme === 'lpf') {
-                                color = p.isOpen ? '#00ffff' : colorSchemes.lpf(p.lpf);
-                            } else if (config.colorScheme === 'gcd') {
-                                color = colorSchemes.gcd(p.gcd);
-                            } else if (config.colorScheme === 'depth') {
-                                color = colorSchemes.depth(p.M);
-                            }
-                        }
-
-                        ctx.beginPath();
-                        ctx.arc(x, y, config.pointSize * 0.7, 0, 2 * Math.PI);
-                        ctx.fillStyle = color;
-                        ctx.fill();
-                    });
-                });
-            } else {
-                // Original behavior: only gold coprime points
-                channels.forEach((channel, M_prime) => {
-                    const radius = baseRadius * Math.pow(M_prime / config.modulus, config.spacingFactor);
-                    for (let r = 0; r < M_prime; r++) {
-                        if (gcd(r, M_prime) === 1) {
-                            const angle = (2 * Math.PI * r) / M_prime;
-                            const x = centerX + radius * Math.cos(angle - Math.PI / 2);
-                            const y = centerY + radius * Math.sin(angle - Math.PI / 2);
-
-                            ctx.beginPath();
-                            ctx.arc(x, y, config.pointSize * 0.7, 0, 2 * Math.PI);
-                            ctx.fillStyle = '#ffd700';
-                            ctx.fill();
-                        }
-                    }
-                });
-            }
-
-            // Draw outer ring points
-            points.forEach(p => {
-                const x = centerX + baseRadius * Math.cos(p.angle - Math.PI / 2);
-                const y = centerY + baseRadius * Math.sin(p.angle - Math.PI / 2);
-
-                let color;
-                if (config.colorScheme === 'channel-type') {
-                    color = p.isOpen ? colorSchemes['channel-type'].irreducible : colorSchemes['channel-type'].reducible;
-                } else if (config.colorScheme === 'spf') {
-                    color = p.isOpen ? '#00ffff' : colorSchemes.spf(p.spf);
-                } else if (config.colorScheme === 'lpf') {
-                    color = p.isOpen ? '#00ffff' : colorSchemes.lpf(p.lpf);
-                } else if (config.colorScheme === 'gcd') {
-                    color = colorSchemes.gcd(p.gcd);
-                } else if (config.colorScheme === 'depth') {
-                    color = colorSchemes.depth(p.reducedM);
-                }
-
-                ctx.beginPath();
-                ctx.arc(x, y, config.pointSize, 0, 2 * Math.PI);
-                ctx.fillStyle = color;
-                ctx.fill();
-
-                // Highlight hovered point
-                if (hoveredPoint && hoveredPoint.r === p.r) {
-                    ctx.strokeStyle = '#fff';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                }
-
-                // Draw point labels if enabled
-                if (config.pointLabelType !== 'none' && config.modulus <= 60) {
-                    ctx.fillStyle = '#ccc';
-                    ctx.font = '9px monospace';
-                    ctx.textAlign = 'center';
-                    const labelRadius = baseRadius + 15;
-                    const labelX = centerX + labelRadius * Math.cos(p.angle - Math.PI / 2);
-                    const labelY = centerY + labelRadius * Math.sin(p.angle - Math.PI / 2);
-                    
-                    let labelText = '';
-                    if (config.pointLabelType === 'residue') {
-                        labelText = p.r.toString();
-                    } else if (config.pointLabelType === 'fraction') {
-                        labelText = `${p.r}/${p.M}`;
-                    } else if (config.pointLabelType === 'gcd') {
-                        labelText = p.gcd.toString();
-                    }
-                    
-                    ctx.fillText(labelText, labelX, labelY);
-                }
-
-                // Store screen coordinates for hit detection
-                p.screenX = x;
-                p.screenY = y;
-            });
-
-            // Draw constellation pair connections
-            ctx.globalAlpha = 0.5;
-            
-            if (config.showTwinResidues || config.gapType === '2') {
-                twinPairs.forEach(([r1, r2]) => {
-                    const p1 = points[r1];
-                    const p2 = points[r2];
-                    ctx.beginPath();
-                    ctx.moveTo(p1.screenX, p1.screenY);
-                    ctx.lineTo(p2.screenX, p2.screenY);
-                    ctx.strokeStyle = '#00ff00'; // Green for twins
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    
-                    // Highlight the points
-                    ctx.beginPath();
-                    ctx.arc(p1.screenX, p1.screenY, config.pointSize + 2, 0, 2 * Math.PI);
-                    ctx.strokeStyle = '#ff0000'; // Red
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    
-                    ctx.beginPath();
-                    ctx.arc(p2.screenX, p2.screenY, config.pointSize + 2, 0, 2 * Math.PI);
-                    ctx.strokeStyle = '#0000ff'; // Blue
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                });
-            }
-            
-            if (config.showCousinResidues || config.gapType === '4') {
-                cousinPairs.forEach(([r1, r2]) => {
-                    const p1 = points[r1];
-                    const p2 = points[r2];
-                    ctx.beginPath();
-                    ctx.moveTo(p1.screenX, p1.screenY);
-                    ctx.lineTo(p2.screenX, p2.screenY);
-                    ctx.strokeStyle = '#ffff00'; // Yellow for cousins
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                });
-            }
-            
-            if (config.showSexyResidues || config.gapType === '6') {
-                sexyPairs.forEach(([r1, r2]) => {
-                    const p1 = points[r1];
-                    const p2 = points[r2];
-                    ctx.beginPath();
-                    ctx.moveTo(p1.screenX, p1.screenY);
-                    ctx.lineTo(p2.screenX, p2.screenY);
-                    ctx.strokeStyle = '#ff00ff'; // Magenta for sexy
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                });
-            }
-            
-            ctx.globalAlpha = 1.0;
-
-            ctx.restore();
-        }
-
-        function handleMouseMove(e) {
-            const rect = canvas.getBoundingClientRect();
-            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-
-            // Find closest point
-            let closest = null;
-            let minDist = config.pointSize * 2;
-
-            points.forEach(p => {
-                const dx = x - p.screenX;
-                const dy = y - p.screenY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < minDist) {
-                    minDist = dist;
-                    closest = p;
-                }
-            });
-
-            if (closest !== hoveredPoint) {
-                hoveredPoint = closest;
-                draw();
-                updateTooltip(e.clientX, e.clientY);
             }
         }
+        if (temp > 1) factors.add(temp);
+        return Array.from(factors);
+    }
+};
 
-        function updateTooltip(x, y) {
-            const tooltip = document.getElementById('tooltip');
-            if (hoveredPoint) {
-                tooltip.style.display = 'block';
-                tooltip.style.left = (x + 15) + 'px';
-                tooltip.style.top = (y + 15) + 'px';
-                
-                const p = hoveredPoint;
-                const reduction = p.isOpen ? 
-                    'Irreducible' : 
-                    `${p.r}/${p.M} → ${p.reducedR}/${p.reducedM}`;
-                
-                // Check constellation membership
-                const isTwin = twinPairs.some(([r1, r2]) => r1 === p.r || r2 === p.r);
-                const isCousin = cousinPairs.some(([r1, r2]) => r1 === p.r || r2 === p.r);
-                const isSexy = sexyPairs.some(([r1, r2]) => r1 === p.r || r2 === p.r);
-                
-                let constellations = [];
-                if (isTwin) constellations.push('Twin');
-                if (isCousin) constellations.push('Cousin');
-                if (isSexy) constellations.push('Sexy');
-                
-                tooltip.innerHTML = `
-                    <div class="tooltip-line"><strong>Residue: r = ${p.r}</strong></div>
-                    <div class="tooltip-line">Modulus: M = ${p.M}</div>
-                    <div class="tooltip-line">gcd(${p.r}, ${p.M}) = ${p.gcd}</div>
-                    <div class="tooltip-line">${reduction}</div>
-                    ${!p.isOpen ? `<div class="tooltip-line">Channel M' = ${p.reducedM}</div>` : ''}
-                    ${p.spf > 1 ? `<div class="tooltip-line">SPF = ${p.spf}, LPF = ${p.lpf}</div>` : ''}
-                    ${constellations.length > 0 ? `<div class="tooltip-line" style="color: #0f0;">${constellations.join(', ')} pair member</div>` : ''}
-                `;
-            } else {
-                tooltip.style.display = 'none';
-            }
-        }
+/**
+ * APPLICATION STATE & CONFIG
+ */
+const State = {
+    M: 60,
+    viewMode: 'projection', // 'projection' or 'rings'
+    colorScheme: 'channel',
+    opacity: 0.3,
+    isAnimating: false,
+    animationId: null,
+    
+    // Calculated Data
+    residues: [],
+    channels: {}, // Map of M_prime -> { count, d, radius }
+    sortedChannels: [] // Array of M_prime sorted by size
+};
 
-        function handleWheel(e) {
-            e.preventDefault();
-            const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            config.zoom = Math.max(0.5, Math.min(10, config.zoom * delta));
-            document.getElementById('zoomLevel').textContent = Math.round(config.zoom * 100) + '%';
-            draw();
-        }
+/**
+ * DATA GENERATION
+ */
+function calculateData() {
+    const M = State.M;
+    State.residues = [];
+    State.channels = {};
 
-        function handleClick(e) {
-            if (hoveredPoint) {
-                console.log('Point details:', hoveredPoint);
-            }
-        }
+    // 1. Generate Residues and identify Channels
+    for (let r = 0; r < M; r++) {
+        // Special case for 0: acts as M
+        const effectiveR = (r === 0) ? M : r;
+        const d = MathCore.gcd(effectiveR, M);
+        const M_prime = M / d; // The Channel
+        const r_prime = effectiveR / d; // Reduced numerator
 
-        function setModulus(m) {
-            config.modulus = m;
-            document.getElementById('modulusSlider').value = Math.min(m, 500);
-            document.getElementById('modulusInput').value = m;
-            document.getElementById('modulusValue').textContent = m;
-            calculatePoints();
-            draw();
-        }
-
-        function exportImage() {
-            const resolution = parseInt(document.getElementById('exportResolution').value);
-            
-            // Create high-resolution canvas
-            const exportCanvas = document.createElement('canvas');
-            const exportCtx = exportCanvas.getContext('2d');
-            
-            const totalWidth = resolution;
-            const totalHeight = resolution;
-            const vizSize = Math.floor(resolution * 0.7);
-            const panelWidth = resolution - vizSize;
-            
-            exportCanvas.width = totalWidth;
-            exportCanvas.height = totalHeight;
-            
-            // Fill background
-            exportCtx.fillStyle = '#000';
-            exportCtx.fillRect(0, 0, totalWidth, totalHeight);
-            
-            // Draw title
-            exportCtx.fillStyle = '#fff';
-            exportCtx.font = `${resolution / 30}px Arial`;
-            exportCtx.textAlign = 'center';
-            exportCtx.fillText(
-                `Modular Reduction Projection: M = ${config.modulus}`,
-                totalWidth / 2,
-                resolution / 20
-            );
-            
-            // Draw visualization
-            const vizCenterX = vizSize / 2;
-            const vizCenterY = totalHeight / 2;
-            const baseRadius = vizSize * 0.42;
-            
-            // Draw subtitle
-            exportCtx.font = `${resolution / 50}px Arial`;
-            exportCtx.fillStyle = '#aaa';
-            exportCtx.fillText(
-                `Composite Modulus M = ${config.modulus}`,
-                vizCenterX,
-                resolution / 12
-            );
-            
-            const scaleFactor = resolution / canvas.width;
-            
-            // Draw projection lines
-            if (config.showProjections) {
-                exportCtx.globalAlpha = config.opacity;
-                points.forEach(p => {
-                    if (!p.isOpen) {
-                        const outerX = vizCenterX + baseRadius * Math.cos(p.angle - Math.PI / 2);
-                        const outerY = vizCenterY + baseRadius * Math.sin(p.angle - Math.PI / 2);
-                        
-                        const channelRadius = baseRadius * (p.reducedM / config.modulus);
-                        const targetAngle = (2 * Math.PI * p.reducedR) / p.reducedM;
-                        const innerX = vizCenterX + channelRadius * Math.cos(targetAngle - Math.PI / 2);
-                        const innerY = vizCenterY + channelRadius * Math.sin(targetAngle - Math.PI / 2);
-
-                        exportCtx.beginPath();
-                        exportCtx.moveTo(outerX, outerY);
-                        exportCtx.lineTo(innerX, innerY);
-                        exportCtx.strokeStyle = '#ff1493';
-                        exportCtx.lineWidth = scaleFactor * 0.5;
-                        exportCtx.stroke();
-                    }
-                });
-                exportCtx.globalAlpha = 1.0;
-            }
-            
-            // Draw channel rings with improved labels
-            const divisors = getDivisors(config.modulus).filter(d => channels.has(d));
-            divisors.forEach(d => {
-                const radius = baseRadius * (d / config.modulus);
-                exportCtx.beginPath();
-                exportCtx.arc(vizCenterX, vizCenterY, radius, 0, 2 * Math.PI);
-                exportCtx.strokeStyle = '#ffd700';
-                exportCtx.lineWidth = scaleFactor;
-                exportCtx.stroke();
-
-                if (config.labelType !== 'none' && d > 1) {
-                    const labelX = vizCenterX + radius + 10 * scaleFactor;
-                    const labelY = vizCenterY;
-                    
-                    exportCtx.fillStyle = '#ffd700';
-                    exportCtx.font = `${resolution / 80}px monospace`;
-                    exportCtx.textAlign = 'left';
-                    
-                    if (config.labelType === 'farey') {
-                        exportCtx.fillText(`M' = ${d}`, labelX, labelY);
-                    } else if (config.labelType === 'gcd' && channels.has(d)) {
-                        const mult = channels.get(d).multiplicity;
-                        exportCtx.fillText(`d = ${mult}`, labelX, labelY);
-                    } else if (config.labelType === 'both' && channels.has(d)) {
-                        const mult = channels.get(d).multiplicity;
-                        exportCtx.fillText(`M' = ${d}`, labelX, labelY - 8 * scaleFactor);
-                        exportCtx.fillStyle = '#aaa';
-                        exportCtx.fillText(`d = ${mult}`, labelX, labelY + 8 * scaleFactor);
-                    }
-                }
-            });
-            
-            // Draw channel points
-            channels.forEach((channel, M_prime) => {
-                const radius = baseRadius * (M_prime / config.modulus);
-                for (let r = 0; r < M_prime; r++) {
-                    if (gcd(r, M_prime) === 1) {
-                        const angle = (2 * Math.PI * r) / M_prime;
-                        const x = vizCenterX + radius * Math.cos(angle - Math.PI / 2);
-                        const y = vizCenterY + radius * Math.sin(angle - Math.PI / 2);
-
-                        exportCtx.beginPath();
-                        exportCtx.arc(x, y, config.pointSize * scaleFactor * 0.7, 0, 2 * Math.PI);
-                        exportCtx.fillStyle = '#ffd700';
-                        exportCtx.fill();
-                    }
-                }
-            });
-            
-            // Draw outer ring points
-            points.forEach(p => {
-                const x = vizCenterX + baseRadius * Math.cos(p.angle - Math.PI / 2);
-                const y = vizCenterY + baseRadius * Math.sin(p.angle - Math.PI / 2);
-
-                let color;
-                if (config.colorScheme === 'channel-type') {
-                    color = p.isOpen ? '#00ffff' : '#ff1493';
-                } else if (config.colorScheme === 'spf') {
-                    color = p.isOpen ? '#00ffff' : colorSchemes.spf(p.spf);
-                } else if (config.colorScheme === 'lpf') {
-                    color = p.isOpen ? '#00ffff' : colorSchemes.lpf(p.lpf);
-                } else if (config.colorScheme === 'gcd') {
-                    color = colorSchemes.gcd(p.gcd);
-                } else if (config.colorScheme === 'depth') {
-                    color = colorSchemes.depth(p.reducedM);
-                }
-
-                exportCtx.beginPath();
-                exportCtx.arc(x, y, config.pointSize * scaleFactor, 0, 2 * Math.PI);
-                exportCtx.fillStyle = color;
-                exportCtx.fill();
-            });
-            
-            // Draw info panel
-            const panelX = vizSize + 20;
-            let panelY = resolution / 8;
-            const lineHeight = resolution / 40;
-            const fontSize = resolution / 60;
-            
-            exportCtx.textAlign = 'left';
-            
-            // Configuration
-            exportCtx.fillStyle = '#fff';
-            exportCtx.font = `bold ${fontSize * 1.2}px Arial`;
-            exportCtx.fillText('CONFIGURATION', panelX, panelY);
-            panelY += lineHeight * 1.5;
-            
-            exportCtx.font = `${fontSize}px Arial`;
-            exportCtx.fillStyle = '#ccc';
-            exportCtx.fillText(`Modulus M = ${config.modulus}`, panelX, panelY);
-            panelY += lineHeight;
-            
-            const factors = primeFactorization(config.modulus);
-            exportCtx.fillText(`Prime Factorization: ${formatFactorization(factors)}`, panelX, panelY);
-            panelY += lineHeight;
-            
-            exportCtx.fillText('Display Mode: Projection Lines', panelX, panelY);
-            panelY += lineHeight;
-            
-            exportCtx.fillText(`Color Scheme: ${config.colorScheme}`, panelX, panelY);
-            panelY += lineHeight * 2;
-            
-            // Statistics
-            exportCtx.fillStyle = '#fff';
-            exportCtx.font = `bold ${fontSize * 1.2}px Arial`;
-            exportCtx.fillText('STATISTICS', panelX, panelY);
-            panelY += lineHeight * 1.5;
-            
-            exportCtx.font = `${fontSize}px Arial`;
-            exportCtx.fillStyle = '#ccc';
-            const phiM = phi(config.modulus);
-            exportCtx.fillText(`φ(M) = ${phiM}`, panelX, panelY);
-            panelY += lineHeight;
-            
-            const irreducible = points.filter(p => p.isOpen).length;
-            const reducible = points.filter(p => !p.isOpen).length;
-            exportCtx.fillText(`Reducible Residues: ${reducible}`, panelX, panelY);
-            panelY += lineHeight;
-            
-            const reducibilityRatio = ((reducible / config.modulus) * 100).toFixed(1);
-            exportCtx.fillText(`Reducibility Ratio: ${reducibilityRatio}%`, panelX, panelY);
-            panelY += lineHeight;
-            
-            exportCtx.fillText(`Farey Channels: ${channels.size}`, panelX, panelY);
-            panelY += lineHeight * 2;
-            
-            // Color key
-            exportCtx.fillStyle = '#fff';
-            exportCtx.font = `bold ${fontSize * 1.2}px Arial`;
-            exportCtx.fillText('COLOR KEY', panelX, panelY);
-            panelY += lineHeight * 1.5;
-            
-            const boxSize = fontSize;
-            exportCtx.fillStyle = '#00ffff';
-            exportCtx.fillRect(panelX, panelY - boxSize * 0.7, boxSize, boxSize);
-            exportCtx.fillStyle = '#ccc';
-            exportCtx.font = `${fontSize}px Arial`;
-            exportCtx.fillText('Cyan = Irreducible (gcd=1)', panelX + boxSize * 1.5, panelY);
-            panelY += lineHeight * 1.2;
-            
-            exportCtx.fillStyle = '#ff1493';
-            exportCtx.fillRect(panelX, panelY - boxSize * 0.7, boxSize, boxSize);
-            exportCtx.fillStyle = '#ccc';
-            exportCtx.fillText('Red = Reducible (gcd>1)', panelX + boxSize * 1.5, panelY);
-            panelY += lineHeight * 1.2;
-            
-            exportCtx.fillStyle = '#ffd700';
-            exportCtx.fillRect(panelX, panelY - boxSize * 0.7, boxSize, boxSize);
-            exportCtx.fillStyle = '#ccc';
-            exportCtx.fillText('Gold = Farey Channels', panelX + boxSize * 1.5, panelY);
-            panelY += lineHeight * 2;
-            
-            // Observation
-            exportCtx.fillStyle = '#fff';
-            exportCtx.font = `bold ${fontSize * 1.2}px Arial`;
-            exportCtx.fillText('OBSERVATION', panelX, panelY);
-            panelY += lineHeight * 1.5;
-            
-            exportCtx.fillStyle = '#ccc';
-            exportCtx.font = `${fontSize * 0.9}px Arial`;
-            const maxWidth = panelWidth - 40;
-            const text = "Reducible residues of composite M project onto their reduced denominators (Farey channels). By elementary counting, exactly d = M/M' residues reduce to each channel M', where d = gcd(r,M) for those residues.";
-            wrapText(exportCtx, text, panelX, panelY, maxWidth, lineHeight * 0.9);
-            
-            // Bottom attribution
-            exportCtx.fillStyle = '#666';
-            exportCtx.font = `${fontSize * 0.85}px Arial`;
-            exportCtx.textAlign = 'left';
-            exportCtx.fillText('Author: Wessen Getachew', panelX, totalHeight - 60);
-            exportCtx.fillText('Tool: Modular Reduction Explorer', panelX, totalHeight - 40);
-            
-            // Zoom indicator
-            exportCtx.textAlign = 'right';
-            exportCtx.fillText('Zoom: 100%', totalWidth - 20, totalHeight - 20);
-            
-            // Download
-            const link = document.createElement('a');
-            link.download = `modular-reduction-projection-M${config.modulus}.png`;
-            link.href = exportCanvas.toDataURL('image/png');
-            link.click();
-        }
-
-        function exportCSV() {
-            const M = config.modulus;
-            const factors = primeFactorization(M);
-            const phiM = phi(M);
-            
-            let csv = `# Modular Reduction Projection Data Export\n`;
-            csv += `# Modulus M = ${M}\n`;
-            csv += `# Prime Factorization: ${formatFactorization(factors)}\n`;
-            csv += `# φ(M) = ${phiM}\n`;
-            csv += `# Total Residues: ${M}\n`;
-            csv += `# Irreducible: ${points.filter(p => p.isOpen).length}\n`;
-            csv += `# Reducible: ${points.filter(p => !p.isOpen).length}\n`;
-            csv += `# Farey Channels: ${channels.size}\n`;
-            csv += `# Twin Pairs: ${twinPairs.length}\n`;
-            csv += `# Cousin Pairs: ${cousinPairs.length}\n`;
-            csv += `# Sexy Pairs: ${sexyPairs.length}\n`;
-            csv += `#\n`;
-            csv += `Residue,Modulus,GCD,Status,Reduced_Numerator,Reduced_Denominator,Channel,Angle_Rad,SPF,LPF\n`;
-            
-            points.forEach(p => {
-                csv += `${p.r},${p.M},${p.gcd},${p.isOpen ? 'Irreducible' : 'Reducible'},`;
-                csv += `${p.reducedR},${p.reducedM},${p.reducedM},${p.angle.toFixed(6)},${p.spf},${p.lpf}\n`;
-            });
-            
-            csv += `\n# Channel Multiplicities\n`;
-            csv += `Channel_M',Multiplicity,Residue_Count\n`;
-            channels.forEach((ch, M_prime) => {
-                csv += `${M_prime},${ch.multiplicity},${ch.count}\n`;
-            });
-            
-            if (twinPairs.length > 0) {
-                csv += `\n# Twin Pairs (r, r+2)\n`;
-                csv += `r1,r2\n`;
-                twinPairs.forEach(([r1, r2]) => {
-                    csv += `${r1},${r2}\n`;
-                });
-            }
-            
-            if (cousinPairs.length > 0) {
-                csv += `\n# Cousin Pairs (r, r+4)\n`;
-                csv += `r1,r2\n`;
-                cousinPairs.forEach(([r1, r2]) => {
-                    csv += `${r1},${r2}\n`;
-                });
-            }
-            
-            if (sexyPairs.length > 0) {
-                csv += `\n# Sexy Pairs (r, r+6)\n`;
-                csv += `r1,r2\n`;
-                sexyPairs.forEach(([r1, r2]) => {
-                    csv += `${r1},${r2}\n`;
-                });
-            }
-            
-            // Download
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.download = `modular-reduction-M${M}.csv`;
-            link.href = url;
-            link.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function exportJSON() {
-            const M = config.modulus;
-            const factors = primeFactorization(M);
-            const phiM = phi(M);
-            
-            const data = {
-                metadata: {
-                    modulus: M,
-                    prime_factorization: factors,
-                    phi_M: phiM,
-                    total_residues: M,
-                    irreducible_count: points.filter(p => p.isOpen).length,
-                    reducible_count: points.filter(p => !p.isOpen).length,
-                    farey_channels: channels.size,
-                    twin_pairs_count: twinPairs.length,
-                    cousin_pairs_count: cousinPairs.length,
-                    sexy_pairs_count: sexyPairs.length,
-                    export_date: new Date().toISOString(),
-                    tool: "Modular Reduction Explorer"
-                },
-                residues: points.map(p => ({
-                    r: p.r,
-                    modulus: p.M,
-                    gcd: p.gcd,
-                    is_coprime: p.isOpen,
-                    reduced_numerator: p.reducedR,
-                    reduced_denominator: p.reducedM,
-                    channel: p.reducedM,
-                    angle_radians: p.angle,
-                    smallest_prime_factor: p.spf,
-                    largest_prime_factor: p.lpf
-                })),
-                channels: Array.from(channels.entries()).map(([M_prime, ch]) => ({
-                    channel_M_prime: M_prime,
-                    multiplicity: ch.multiplicity,
-                    residue_count: ch.count,
-                    residues: ch.residues
-                })),
-                twin_pairs: twinPairs,
-                cousin_pairs: cousinPairs,
-                sexy_pairs: sexyPairs,
-                all_rings: Array.from(allRingPoints.entries()).map(([d, ringPts]) => ({
-                    divisor: d,
-                    ring_size: d,
-                    phi_d: phi(d),
-                    points: ringPts.map(p => ({
-                        r: p.r,
-                        gcd: p.gcd,
-                        is_coprime: p.isOpen,
-                        angle_radians: p.angle
-                    }))
-                }))
+        // Register Channel
+        if (!State.channels[M_prime]) {
+            State.channels[M_prime] = {
+                val: M_prime,
+                d: d, // Reduction factor
+                residues: [],
+                population: MathCore.phi(M_prime) // THE FIX: Using Totient
             };
-            
-            // Download
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.download = `modular-reduction-M${M}.json`;
-            link.href = url;
-            link.click();
-            URL.revokeObjectURL(url);
+        }
+        
+        // Store Residue
+        const residueObj = {
+            r: r,
+            d: d,
+            M_prime: M_prime,
+            r_prime: r_prime,
+            angle: (r / M) * Math.PI * 2 - (Math.PI / 2), // Start at top
+            spf: MathCore.getSmallestPrimeFactor(d > 1 ? d : M),
+            isCoprime: (d === 1)
+        };
+
+        State.residues.push(residueObj);
+        State.channels[M_prime].residues.push(residueObj);
+    }
+
+    // 2. Sort Channels for Visual Layout
+    // We sort by M_prime. M_prime=1 (center) to M_prime=M (outer)
+    State.sortedChannels = Object.values(State.channels).sort((a, b) => a.val - b.val);
+    
+    // 3. Assign Visual Radii
+    // Logic: Distributed evenly between inner padding and outer edge
+    const totalChannels = State.sortedChannels.length;
+    State.sortedChannels.forEach((ch, index) => {
+        // Normalized radius 0 to 1
+        // If M_prime is 1, it's at the center (index 0)
+        // If M_prime is M, it's at the edge
+        ch.radiusPct = (index + 1) / (totalChannels + 1); // +1 padding
+        
+        // Override for visual clarity in 'projection' mode
+        // The outer ring is always max radius
+        if (ch.val === M) ch.radiusPct = 1.0;
+        // The center point
+        if (ch.val === 1) ch.radiusPct = 0.05; 
+    });
+
+    updateStatsUI();
+}
+
+function updateStatsUI() {
+    const phi = MathCore.phi(State.M);
+    const distinctPrimes = MathCore.getPrimeFactors(State.M).join(" × ");
+    
+    let html = `
+        <div><strong>M = ${State.M}</strong></div>
+        <div>Factors: ${distinctPrimes}</div>
+        <div>φ(M): ${phi} (Coprimes)</div>
+        <div>Channels: ${State.sortedChannels.length}</div>
+        <div style="margin-top:5px; border-top:1px solid #444; padding-top:5px;">
+            <small>Hover chart for details</small>
+        </div>
+    `;
+    document.getElementById('global-stats').innerHTML = html;
+}
+
+/**
+ * RENDERING ENGINE
+ */
+const canvas = document.getElementById('vizCanvas');
+const ctx = canvas.getContext('2d', { alpha: false }); // Optimization
+let centerX, centerY, maxRadius;
+
+function resize() {
+    const container = document.getElementById('canvas-container');
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+    centerX = canvas.width / 2;
+    centerY = canvas.height / 2;
+    maxRadius = Math.min(centerX, centerY) - 40;
+    render();
+}
+
+function getColor(residue) {
+    const scheme = State.colorScheme;
+    
+    if (scheme === 'channel') {
+        // Color based on the Channel (M_prime)
+        // Map index to hue
+        const chIndex = State.sortedChannels.findIndex(c => c.val === residue.M_prime);
+        const hue = (chIndex / State.sortedChannels.length) * 300;
+        if (residue.M_prime === 1) return '#ffd700'; // Gold for center
+        if (residue.M_prime === State.M) return '#58a6ff'; // Blue for outer
+        return `hsl(${hue}, 70%, 60%)`;
+    } 
+    else if (scheme === 'gcd') {
+        // Color based on GCD value
+        if (residue.d === 1) return '#58a6ff';
+        return `hsl(${(residue.d * 137.5) % 360}, 70%, 60%)`;
+    }
+    else if (scheme === 'prime') {
+        const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23];
+        const colors = ['#ff6b6b', '#51cf66', '#fcc419', '#339af0', '#cc5de8', '#ff922b'];
+        const pIndex = primes.indexOf(residue.spf);
+        if (pIndex === -1) return '#868e96';
+        return colors[pIndex % colors.length];
+    }
+    return '#fff';
+}
+
+function render() {
+    // Background
+    ctx.fillStyle = '#0f1115';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    if (!State.sortedChannels.length) return;
+
+    // 1. Draw Channel Rings
+    State.sortedChannels.forEach(ch => {
+        const r = ch.radiusPct * maxRadius;
+        
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
+        ctx.strokeStyle = '#30363d';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Label the ring if space permits
+        if (State.sortedChannels.length < 15 || ch.val === State.M || ch.val === 1) {
+            ctx.fillStyle = '#8b949e';
+            ctx.font = '10px monospace';
+            ctx.fillText(`M'=${ch.val}`, centerX + 5, centerY - r - 2);
+        }
+    });
+
+    // 2. Draw Projections / Points
+    ctx.lineWidth = 1;
+    
+    State.residues.forEach(res => {
+        // Origin coordinates (Outer Ring)
+        const outerR = maxRadius;
+        const x1 = centerX + Math.cos(res.angle) * outerR;
+        const y1 = centerY + Math.sin(res.angle) * outerR;
+
+        // Destination coordinates (Channel Ring)
+        // In 'rings' mode, the point stays on its channel ring
+        // In 'projection' mode, we draw a line from outer to channel
+        
+        const chObj = State.channels[res.M_prime];
+        const destR = chObj.radiusPct * maxRadius;
+        
+        // Angle logic: 
+        // In standard view, angle is fixed by r/M.
+        // In Ring view, we might want to rotate relative to M' but let's keep it simple first.
+        const x2 = centerX + Math.cos(res.angle) * destR;
+        const y2 = centerY + Math.sin(res.angle) * destR;
+
+        const color = getColor(res);
+
+        if (State.viewMode === 'projection' && res.d > 1) {
+            // Draw Line
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = color;
+            ctx.globalAlpha = State.opacity;
+            ctx.stroke();
+            ctx.globalAlpha = 1.0;
         }
 
-        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-            const words = text.split(' ');
-            let line = '';
-            let yPos = y;
+        // Draw Point at destination
+        const pointSize = (res.M_prime === State.M) ? 2 : 3;
+        ctx.beginPath();
+        ctx.arc(x2, y2, pointSize, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
 
-            for (let n = 0; n < words.length; n++) {
-                const testLine = line + words[n] + ' ';
-                const metrics = ctx.measureText(testLine);
-                const testWidth = metrics.width;
-                
-                if (testWidth > maxWidth && n > 0) {
-                    ctx.fillText(line, x, yPos);
-                    line = words[n] + ' ';
-                    yPos += lineHeight;
-                } else {
-                    line = testLine;
-                }
-            }
-            ctx.fillText(line, x, yPos);
+        // Save coordinates for hover detection
+        res.hitX = x2;
+        res.hitY = y2;
+        res.hitR = pointSize + 2; // Hit radius
+    });
+}
+
+/**
+ * INTERACTIVITY
+ */
+function handleInteraction(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    // Find closest point
+    let minDist = 10;
+    let target = null;
+
+    // Optimization: Iterate backward (draw order) or use quadtree for huge N
+    // Simple iteration is fine for N < 5000 on modern CPU
+    for (let i = 0; i < State.residues.length; i++) {
+        const res = State.residues[i];
+        const dx = mx - res.hitX;
+        const dy = my - res.hitY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        
+        if (dist < minDist) {
+            minDist = dist;
+            target = res;
         }
+    }
 
-        // Event listeners
-        document.getElementById('modulusSlider').addEventListener('input', (e) => {
-            setModulus(parseInt(e.target.value));
-        });
+    const tooltip = document.getElementById('tooltip');
+    
+    if (target) {
+        tooltip.style.display = 'block';
+        tooltip.style.left = (e.clientX + 15) + 'px';
+        tooltip.style.top = (e.clientY + 15) + 'px';
+        
+        const ch = State.channels[target.M_prime];
+        
+        tooltip.innerHTML = `
+            <span style="color:${getColor(target)}; font-weight:bold">r = ${target.r}</span> (mod ${State.M})
+            <hr style="border:0; border-top:1px solid #444; margin:4px 0">
+            <strong>Projection:</strong>
+            ${target.r}/${State.M} → <span style="color:var(--accent)">${target.r_prime}/${target.M_prime}</span>
+            <br>
+            <strong>Analysis:</strong>
+            GCD (Reduction): ${target.d}
+            Target Channel: M'=${target.M_prime}
+            <br>
+            <span style="font-size:0.8em; color:#8b949e">
+            Channel Population: ${ch.population} (φ(${target.M_prime}))
+            Channel Multiplicity: ${ch.d} (M/M')
+            </span>
+        `;
+        
+        // Highlight this specific line if in projection mode
+        if (State.viewMode === 'projection') {
+            requestAnimationFrame(() => {
+                render(); // clear
+                // Draw highlight
+                ctx.beginPath();
+                ctx.moveTo(centerX + Math.cos(target.angle) * maxRadius, centerY + Math.sin(target.angle) * maxRadius);
+                ctx.lineTo(target.hitX, target.hitY);
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 1;
+                ctx.stroke();
+                ctx.lineWidth = 1;
+            });
+        }
+    } else {
+        tooltip.style.display = 'none';
+        // Only re-render if we were highlighting something
+        // (Debounce this in prod)
+        render();
+    }
+}
 
-        document.getElementById('modulusInput').addEventListener('input', (e) => {
-            const value = parseInt(e.target.value);
-            if (value >= 2 && value <= 5000) {
-                setModulus(value);
-            }
-        });
+/**
+ * EVENT LISTENERS & CONTROLS
+ */
+document.getElementById('input-m').addEventListener('change', (e) => setM(parseInt(e.target.value)));
+document.getElementById('slider-m').addEventListener('input', (e) => setM(parseInt(e.target.value)));
 
-        document.getElementById('colorScheme').addEventListener('change', (e) => {
-            config.colorScheme = e.target.value;
-            draw();
-        });
+document.getElementById('slider-opacity').addEventListener('input', (e) => {
+    State.opacity = parseFloat(e.target.value);
+    document.getElementById('val-opacity').innerText = State.opacity;
+    render();
+});
 
-        document.getElementById('opacitySlider').addEventListener('input', (e) => {
-            config.opacity = parseInt(e.target.value) / 100;
-            document.getElementById('opacityValue').textContent = config.opacity.toFixed(2);
-            draw();
-        });
+document.getElementById('color-scheme').addEventListener('change', (e) => {
+    State.colorScheme = e.target.value;
+    render();
+});
 
-        document.getElementById('zoomSlider').addEventListener('input', (e) => {
-            config.zoom = parseInt(e.target.value) / 100;
-            document.getElementById('zoomValue').textContent = Math.round(config.zoom * 100) + '%';
-            document.getElementById('zoomLevel').textContent = Math.round(config.zoom * 100) + '%';
-            draw();
-        });
+canvas.addEventListener('mousemove', handleInteraction);
+window.addEventListener('resize', resize);
 
-        document.getElementById('pointSizeSlider').addEventListener('input', (e) => {
-            config.pointSize = parseFloat(e.target.value);
-            document.getElementById('pointSizeValue').textContent = config.pointSize;
-            draw();
-        });
+function setM(val) {
+    if (val < 2) val = 2;
+    if (val > 5000) val = 5000;
+    State.M = val;
+    
+    // Sync Inputs
+    document.getElementById('input-m').value = val;
+    document.getElementById('slider-m').value = val;
+    
+    calculateData();
+    render();
+}
 
-        document.getElementById('spacingSlider').addEventListener('input', (e) => {
-            config.spacingFactor = parseInt(e.target.value) / 100;
-            document.getElementById('spacingValue').textContent = config.spacingFactor.toFixed(2);
-            draw();
-        });
+function setView(mode) {
+    State.viewMode = mode;
+    document.getElementById('btn-view-projection').className = mode === 'projection' ? 'active' : '';
+    document.getElementById('btn-view-rings').className = mode === 'rings' ? 'active' : '';
+    render();
+}
 
-        document.getElementById('labelType').addEventListener('change', (e) => {
-            config.labelType = e.target.value;
-            draw();
-        });
+function toggleAnimation() {
+    const btn = document.getElementById('btn-animate');
+    if (State.isAnimating) {
+        State.isAnimating = false;
+        clearInterval(State.animationId);
+        btn.innerText = "Play Sequence";
+        btn.className = "";
+    } else {
+        State.isAnimating = true;
+        btn.innerText = "Stop";
+        btn.className = "active";
+        State.animationId = setInterval(() => {
+            let nextM = parseInt(State.M) + 1;
+            if (nextM > 1000) nextM = 4;
+            setM(nextM);
+        }, 150); // Speed
+    }
+}
 
-        document.getElementById('pointLabelType').addEventListener('change', (e) => {
-            config.pointLabelType = e.target.value;
-            draw();
-        });
+// Initialize
+resize();
+calculateData(); // Initial calc for M=60
 
-        document.getElementById('showProjections').addEventListener('change', (e) => {
-            config.showProjections = e.target.checked;
-            draw();
-        });
-
-        document.getElementById('showAllRings').addEventListener('change', (e) => {
-            config.showAllRings = e.target.checked;
-            draw();
-        });
-
-        document.getElementById('colorAllRings').addEventListener('change', (e) => {
-            config.colorAllRings = e.target.checked;
-            draw();
-        });
-
-        document.getElementById('selectedRings').addEventListener('input', (e) => {
-            config.selectedRings = e.target.value || null;
-            draw();
-        });
-
-        document.getElementById('showTwinResidues').addEventListener('change', (e) => {
-            config.showTwinResidues = e.target.checked;
-            draw();
-        });
-
-        document.getElementById('showCousinResidues').addEventListener('change', (e) => {
-            config.showCousinResidues = e.target.checked;
-            draw();
-        });
-
-        document.getElementById('showSexyResidues').addEventListener('change', (e) => {
-            config.showSexyResidues = e.target.checked;
-            draw();
-        });
-
-        document.getElementById('gapType').addEventListener('change', (e) => {
-            config.gapType = e.target.value;
-            draw();
-        });
-
-        // Initialize
-        initCanvas();
-        calculatePoints();
-        draw();
-    </script>
+</script>
 </body>
 </html>
