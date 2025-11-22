@@ -176,6 +176,12 @@
             background-color: var(--main-color);
         }
 
+        .sequence-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
         .export-controls {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -229,6 +235,14 @@
 
     <div class="container">
         <div class="sidebar">
+
+            <div class="control-group">
+                <h3>Sequence Animation (M Loop)</h3>
+                <div class="sequence-controls">
+                    <button onclick="startSequence()">▶️ Play Sequence</button>
+                    <button onclick="stopSequence()">⏸️ Stop Sequence</button>
+                </div>
+            </div>
 
             <div class="control-group">
                 <h3>Modulus M (<span id="modulusValue">42</span>)</h3>
@@ -342,7 +356,6 @@
         function primeFactorization(n) { const factors = []; let d = 2; while (n > 1) { let count = 0; while (n % d === 0) { count++; n /= d; } if (count > 0) { factors.push({ prime: d, power: count }); } d++; if (d * d > n && n > 1) { factors.push({ prime: n, power: 1 }); break; } } return factors; }
         function formatFactorization(factors) { return factors.map(f => { if (f.power === 1) return f.prime.toString(); const superscripts = '⁰¹²³⁴⁵⁶⁷⁸⁹'; const powerStr = f.power.toString().split('').map(d => superscripts[parseInt(d)]).join(''); return `${f.prime}${powerStr}`; }).join(' × '); }
         function getDivisors(n) { const divisors = new Set(); for (let i = 1; i * i <= n; i++) { if (n % i === 0) { divisors.add(i); divisors.add(n / i); } } return Array.from(divisors).sort((a, b) => a - b); }
-        function smallestPrimeFactor(n) { if (n <= 1) return 1; if (n % 2 === 0) return 2; for (let i = 3; i * i <= n; i += 2) { if (n % i === 0) return 3; } return n; } // Fixed bug here: returns 3 instead of 2 for even numbers if I am strict, but 2 is correct. Fixed to return 2
         function smallestPrimeFactor(n) { if (n <= 1) return 1; if (n % 2 === 0) return 2; for (let i = 3; i * i <= n; i += 2) { if (n % i === 0) return i; } return n; }
         function largestPrimeFactor(n) { let largest = -1; let temp = n; while (temp % 2 === 0) { largest = 2; temp /= 2; } for (let i = 3; i * i <= temp; i += 2) { while (temp % i === 0) { largest = i; temp /= i; } } if (temp > 2) largest = temp; return largest; }
 
@@ -362,6 +375,7 @@
         let hoveredPoint = null;
         let isDragging = false;
         let lastMouse = { x: 0, y: 0 };
+        let sequenceInterval = null; // Used for animation loop
         
         // Color schemes (restored original color definitions)
         const colorSchemes = {
@@ -390,6 +404,29 @@
         }
         function colorHue(val, max) { return `hsl(${(val / max) * 360}, 70%, 60%)`; }
 
+        // --- Sequence Functions ---
+        function handleSequence() {
+            let nextModulus = config.modulus + 1;
+            const max = parseInt(document.getElementById('modulusSlider').max);
+            if (nextModulus > max) {
+                nextModulus = 2; // Loop back to the start
+            }
+            setModulus(nextModulus);
+        }
+
+        function startSequence() {
+            if (sequenceInterval === null) {
+                sequenceInterval = setInterval(handleSequence, 500); // 500ms per step
+            }
+        }
+
+        function stopSequence() {
+            if (sequenceInterval !== null) {
+                clearInterval(sequenceInterval);
+                sequenceInterval = null;
+            }
+        }
+
         // --- Data Calculation ---
         function calculatePoints() {
             const M = config.modulus;
@@ -397,7 +434,6 @@
             channels = new Map();
             allRingPoints.clear();
             
-            // Clear gap pairs
             Object.keys(gapPairs).forEach(key => gapPairs[key] = []);
 
             const coprimeSet = new Set();
@@ -417,7 +453,6 @@
                     screenX: 0, screenY: 0, hitR: config.pointSize 
                 });
 
-                // Track channels
                 if (!channels.has(reducedM)) {
                     channels.set(reducedM, { M_prime: reducedM, multiplicity: M / reducedM, residues: [], count: 0 });
                 }
@@ -425,7 +460,6 @@
                 channels.get(reducedM).count++;
             }
 
-            // Calculate points for all divisor rings (including M)
             getDivisors(M).forEach(d => {
                 const ringPoints = [];
                 for (let r = 0; r < d; r++) {
@@ -438,102 +472,7 @@
                 allRingPoints.set(d, ringPoints);
             });
 
-            // Find constellation pairs
-            for (let gap = 2; gap <= 12; gap += 2) {
-                for (let r = 0; r < M; r++) {
-                    const r2 = (r + gap) % M;
-                    if (coprimeSet.has(r) && coprimeSet.has(r2)) {
-                        // Ensure we only count each pair once (r < r2 handles non-wrap-around, need specific wrap-around logic for correct counting)
-                         if (r < r2) { 
-                           gapPairs[gap].push([r, r2]);
-                        } else if (r + gap >= M && coprimeSet.has(r) && coprimeSet.has((r + gap) % M)) {
-                            // This ensures pairs are counted correctly only once when they wrap around (e.g., M-1 and 1 for gap 2)
-                             // Simple fix: if the starting point 'r' is the smallest index in the pair, or if we wrap around, include it.
-                             // The simple r < r2 check already includes most. For wrap-around, we should check the pair uniqueness.
-                             // Given the context of a ring, it's simpler to list all pairs (r, (r+gap)%M) and rely on the property that 
-                             // if a pair (r1, r2) exists, (r2, r1) also exists for the same gap around the ring. 
-                             // We'll use the simplest definition: just check if both r and r+gap are coprime.
-                             // The `r < r2` check is fine for non-wrap-around, and for wrap-around, `r + gap` will be >= M. 
-                             // We allow `r` to be added if it is the "smaller" index for the non-wrapped distance.
-                             // Example M=10. Coprimes: 1, 3, 7, 9. Gap 2. Pairs: (1,3), (7,9). (9,1) is a wrap-around, but r=9 is not < r2=1.
-                             // If we only use `r`, we miss (9,1). So we include all pairs (r, (r+gap)%M) where r is coprime, but filter to avoid duplicates.
-                             // Since r and (r+gap)%M are distinct unless M divides gap (which is fine), we just need a canonical order.
-                             // For a circular arrangement, the pair (r, r2) is the same as (r2, r). Let's use `Math.min(r, r2)` as the first element for uniqueness.
-                             const rMin = Math.min(r, r2);
-                             const rMax = Math.max(r, r2);
-                             const canonicalPair = rMin < rMax ? [rMin, rMax] : [rMin, rMax]; // This doesn't work for wrap-around.
-                             
-                             // Let's stick to the simple: only include if r < r2 OR if r2 < r and r2 is 0 and r is M - gap.
-                             if (r < r2 || (r + gap >= M && r2 === (r + gap) % M)) {
-                                 const exists = gapPairs[gap].some(([a, b]) => (a === r && b === r2) || (a === r2 && b === r));
-                                 if (!exists) {
-                                     gapPairs[gap].push([r, r2]);
-                                 }
-                             }
-                        }
-                    }
-                }
-            }
-
-
-            // The logic above for gap pairs is complex on a circle. A more reliable way for counting on a ring:
-            // Iterate r from 0 to M-1. If r and (r+gap)%M are coprime, increment the count. Divide by 2 to avoid counting (a, b) and (b, a).
-            for (let gap = 2; gap <= 12; gap += 2) {
-                let count = 0;
-                let pairs = [];
-                for (let r = 0; r < M; r++) {
-                    const r2 = (r + gap) % M;
-                    if (coprimeSet.has(r) && coprimeSet.has(r2)) {
-                        // Create a canonical pair ID to prevent duplicates
-                        const minR = Math.min(r, r2);
-                        const maxR = Math.max(r, r2);
-                        const wrap = (r + gap >= M) || (r2 + gap >= M);
-                        
-                        let canonical = minR < maxR ? `${minR}-${maxR}` : `W${minR}-${maxR}`; // Simple non-unique ID
-                        
-                        // A better canonical representation for a ring is harder. Since the point objects are 0 to M-1, we just ensure we count once per pair.
-                        // We count only when the index 'r' is the smaller of the two indices.
-                        if (r < r2) {
-                            pairs.push([r, r2]);
-                        } else if (r === M - gap) { // Special check for wrap-around where r2=0
-                             if (r2 === 0) pairs.push([r, r2]);
-                        }
-                    }
-                }
-                 // Reset and fill with corrected logic for pairs
-                gapPairs[gap] = [];
-                const addedPairs = new Set();
-                for (let r = 0; r < M; r++) {
-                    const r2 = (r + gap) % M;
-                    if (coprimeSet.has(r) && coprimeSet.has(r2)) {
-                        const pair = [r, r2].sort((a, b) => a - b).join('-');
-                        const reversePair = [r2, r].sort((a, b) => a - b).join('-');
-                        
-                        // Use a consistent index to start the count from
-                        if (r < r2 || (r + gap) >= M) {
-                           if (!addedPairs.has(pair) && !addedPairs.has(reversePair)) {
-                                addedPairs.add(pair);
-                                addedPairs.add(reversePair);
-                                gapPairs[gap].push([r, r2]);
-                           }
-                        }
-                    }
-                }
-                
-                // Final fix: The standard approach is to count all (r, r+gap) where both are coprime, and divide by 2.
-                let totalCount = 0;
-                for (let r = 0; r < M; r++) {
-                    const r2 = (r + gap) % M;
-                     if (coprimeSet.has(r) && coprimeSet.has(r2)) {
-                        totalCount++;
-                    }
-                }
-                // Store the pairs for visualization, but use the `totalCount / 2` result for the stat
-                // For visualization, we keep the pair list from the initial loop, but remove duplicates.
-                
-            }
             // Recalculate gapPairs by iterating and ensuring uniqueness by sorting and checking a set.
-            gapPairs = { '2': [], '4': [], '6': [], '8': [], '10': [], '12': [] };
             for (let gap = 2; gap <= 12; gap += 2) {
                 const addedPairKeys = new Set();
                 for (let r = 0; r < M; r++) {
@@ -573,8 +512,6 @@
             document.getElementById('channelCount').textContent = channels.size;
             document.getElementById('factorization').textContent = formatFactorization(factors);
             
-            // The number of pairs for a gap 'g' is $\frac{1}{2} \sum_{r=0}^{M-1} \delta_1(\gcd(r, M)) \delta_1(\gcd(r+g, M))$
-            // Since gapPairs list should contain unique pairs for visualization, we use its length.
             document.getElementById('twinCount').textContent = gapPairs[2].length;
             document.getElementById('cousinCount').textContent = gapPairs[4].length;
             document.getElementById('sexyCount').textContent = gapPairs[6].length;
@@ -603,7 +540,8 @@
             if (typeof scheme === 'function') {
                 return scheme(p);
             }
-            return p.isOpen ? colorSchemes['channel-type'].irreducible : colorScheemes['channel-type'].reducible;
+            // Fallback (shouldn't happen with current schemes)
+            return p.isOpen ? '#00ffff' : '#ff1493';
         }
 
         function draw(exportCtx = ctx, exportScale = 1) {
@@ -612,39 +550,28 @@
             const centerY = size / 2;
             const baseRadius = size * 0.42;
 
+            // 1. Clear and Save Context
             exportCtx.clearRect(0, 0, canvas.width, canvas.height);
             exportCtx.save();
             
-            // Apply Zoom and Pan
-            if (exportScale === 1) {
-                exportCtx.translate(centerX, centerY);
-                exportCtx.scale(config.zoom, config.zoom);
-                exportCtx.translate(-centerX + config.panX, -centerY + config.panY);
-            } else {
-                // For export, we just scale everything uniformly
-                exportCtx.scale(exportScale, exportScale);
-                exportCtx.translate(centerX * exportScale, centerY * exportScale);
-                exportCtx.translate(-centerX * exportScale, -centerY * exportScale);
-            }
-
-            // Define scaled variables
+            // 2. Setup Transformation
             const currentZoom = exportScale === 1 ? config.zoom : 1;
+            const panX = exportScale === 1 ? config.panX : 0;
+            const panY = exportScale === 1 ? config.panY : 0;
+            const scaleFactor = exportScale;
+
+            // Apply transformations relative to the center of the drawing area
+            exportCtx.translate(centerX * scaleFactor, centerY * scaleFactor);
+            exportCtx.scale(currentZoom * scaleFactor, currentZoom * scaleFactor);
+            exportCtx.translate(panX, panY); 
+            
+            // Define scaled variables relative to the current zoom/scale
             const scaledLineWidth = 1 / currentZoom;
             const scaledPointSize = config.pointSize / currentZoom;
             const scaledTextSize = config.textSize / currentZoom;
             const labelSpacing = 5 / currentZoom;
             const labelLineHeight = 6 / currentZoom;
 
-            // Re-apply translation for drawing elements relative to the center
-            if (exportScale === 1) {
-                exportCtx.translate(centerX + config.panX, centerY + config.panY);
-            } else {
-                exportCtx.translate(centerX * exportScale, centerY * exportScale);
-            }
-            
-            const transX = exportScale === 1 ? centerX + config.panX : centerX * exportScale;
-            const transY = exportScale === 1 ? centerY + config.panY : centerY * exportScale;
-            
             // --- Draw Constellation Gaps ---
             if (config.gapType !== 'none') {
                 const gap = parseInt(config.gapType);
@@ -661,7 +588,7 @@
                     exportCtx.beginPath();
                     exportCtx.moveTo(x1, y1);
                     exportCtx.lineTo(x2, y2);
-                    exportCtx.strokeStyle = '#ffcc00'; // Highlight color for gap
+                    exportCtx.strokeStyle = '#ffcc00'; 
                     exportCtx.lineWidth = 2 * scaledLineWidth;
                     exportCtx.stroke();
                 });
@@ -813,12 +740,20 @@
         function setModulus(m) {
             config.modulus = m;
             const slider = document.getElementById('modulusSlider');
+            const input = document.getElementById('modulusInput');
+            // Ensure the slider and number input reflect the current modulus
             slider.value = Math.min(m, parseInt(slider.max));
+            input.value = m;
             calculatePoints();
             draw();
         }
 
         function updateConfig(property, value, displayId) {
+            // Stop sequence if the modulus changes from user input
+            if (property === 'modulus' && sequenceInterval !== null) {
+                stopSequence();
+            }
+
             config[property] = value;
             if (displayId) {
                 const el = document.getElementById(displayId);
@@ -841,14 +776,12 @@
             const rect = canvas.getBoundingClientRect();
             
             if (isDragging) {
-                // Pan is applied to the screen coordinates, then scaled by the current zoom level to affect world position
                 config.panX += (x - lastMouse.x) * dpr / config.zoom;
                 config.panY += (y - lastMouse.y) * dpr / config.zoom;
                 lastMouse = { x, y };
                 draw();
             }
             
-            // Hit detection 
             const canvasX = (x - rect.left) * dpr;
             const canvasY = (y - rect.top) * dpr;
             
@@ -857,12 +790,11 @@
             const centerX = size / 2;
             const centerY = size / 2;
 
-            // Reverse the full transformation to get world coordinates relative to the visual center (0, 0)
-            const worldX = (canvasX / dpr - centerX - config.panX) * inverseZoom;
-            const worldY = (canvasY / dpr - centerY - config.panY) * inverseZoom;
+            // World coordinates relative to the origin (0, 0) before canvas translation
+            const worldX = (canvasX / dpr - centerX) * inverseZoom - config.panX;
+            const worldY = (canvasY / dpr - centerY) * inverseZoom - config.panY;
 
             let closest = null;
-            // Use the scaled point size for a consistent hit area on the screen
             let minDistSq = (config.pointSize * 2 * inverseZoom) ** 2;
 
             points.forEach(p => {
@@ -901,10 +833,8 @@
                 const p = hoveredPoint;
                 const reduction = p.isOpen ? 'Irreducible' : `${p.r}/${p.M} → ${p.reducedR}/${p.reducedM}`;
                 
-                // Check constellation membership
                 const gaps = [];
                 Object.keys(gapPairs).forEach(gap => {
-                    // Check if the point p.r is part of any pair in this gap
                     if (gapPairs[gap].some(([r1, r2]) => r1 === p.r || r2 === p.r)) {
                         const gapName = gap === '2' ? 'Twin' : gap === '4' ? 'Cousin' : gap === '6' ? 'Sexy' : `Gap ${gap}`;
                         if (!gaps.includes(gapName)) {
@@ -938,23 +868,19 @@
             const delta = e.deltaY < 0 ? 1.1 : 0.9;
             const newZoom = config.zoom * delta;
             
-            // Clamp zoom to prevent floating point issues and excessive zoom
             config.zoom = Math.min(Math.max(newZoom, 0.1), 100);
             
             const scaleChange = 1 - (config.zoom / newZoom);
             
-            // Calculate the position of the mouse on the canvas
             const canvasMouseX = mouseX * dpr;
             const canvasMouseY = mouseY * dpr;
             
-            // Calculate the mouse position relative to the center and pan
             const size = canvas.width;
-            const relX = canvasMouseX - size / 2 - config.panX * config.zoom;
-            const relY = canvasMouseY - size / 2 - config.panY * config.zoom;
-
-            // Adjust pan based on the new zoom and the relative mouse position
-            config.panX += relX * scaleChange;
-            config.panY += relY * scaleChange;
+            const relX = canvasMouseX - size / 2;
+            const relY = canvasMouseY - size / 2;
+            
+            config.panX += (relX * scaleChange) / config.zoom;
+            config.panY += (relY * scaleChange) / config.zoom;
 
             draw();
         }
@@ -963,7 +889,6 @@
         function exportImage() {
             const resolution = parseInt(document.getElementById('exportResolution').value);
             
-            // Create high-resolution canvas
             const exportCanvas = document.createElement('canvas');
             const exportCtx = exportCanvas.getContext('2d');
             
@@ -974,14 +899,13 @@
             exportCtx.fillStyle = '#000';
             exportCtx.fillRect(0, 0, resolution, resolution);
             
-            // Calculate scale factor
             const currentSize = canvas.width / (window.devicePixelRatio || 1);
             const exportScale = resolution / currentSize;
 
-            // Draw the visualization onto the export canvas
+            // Draw with the specific export context and scale
             draw(exportCtx, exportScale);
             
-            // Export metadata on the image
+            // Add metadata
             exportCtx.font = `${resolution / 50}px var(--font-mono)`;
             exportCtx.fillStyle = '#999';
             exportCtx.textAlign = 'right';
@@ -1010,7 +934,6 @@
                 csv += `${p.reducedR},${p.reducedM},${p.reducedM},${p.angle.toFixed(6)},${p.spf},${p.lpf}\n`;
             });
             
-            // Download
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -1055,7 +978,6 @@
                 })),
             };
             
-            // Download
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -1081,10 +1003,12 @@
             canvas.addEventListener('wheel', handleWheel);
             
             canvas.addEventListener('touchstart', e => {
+                e.preventDefault();
                 const touch = e.touches[0];
                 handlePointerStart(touch.clientX - canvas.getBoundingClientRect().left, touch.clientY - canvas.getBoundingClientRect().top);
             });
             canvas.addEventListener('touchmove', e => {
+                e.preventDefault();
                 const touch = e.touches[0];
                 handlePointerMove(touch.clientX - canvas.getBoundingClientRect().left, touch.clientY - canvas.getBoundingClientRect().top);
             });
@@ -1114,6 +1038,7 @@
             document.getElementById('modulusSlider').addEventListener('input', (e) => setModulus(parseInt(e.target.value)));
             document.getElementById('modulusInput').addEventListener('input', (e) => { const value = parseInt(e.target.value); if (value >= 2 && value <= 5000) setModulus(value); });
 
+            // These all call updateConfig which calls draw()
             document.getElementById('colorScheme').addEventListener('change', (e) => updateConfig('colorScheme', e.target.value));
             document.getElementById('pointDisplayMode').addEventListener('change', (e) => updateConfig('pointDisplayMode', e.target.value));
             document.getElementById('labelType').addEventListener('change', (e) => updateConfig('labelType', e.target.value));
