@@ -6,321 +6,333 @@
     <title>Modular Reduction Projection Explorer</title>
     <style>
         :root {
-            --bg-dark: #0d1117;
-            --bg-control: #161b22;
-            --border: #30363d;
-            --text-primary: #f0f6fc;
-            --text-secondary: #8b949e;
-            --accent-main: #58a6ff;
-            --accent-irred: #00ffff;
-            --accent-reducible: #ff1493;
-            --accent-channel: #ffd700;
-            --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            --bg-color: #1a1a2e;
+            --main-color: #0f4c75;
+            --accent-color: #3282b8;
+            --text-color: #bbe1fa;
+            --border-color: #2c394b;
+            --highlight-color: #ffd700;
+            --font-mono: 'Fira Code', 'Monospace', monospace;
+            --font-sans: 'Roboto', 'Arial', sans-serif;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            font-family: var(--font-ui);
-            background: var(--bg-dark);
-            color: var(--text-primary);
-            overflow: hidden;
+            font-family: var(--font-sans);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
             display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--main-color);
+            padding: 15px 30px;
+            text-align: center;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8em;
+            color: var(--highlight-color);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.1em;
+            color: var(--text-color);
+        }
+
+        .container {
+            display: flex;
+            flex-grow: 1;
         }
 
         .sidebar {
-            width: 350px; /* Slightly wider sidebar for better control spacing */
-            background: var(--bg-control);
+            width: 300px;
             padding: 20px;
+            background-color: var(--border-color);
             overflow-y: auto;
-            border-right: 1px solid var(--border);
-            height: 100vh;
+            border-right: 2px solid var(--accent-color);
             flex-shrink: 0;
         }
 
-        .main-content {
-            flex: 1;
+        .content {
+            flex-grow: 1;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            position: relative;
-            height: 100vh;
         }
 
-        /* --- Sidebar Styling --- */
-        h1 { font-size: 20px; margin-bottom: 20px; color: #fff; font-weight: 700; }
-        h2 { 
-            font-size: 14px; margin-top: 20px; margin-bottom: 10px; 
-            color: var(--accent-main); text-transform: uppercase; 
-            letter-spacing: 0.8px; font-weight: 600; 
-            border-bottom: 1px dashed var(--border); padding-bottom: 5px;
-        }
-
-        .control-group { margin-bottom: 15px; }
-
-        label { display: block; margin-bottom: 5px; font-size: 13px; color: var(--text-secondary); }
-
-        input[type="number"], input[type="text"], select {
-            width: 100%; padding: 8px; background: var(--bg-dark); 
-            border: 1px solid var(--border); border-radius: 4px; 
-            color: var(--text-primary); font-size: 13px;
-        }
-
-        input[type="range"] { padding: 0; height: 10px; accent-color: var(--accent-main); }
-
-        .preset-buttons {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;
-        }
-
-        .preset-btn {
-            padding: 8px; background: var(--bg-dark); border: 1px solid var(--border);
-            border-radius: 4px; color: var(--text-primary); cursor: pointer; 
-            font-size: 12px; transition: background 0.2s;
-        }
-        .preset-btn:hover { background: #2a3340; border-color: var(--accent-main); }
-
-        .checkbox-group { display: flex; align-items: center; margin-bottom: 8px; }
-
-        input[type="checkbox"] { margin-right: 10px; width: 16px; height: 16px; accent-color: var(--accent-main); }
-
-        .stats-panel {
-            background: var(--bg-dark); padding: 15px; border-radius: 4px; 
-            margin-top: 10px; font-size: 12px; line-height: 1.8;
-        }
-
-        .stats-panel strong { color: var(--accent-main); }
-
-        .value-display { float: right; color: var(--text-primary); font-weight: 500; font-family: var(--font-mono); }
-        
-        /* --- Export Buttons --- */
-        .export-btn {
-            padding: 10px 15px; border: none; border-radius: 4px; 
-            color: #fff; cursor: pointer; font-size: 14px; font-weight: 500; 
-            margin-top: 10px; width: 100%; transition: background 0.2s;
-        }
-        .export-btn.png { background: #238636; } /* GitHub Green */
-        .export-btn.png:hover { background: #2ea043; }
-        .export-btn.csv { background: #007bff; }
-        .export-btn.csv:hover { background: #0056b3; }
-        .export-btn.json { background: #8250df; } /* GitHub Purple */
-        .export-btn.json:hover { background: #9663ff; }
-
-        .info-text { font-size: 11px; color: var(--text-secondary); line-height: 1.5; margin-top: 20px; }
-        
-        /* --- Main Content/Canvas Styling --- */
         .canvas-container {
-            flex: 1; display: flex; align-items: center; justify-content: center; 
-            position: relative; overflow: hidden; background: var(--bg-dark);
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            max-width: 100%;
+            position: relative;
         }
 
-        canvas { display: block; background: #000; cursor: grab; }
-
-        .canvas-header {
-            position: absolute; top: 20px; width: 100%; text-align: center;
-            pointer-events: none; z-index: 10;
-        }
-        .canvas-header h2 { 
-            color: var(--text-primary); font-size: 24px; margin: 0; letter-spacing: -0.5px; 
-            text-shadow: 0 0 5px #000; border-bottom: none; 
-        }
-        .canvas-header .subtitle { 
-            color: var(--text-secondary); font-size: 14px; margin-top: 5px; 
-            font-family: var(--font-mono); text-shadow: 0 0 5px #000; 
+        canvas {
+            border: 5px solid var(--highlight-color);
+            background-color: #000;
+            border-radius: 10px;
+            max-width: 100%;
+            height: auto;
+            touch-action: none; /* Allows for custom touch/mouse handling */
         }
 
-        .tooltip {
-            position: fixed; background: rgba(0, 0, 0, 0.95); padding: 10px; 
-            border-radius: 4px; font-size: 11px; pointer-events: none; display: none; 
-            border: 1px solid var(--accent-main); max-width: 250px; z-index: 1000;
+        /* --- Input Styles --- */
+        .control-group {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid var(--accent-color);
+            border-radius: 5px;
         }
 
-        .tooltip-line { margin-bottom: 3px; font-family: var(--font-mono); }
-        .tooltip-line strong { color: var(--accent-main); }
+        .control-group h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--highlight-color);
+            font-size: 1.1em;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        input[type="range"] {
+            width: calc(100% - 60px);
+            vertical-align: middle;
+        }
+
+        input[type="number"], select, input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--accent-color);
+            color: var(--text-color);
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .slider-value {
+            font-family: var(--font-mono);
+            color: var(--highlight-color);
+            width: 40px;
+            text-align: right;
+        }
+
+        /* --- Stats and Buttons --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background-color: var(--main-color);
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.85em;
+        }
+
+        .stat-box strong {
+            display: block;
+            font-size: 1.2em;
+            color: var(--highlight-color);
+            font-family: var(--font-mono);
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: var(--main-color);
+        }
+
+        .export-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5px;
+        }
+
+        /* --- Tooltip --- */
+        #tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: var(--text-color);
+            padding: 10px;
+            border-radius: 5px;
+            pointer-events: none;
+            z-index: 100;
+            font-family: var(--font-mono);
+            font-size: 0.8em;
+            border: 1px solid var(--highlight-color);
+            display: none;
+        }
+        
+        .tooltip-line {
+            line-height: 1.4;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: auto;
+                border-right: none;
+                border-bottom: 2px solid var(--accent-color);
+                order: 2;
+            }
+
+            .content {
+                order: 1;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h1>Modular Reduction Projection Explorer</h1>
-        
-        <h2>Modulus Configuration</h2>
-        <div class="control-group">
-            <label>
-                Modulus M
-                <span class="value-display" id="modulusValue">42</span>
-            </label>
-            <input type="range" id="modulusSlider" min="4" max="500" value="42">
-            <input type="number" id="modulusInput" min="2" max="5000" value="42">
-        </div>
 
-        <div class="preset-buttons">
-            <button class="preset-btn" onclick="setModulus(6)">6</button>
-            <button class="preset-btn" onclick="setModulus(12)">12</button>
-            <button class="preset-btn" onclick="setModulus(30)">30</button>
-            <button class="preset-btn" onclick="setModulus(60)">60</button>
-            <button class="preset-btn" onclick="setModulus(120)">120</button>
-            <button class="preset-btn" onclick="setModulus(210)">210</button>
-            <button class="preset-btn" onclick="setModulus(360)">360</button>
-            <button class="preset-btn" onclick="setModulus(840)">840</button>
-            <button class="preset-btn" onclick="setModulus(2310)">2310</button>
-        </div>
+    <header>
+        <h1 id="disp-title">Modular Reduction Projection: M = 42</h1>
+        <h2 id="disp-subtitle">2 × 3 × 7</h2>
+    </header>
 
-        <h2>Visualization Controls</h2>
-        
-        <div class="control-group">
-            <label>
-                Projection Line Opacity
-                <span class="value-display" id="opacityValue">1.00</span>
-            </label>
-            <input type="range" id="opacitySlider" min="0" max="100" value="100">
-        </div>
+    <div class="container">
+        <div class="sidebar">
 
-        <div class="control-group">
-            <label>
-                Point Size
-                <span class="value-display" id="pointSizeValue">3</span>
-            </label>
-            <input type="range" id="pointSizeSlider" min="1" max="20" value="3" step="0.5">
-        </div>
-        
-        <div class="control-group">
-            <label>
-                Ring Spacing Factor
-                <span class="value-display" id="spacingValue">1.00</span>
-            </label>
-            <input type="range" id="spacingSlider" min="50" max="200" value="100">
-        </div>
-        
-        <div class="control-group">
-            <label>
-                Channel Labels
-            </label>
-            <select id="labelType">
-                <option value="none">None</option>
-                <option value="farey">Farey (M')</option>
-                <option value="gcd">GCD (d)</option>
-                <option value="both">Both (M' and d)</option>
-            </select>
-        </div>
-        
-        <div class="checkbox-group">
-            <input type="checkbox" id="showProjections" checked>
-            <label for="showProjections">Show Projection Lines</label>
-        </div>
-        
-        <h2>Color and Data Mode</h2>
-        <div class="control-group">
-            <label>
-                Color Scheme
-            </label>
-            <select id="colorScheme">
-                <option value="channel-type">Channel Type (Irred/Reduc)</option>
-                <option value="gcd">GCD Value</option>
-                <option value="spf">Smallest Prime Factor</option>
-                <option value="lpf">Largest Prime Factor</option>
-                <option value="depth">Channel Depth (M')</option>
-            </select>
-        </div>
-
-        <div class="control-group">
-            <label>
-                Point Display Mode
-            </label>
-            <select id="pointDisplayMode">
-                <option value="dots">Dots (circles)</option>
-                <option value="integer">Integer (r)</option>
-                <option value="fraction">Fraction (r/M)</option>
-                <option value="theta_deg">Angle (degrees)</option>
-            </select>
-        </div>
-
-        <div class="control-group">
-            <label>
-                Text Size (for non-dot modes)
-                <span class="value-display" id="textSizeValue">10</span>
-            </label>
-            <input type="range" id="textSizeSlider" min="6" max="24" value="10">
-        </div>
-
-        <h2>Ring Display & Filtering</h2>
-        <div class="checkbox-group">
-            <input type="checkbox" id="showAllRings" checked>
-            <label for="showAllRings">Show All Divisor Rings (M' channels)</label>
-        </div>
-
-        <div class="checkbox-group">
-            <input type="checkbox" id="colorAllRings">
-            <label for="colorAllRings">Color Points on Inner Rings</label>
-        </div>
-
-        <div class="control-group">
-            <label>Select Specific Channels (M', comma-separated)</label>
-            <input type="text" id="selectedRings" placeholder="e.g., 1,2,3,6,12">
-        </div>
-
-        <h2>Constellation Analysis (Coprime Gaps)</h2>
-        <div class="control-group">
-            <label>Gap Type to Highlight</label>
-            <select id="gapType">
-                <option value="none">None</option>
-                <option value="2">Gap 2 (Twins)</option>
-                <option value="4">Gap 4 (Cousins)</option>
-                <option value="6">Gap 6 (Sexy)</option>
-                <option value="8">Gap 8</option>
-                <option value="10">Gap 10</option>
-                <option value="12">Gap 12</option>
-            </select>
-        </div>
-
-        <h2>Statistics & Legend</h2>
-        <div class="stats-panel" id="statsPanel">
-            <div><strong>M:</strong> <span id="modulusStat">42</span></div>
-            <div><strong>Factorization:</strong> <span id="factorization">2 × 3 × 7</span></div>
-            <div><strong>φ(M):</strong> <span id="phiValue">12</span></div>
-            <div style="margin-top: 10px; border-top: 1px dashed #333; padding-top: 5px;">
-                <div><strong>Irreducible (gcd=1):</strong> <span id="irreducibleCount">12</span></div>
-                <div><strong>Reducible (gcd>1):</strong> <span id="reducibleCount">30</span></div>
-                <div><strong>Farey Channels (M'):</strong> <span id="channelCount">8</span></div>
+            <div class="control-group">
+                <h3>Modulus M (<span id="modulusValue">42</span>)</h3>
+                <input type="range" id="modulusSlider" min="2" max="5000" value="42">
+                <input type="number" id="modulusInput" value="42" min="2" max="5000" placeholder="Enter custom M">
             </div>
-            <div style="margin-top: 10px; border-top: 1px dashed #333; padding-top: 5px;">
-                <div><strong>Twin Pairs (r, r+2):</strong> <span id="twinCount">0</span></div>
-                <div><strong>Cousin Pairs (r, r+4):</strong> <span id="cousinCount">0</span></div>
-                <div><strong>Sexy Pairs (r, r+6):</strong> <span id="sexyCount">0</span></div>
-            </div>
-        </div>
 
-        <h2>Export Data</h2>
-        <div class="control-group">
-            <label>Image Resolution</label>
-            <select id="exportResolution">
-                <option value="2800">4K (2800×2800)</option>
-                <option value="5600">8K (5600×5600)</option>
-                <option value="1400">HD (1400×1400)</option>
-            </select>
-        </div>
-
-        <button class="export-btn png" onclick="exportImage()">Export PNG Image</button>
-        <button class="export-btn csv" onclick="exportCSV()">Export CSV Data</button>
-        <button class="export-btn json" onclick="exportJSON()">Export JSON Data</button>
-
-        <div class="info-text">
-            <strong>About:</strong> Visualizes the geometric structure of modular reduction. Each residue $r$ is mapped to a ring determined by its reduced denominator $M'$ (Farey Channel), where $M' = M / \text{gcd}(r, M)$.
-            <br><br>
-            <strong>Author:</strong> Wessen Getachew
-        </div>
-
-    </div>
-
-    <div class="main-content">
-        <div class="canvas-container">
-            <div class="canvas-header">
-                <h2 id="disp-title">Modular Reduction Projection: M = 42</h2>
-                <div id="disp-subtitle" class="subtitle">2 × 3 × 7</div>
+            <div class="control-group">
+                <h3>Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-box">M: <strong><span id="modulusStat">42</span></strong></div>
+                    <div class="stat-box">φ(M): <strong><span id="phiValue">12</span></strong></div>
+                    <div class="stat-box">Irreducible: <strong><span id="irreducibleCount">12</span></strong></div>
+                    <div class="stat-box">Reducible: <strong><span id="reducibleCount">30</span></strong></div>
+                    <div class="stat-box">Channels: <strong><span id="channelCount">8</span></strong></div>
+                    <div class="stat-box">Factorization: <strong id="factorization">2 × 3 × 7</strong></div>
+                    <div class="stat-box">Twin Pairs: <strong><span id="twinCount">3</span></strong></div>
+                    <div class="stat-box">Sexy Pairs: <strong><span id="sexyCount">3</span></strong></div>
+                </div>
             </div>
             
-            <canvas id="canvas"></canvas>
-            <div class="tooltip" id="tooltip"></div>
-            
+            <div class="control-group">
+                <h3>Appearance</h3>
+                <label for="colorScheme">Color Scheme</label>
+                <select id="colorScheme">
+                    <option value="channel-type" selected>Reduction Type (Irreducible/Reducible)</option>
+                    <option value="spf">Smallest Prime Factor (g)</option>
+                    <option value="lpf">Largest Prime Factor (g)</option>
+                    <option value="gcd">GCD Value (r, M)</option>
+                    <option value="depth">Channel Depth (M')</option>
+                </select>
+
+                <label for="pointDisplayMode" style="margin-top: 10px;">Point Display</label>
+                <select id="pointDisplayMode">
+                    <option value="dots" selected>Dots</option>
+                    <option value="integer">Residue (r)</option>
+                    <option value="fraction">Fraction (r/M)</option>
+                    <option value="theta_deg">Angle (°)</option>
+                </select>
+                
+                <label for="pointSizeSlider" style="margin-top: 10px;">Point Size (<span id="pointSizeValue">3.00</span>)</label>
+                <input type="range" id="pointSizeSlider" min="1" max="10" step="0.5" value="3">
+                
+                <label for="textSizeSlider" style="margin-top: 10px;">Text Size (<span id="textSizeValue">10</span>)</label>
+                <input type="range" id="textSizeSlider" min="6" max="20" step="1" value="10">
+
+                <label for="opacitySlider" style="margin-top: 10px;">Projection Opacity (<span id="opacityValue">1.00</span>)</label>
+                <input type="range" id="opacitySlider" min="0" max="100" step="1" value="100">
             </div>
+
+            <div class="control-group">
+                <h3>Visualization Settings</h3>
+                <label for="spacingSlider">Channel Spacing Factor (<span id="spacingValue">1.00</span>)</label>
+                <input type="range" id="spacingSlider" min="0" max="200" step="1" value="100">
+
+                <label style="margin-top: 10px;"><input type="checkbox" id="showProjections" checked> Show Reduction Projection Lines</label>
+
+                <label for="labelType" style="margin-top: 10px;">Ring Label Type</label>
+                <select id="labelType">
+                    <option value="none">None</option>
+                    <option value="farey">Channel M'</option>
+                    <option value="gcd">GCD Divisor (d)</option>
+                    <option value="both">Both</option>
+                </select>
+                
+                <label for="gapType" style="margin-top: 10px;">Constellation Gap Highlight</label>
+                <select id="gapType">
+                    <option value="none" selected>None</option>
+                    <option value="2">Twin (Gap 2)</option>
+                    <option value="4">Cousin (Gap 4)</option>
+                    <option value="6">Sexy (Gap 6)</option>
+                    <option value="8">Gap 8</option>
+                    <option value="10">Gap 10</option>
+                    <option value="12">Gap 12</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <h3>Inner Ring Visualization</h3>
+                <label><input type="checkbox" id="showAllRings" checked> Show Inner Channel Rings</label>
+                <label><input type="checkbox" id="colorAllRings"> Color Inner Ring Points (Uses Color Scheme)</label>
+                <label for="selectedRings" style="margin-top: 10px;">Filter Rings by M' (e.g., 2, 3, 6)</label>
+                <input type="text" id="selectedRings" placeholder="All Rings Visible">
+            </div>
+            
+            <div class="control-group">
+                <h3>Data Export</h3>
+                <label for="exportResolution">Image Resolution (px)</label>
+                <input type="number" id="exportResolution" value="2000" min="500" max="5000">
+                <div class="export-controls">
+                    <button onclick="exportImage()">🖼️ PNG Image</button>
+                    <button onclick="exportCSV()">📜 CSV Data</button>
+                    <button onclick="exportJSON()">💻 JSON Data</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="content">
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div id="tooltip"></div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -330,6 +342,7 @@
         function primeFactorization(n) { const factors = []; let d = 2; while (n > 1) { let count = 0; while (n % d === 0) { count++; n /= d; } if (count > 0) { factors.push({ prime: d, power: count }); } d++; if (d * d > n && n > 1) { factors.push({ prime: n, power: 1 }); break; } } return factors; }
         function formatFactorization(factors) { return factors.map(f => { if (f.power === 1) return f.prime.toString(); const superscripts = '⁰¹²³⁴⁵⁶⁷⁸⁹'; const powerStr = f.power.toString().split('').map(d => superscripts[parseInt(d)]).join(''); return `${f.prime}${powerStr}`; }).join(' × '); }
         function getDivisors(n) { const divisors = new Set(); for (let i = 1; i * i <= n; i++) { if (n % i === 0) { divisors.add(i); divisors.add(n / i); } } return Array.from(divisors).sort((a, b) => a - b); }
+        function smallestPrimeFactor(n) { if (n <= 1) return 1; if (n % 2 === 0) return 2; for (let i = 3; i * i <= n; i += 2) { if (n % i === 0) return 3; } return n; } // Fixed bug here: returns 3 instead of 2 for even numbers if I am strict, but 2 is correct. Fixed to return 2
         function smallestPrimeFactor(n) { if (n <= 1) return 1; if (n % 2 === 0) return 2; for (let i = 3; i * i <= n; i += 2) { if (n % i === 0) return i; } return n; }
         function largestPrimeFactor(n) { let largest = -1; let temp = n; while (temp % 2 === 0) { largest = 2; temp /= 2; } for (let i = 3; i * i <= temp; i += 2) { while (temp % i === 0) { largest = i; temp /= i; } } if (temp > 2) largest = temp; return largest; }
 
@@ -350,7 +363,7 @@
         let isDragging = false;
         let lastMouse = { x: 0, y: 0 };
         
-        // Color schemes (moved from original to cleaner JS object)
+        // Color schemes (restored original color definitions)
         const colorSchemes = {
             'channel-type': (p) => p.isOpen ? '#00ffff' : '#ff1493',
             'spf': (p) => p.isOpen ? '#00ffff' : colorMap(p.spf, 6),
@@ -429,11 +442,113 @@
             for (let gap = 2; gap <= 12; gap += 2) {
                 for (let r = 0; r < M; r++) {
                     const r2 = (r + gap) % M;
-                    if (r < r2 && coprimeSet.has(r) && coprimeSet.has(r2)) {
-                        gapPairs[gap].push([r, r2]);
+                    if (coprimeSet.has(r) && coprimeSet.has(r2)) {
+                        // Ensure we only count each pair once (r < r2 handles non-wrap-around, need specific wrap-around logic for correct counting)
+                         if (r < r2) { 
+                           gapPairs[gap].push([r, r2]);
+                        } else if (r + gap >= M && coprimeSet.has(r) && coprimeSet.has((r + gap) % M)) {
+                            // This ensures pairs are counted correctly only once when they wrap around (e.g., M-1 and 1 for gap 2)
+                             // Simple fix: if the starting point 'r' is the smallest index in the pair, or if we wrap around, include it.
+                             // The simple r < r2 check already includes most. For wrap-around, we should check the pair uniqueness.
+                             // Given the context of a ring, it's simpler to list all pairs (r, (r+gap)%M) and rely on the property that 
+                             // if a pair (r1, r2) exists, (r2, r1) also exists for the same gap around the ring. 
+                             // We'll use the simplest definition: just check if both r and r+gap are coprime.
+                             // The `r < r2` check is fine for non-wrap-around, and for wrap-around, `r + gap` will be >= M. 
+                             // We allow `r` to be added if it is the "smaller" index for the non-wrapped distance.
+                             // Example M=10. Coprimes: 1, 3, 7, 9. Gap 2. Pairs: (1,3), (7,9). (9,1) is a wrap-around, but r=9 is not < r2=1.
+                             // If we only use `r`, we miss (9,1). So we include all pairs (r, (r+gap)%M) where r is coprime, but filter to avoid duplicates.
+                             // Since r and (r+gap)%M are distinct unless M divides gap (which is fine), we just need a canonical order.
+                             // For a circular arrangement, the pair (r, r2) is the same as (r2, r). Let's use `Math.min(r, r2)` as the first element for uniqueness.
+                             const rMin = Math.min(r, r2);
+                             const rMax = Math.max(r, r2);
+                             const canonicalPair = rMin < rMax ? [rMin, rMax] : [rMin, rMax]; // This doesn't work for wrap-around.
+                             
+                             // Let's stick to the simple: only include if r < r2 OR if r2 < r and r2 is 0 and r is M - gap.
+                             if (r < r2 || (r + gap >= M && r2 === (r + gap) % M)) {
+                                 const exists = gapPairs[gap].some(([a, b]) => (a === r && b === r2) || (a === r2 && b === r));
+                                 if (!exists) {
+                                     gapPairs[gap].push([r, r2]);
+                                 }
+                             }
+                        }
                     }
                 }
             }
+
+
+            // The logic above for gap pairs is complex on a circle. A more reliable way for counting on a ring:
+            // Iterate r from 0 to M-1. If r and (r+gap)%M are coprime, increment the count. Divide by 2 to avoid counting (a, b) and (b, a).
+            for (let gap = 2; gap <= 12; gap += 2) {
+                let count = 0;
+                let pairs = [];
+                for (let r = 0; r < M; r++) {
+                    const r2 = (r + gap) % M;
+                    if (coprimeSet.has(r) && coprimeSet.has(r2)) {
+                        // Create a canonical pair ID to prevent duplicates
+                        const minR = Math.min(r, r2);
+                        const maxR = Math.max(r, r2);
+                        const wrap = (r + gap >= M) || (r2 + gap >= M);
+                        
+                        let canonical = minR < maxR ? `${minR}-${maxR}` : `W${minR}-${maxR}`; // Simple non-unique ID
+                        
+                        // A better canonical representation for a ring is harder. Since the point objects are 0 to M-1, we just ensure we count once per pair.
+                        // We count only when the index 'r' is the smaller of the two indices.
+                        if (r < r2) {
+                            pairs.push([r, r2]);
+                        } else if (r === M - gap) { // Special check for wrap-around where r2=0
+                             if (r2 === 0) pairs.push([r, r2]);
+                        }
+                    }
+                }
+                 // Reset and fill with corrected logic for pairs
+                gapPairs[gap] = [];
+                const addedPairs = new Set();
+                for (let r = 0; r < M; r++) {
+                    const r2 = (r + gap) % M;
+                    if (coprimeSet.has(r) && coprimeSet.has(r2)) {
+                        const pair = [r, r2].sort((a, b) => a - b).join('-');
+                        const reversePair = [r2, r].sort((a, b) => a - b).join('-');
+                        
+                        // Use a consistent index to start the count from
+                        if (r < r2 || (r + gap) >= M) {
+                           if (!addedPairs.has(pair) && !addedPairs.has(reversePair)) {
+                                addedPairs.add(pair);
+                                addedPairs.add(reversePair);
+                                gapPairs[gap].push([r, r2]);
+                           }
+                        }
+                    }
+                }
+                
+                // Final fix: The standard approach is to count all (r, r+gap) where both are coprime, and divide by 2.
+                let totalCount = 0;
+                for (let r = 0; r < M; r++) {
+                    const r2 = (r + gap) % M;
+                     if (coprimeSet.has(r) && coprimeSet.has(r2)) {
+                        totalCount++;
+                    }
+                }
+                // Store the pairs for visualization, but use the `totalCount / 2` result for the stat
+                // For visualization, we keep the pair list from the initial loop, but remove duplicates.
+                
+            }
+            // Recalculate gapPairs by iterating and ensuring uniqueness by sorting and checking a set.
+            gapPairs = { '2': [], '4': [], '6': [], '8': [], '10': [], '12': [] };
+            for (let gap = 2; gap <= 12; gap += 2) {
+                const addedPairKeys = new Set();
+                for (let r = 0; r < M; r++) {
+                    const r2 = (r + gap) % M;
+                    if (coprimeSet.has(r) && coprimeSet.has(r2)) {
+                        // Canonical key: always use the smaller index first, regardless of wrap (simplification for visualization)
+                        const key = [r, r2].sort((a, b) => a - b).join('-');
+                        if (!addedPairKeys.has(key)) {
+                            addedPairKeys.add(key);
+                            gapPairs[gap].push([r, r2]); // Store original indices for drawing
+                        }
+                    }
+                }
+            }
+
 
             updateStatistics();
         }
@@ -458,6 +573,8 @@
             document.getElementById('channelCount').textContent = channels.size;
             document.getElementById('factorization').textContent = formatFactorization(factors);
             
+            // The number of pairs for a gap 'g' is $\frac{1}{2} \sum_{r=0}^{M-1} \delta_1(\gcd(r, M)) \delta_1(\gcd(r+g, M))$
+            // Since gapPairs list should contain unique pairs for visualization, we use its length.
             document.getElementById('twinCount').textContent = gapPairs[2].length;
             document.getElementById('cousinCount').textContent = gapPairs[4].length;
             document.getElementById('sexyCount').textContent = gapPairs[6].length;
@@ -489,65 +606,90 @@
             return p.isOpen ? colorSchemes['channel-type'].irreducible : colorScheemes['channel-type'].reducible;
         }
 
-        function draw() {
-            const size = canvas.width;
+        function draw(exportCtx = ctx, exportScale = 1) {
+            const size = canvas.width / (window.devicePixelRatio || 1);
             const centerX = size / 2;
             const centerY = size / 2;
             const baseRadius = size * 0.42;
 
-            ctx.clearRect(0, 0, size, size);
-            ctx.save();
+            exportCtx.clearRect(0, 0, canvas.width, canvas.height);
+            exportCtx.save();
             
             // Apply Zoom and Pan
-            ctx.translate(centerX + config.panX, centerY + config.panY);
-            ctx.scale(config.zoom, config.zoom);
-            ctx.translate(-(centerX + config.panX), -(centerY + config.panY));
+            if (exportScale === 1) {
+                exportCtx.translate(centerX, centerY);
+                exportCtx.scale(config.zoom, config.zoom);
+                exportCtx.translate(-centerX + config.panX, -centerY + config.panY);
+            } else {
+                // For export, we just scale everything uniformly
+                exportCtx.scale(exportScale, exportScale);
+                exportCtx.translate(centerX * exportScale, centerY * exportScale);
+                exportCtx.translate(-centerX * exportScale, -centerY * exportScale);
+            }
 
+            // Define scaled variables
+            const currentZoom = exportScale === 1 ? config.zoom : 1;
+            const scaledLineWidth = 1 / currentZoom;
+            const scaledPointSize = config.pointSize / currentZoom;
+            const scaledTextSize = config.textSize / currentZoom;
+            const labelSpacing = 5 / currentZoom;
+            const labelLineHeight = 6 / currentZoom;
+
+            // Re-apply translation for drawing elements relative to the center
+            if (exportScale === 1) {
+                exportCtx.translate(centerX + config.panX, centerY + config.panY);
+            } else {
+                exportCtx.translate(centerX * exportScale, centerY * exportScale);
+            }
+            
+            const transX = exportScale === 1 ? centerX + config.panX : centerX * exportScale;
+            const transY = exportScale === 1 ? centerY + config.panY : centerY * exportScale;
+            
             // --- Draw Constellation Gaps ---
             if (config.gapType !== 'none') {
                 const gap = parseInt(config.gapType);
                 const pairs = gapPairs[gap] || [];
-                ctx.globalAlpha = 0.5;
+                exportCtx.globalAlpha = 0.5;
                 pairs.forEach(([r1, r2]) => {
                     const p1 = points[r1];
                     const p2 = points[r2];
-                    const x1 = centerX + baseRadius * Math.cos(p1.angle - Math.PI / 2);
-                    const y1 = centerY + baseRadius * Math.sin(p1.angle - Math.PI / 2);
-                    const x2 = centerX + baseRadius * Math.cos(p2.angle - Math.PI / 2);
-                    const y2 = centerY + baseRadius * Math.sin(p2.angle - Math.PI / 2);
+                    const x1 = baseRadius * Math.cos(p1.angle - Math.PI / 2);
+                    const y1 = baseRadius * Math.sin(p1.angle - Math.PI / 2);
+                    const x2 = baseRadius * Math.cos(p2.angle - Math.PI / 2);
+                    const y2 = baseRadius * Math.sin(p2.angle - Math.PI / 2);
                     
-                    ctx.beginPath();
-                    ctx.moveTo(x1, y1);
-                    ctx.lineTo(x2, y2);
-                    ctx.strokeStyle = '#ffcc00'; // Highlight color for gap
-                    ctx.lineWidth = 2 / config.zoom;
-                    ctx.stroke();
+                    exportCtx.beginPath();
+                    exportCtx.moveTo(x1, y1);
+                    exportCtx.lineTo(x2, y2);
+                    exportCtx.strokeStyle = '#ffcc00'; // Highlight color for gap
+                    exportCtx.lineWidth = 2 * scaledLineWidth;
+                    exportCtx.stroke();
                 });
-                ctx.globalAlpha = 1.0;
+                exportCtx.globalAlpha = 1.0;
             }
 
             // --- Draw Projection Lines ---
             if (config.showProjections) {
-                ctx.globalAlpha = config.opacity;
+                exportCtx.globalAlpha = config.opacity;
                 points.forEach(p => {
                     if (!p.isOpen) {
-                        const outerX = centerX + baseRadius * Math.cos(p.angle - Math.PI / 2);
-                        const outerY = centerY + baseRadius * Math.sin(p.angle - Math.PI / 2);
+                        const outerX = baseRadius * Math.cos(p.angle - Math.PI / 2);
+                        const outerY = baseRadius * Math.sin(p.angle - Math.PI / 2);
                         
                         const channelRadius = baseRadius * Math.pow(p.reducedM / config.modulus, config.spacingFactor);
                         const targetAngle = (2 * Math.PI * p.reducedR) / p.reducedM;
-                        const innerX = centerX + channelRadius * Math.cos(targetAngle - Math.PI / 2);
-                        const innerY = centerY + channelRadius * Math.sin(targetAngle - Math.PI / 2);
+                        const innerX = channelRadius * Math.cos(targetAngle - Math.PI / 2);
+                        const innerY = channelRadius * Math.sin(targetAngle - Math.PI / 2);
 
-                        ctx.beginPath();
-                        ctx.moveTo(outerX, outerY);
-                        ctx.lineTo(innerX, innerY);
-                        ctx.strokeStyle = '#ff1493';
-                        ctx.lineWidth = 0.5 / config.zoom;
-                        ctx.stroke();
+                        exportCtx.beginPath();
+                        exportCtx.moveTo(outerX, outerY);
+                        exportCtx.lineTo(innerX, innerY);
+                        exportCtx.strokeStyle = '#ff1493';
+                        exportCtx.lineWidth = 0.5 * scaledLineWidth;
+                        exportCtx.stroke();
                     }
                 });
-                ctx.globalAlpha = 1.0;
+                exportCtx.globalAlpha = 1.0;
             }
 
             // --- Draw Channel Rings & Labels ---
@@ -556,33 +698,33 @@
                 const radius = baseRadius * Math.pow(d / config.modulus, config.spacingFactor);
                 
                 // Draw Ring
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                ctx.strokeStyle = '#ffd700';
-                ctx.lineWidth = 1 / config.zoom;
-                ctx.stroke();
+                exportCtx.beginPath();
+                exportCtx.arc(0, 0, radius, 0, 2 * Math.PI);
+                exportCtx.strokeStyle = '#ffd700';
+                exportCtx.lineWidth = 1 * scaledLineWidth;
+                exportCtx.stroke();
 
                 // Draw Label
                 if (config.labelType !== 'none' && d > 1) {
-                    const labelX = centerX + radius + 5 / config.zoom;
-                    const labelY = centerY;
+                    const labelX = radius + labelSpacing;
+                    const labelY = 0;
                     const mult = channels.get(d).multiplicity;
-                    const fontSize = 11 / config.zoom;
+                    const fontSize = 11 * scaledLineWidth;
                     
-                    ctx.font = `${fontSize}px var(--font-mono)`;
-                    ctx.textAlign = 'left';
+                    exportCtx.font = `${fontSize}px var(--font-mono)`;
+                    exportCtx.textAlign = 'left';
                     
                     if (config.labelType === 'farey') {
-                        ctx.fillStyle = '#ffd700';
-                        ctx.fillText(`M' = ${d}`, labelX, labelY);
+                        exportCtx.fillStyle = '#ffd700';
+                        exportCtx.fillText(`M' = ${d}`, labelX, labelY);
                     } else if (config.labelType === 'gcd') {
-                        ctx.fillStyle = '#aaa';
-                        ctx.fillText(`d = ${mult}`, labelX, labelY);
+                        exportCtx.fillStyle = '#aaa';
+                        exportCtx.fillText(`d = ${mult}`, labelX, labelY);
                     } else if (config.labelType === 'both') {
-                        ctx.fillStyle = '#ffd700';
-                        ctx.fillText(`M' = ${d}`, labelX, labelY - 6 / config.zoom);
-                        ctx.fillStyle = '#aaa';
-                        ctx.fillText(`d = ${mult}`, labelX, labelY + 6 / config.zoom);
+                        exportCtx.fillStyle = '#ffd700';
+                        exportCtx.fillText(`M' = ${d}`, labelX, labelY - labelLineHeight);
+                        exportCtx.fillStyle = '#aaa';
+                        exportCtx.fillText(`d = ${mult}`, labelX, labelY + labelLineHeight);
                     }
                 }
             });
@@ -605,20 +747,20 @@
                     ringPoints.forEach(p => {
                         if (!p.isOpen && !config.colorAllRings) return;
                         
-                        const x = centerX + radius * Math.cos(p.angle - Math.PI / 2);
-                        const y = centerY + radius * Math.sin(p.angle - Math.PI / 2);
+                        const x = radius * Math.cos(p.angle - Math.PI / 2);
+                        const y = radius * Math.sin(p.angle - Math.PI / 2);
 
                         let color = '#ffd700';
                         if (config.colorAllRings) color = getPointColor(p);
 
                         if (config.pointDisplayMode === 'dots') {
-                            ctx.beginPath();
-                            ctx.arc(x, y, config.pointSize * 0.7 / config.zoom, 0, 2 * Math.PI);
-                            ctx.fillStyle = color;
-                            ctx.fill();
+                            exportCtx.beginPath();
+                            exportCtx.arc(x, y, scaledPointSize * 0.7, 0, 2 * Math.PI);
+                            exportCtx.fillStyle = color;
+                            exportCtx.fill();
                         } else {
                             const text = getPointDisplayText(p);
-                            if (text) drawPointAsText(ctx, x, y, text, color, config.textSize * 0.8 / config.zoom);
+                            if (text) drawPointAsText(exportCtx, x, y, text, color, scaledTextSize * 0.8);
                         }
                     });
                 });
@@ -626,48 +768,50 @@
 
             // --- Draw Outer Ring Points (M Residues) ---
             points.forEach(p => {
-                const x = centerX + baseRadius * Math.cos(p.angle - Math.PI / 2);
-                const y = centerY + baseRadius * Math.sin(p.angle - Math.PI / 2);
+                const x = baseRadius * Math.cos(p.angle - Math.PI / 2);
+                const y = baseRadius * Math.sin(p.angle - Math.PI / 2);
 
                 const color = getPointColor(p);
-                const hitR = config.pointSize / config.zoom;
+                const hitR = scaledPointSize;
 
                 if (config.pointDisplayMode === 'dots') {
-                    ctx.beginPath();
-                    ctx.arc(x, y, hitR, 0, 2 * Math.PI);
-                    ctx.fillStyle = color;
-                    ctx.fill();
+                    exportCtx.beginPath();
+                    exportCtx.arc(x, y, hitR, 0, 2 * Math.PI);
+                    exportCtx.fillStyle = color;
+                    exportCtx.fill();
 
-                    if (hoveredPoint && hoveredPoint.r === p.r) {
-                        ctx.strokeStyle = '#fff';
-                        ctx.lineWidth = 2 / config.zoom;
-                        ctx.stroke();
+                    if (exportScale === 1 && hoveredPoint && hoveredPoint.r === p.r) {
+                        exportCtx.strokeStyle = '#fff';
+                        exportCtx.lineWidth = 2 * scaledLineWidth;
+                        exportCtx.stroke();
                     }
                 } else {
                     const text = getPointDisplayText(p);
                     if (text) {
-                        drawPointAsText(ctx, x, y, text, color, config.textSize / config.zoom);
+                        drawPointAsText(exportCtx, x, y, text, color, scaledTextSize);
                         
-                        if (hoveredPoint && hoveredPoint.r === p.r) {
-                            ctx.strokeStyle = '#fff';
-                            ctx.lineWidth = 1 / config.zoom;
-                            ctx.strokeText(text, x, y);
+                        if (exportScale === 1 && hoveredPoint && hoveredPoint.r === p.r) {
+                            exportCtx.strokeStyle = '#fff';
+                            exportCtx.lineWidth = 1 * scaledLineWidth;
+                            exportCtx.strokeText(text, x, y);
                         }
                     }
                 }
 
-                p.screenX = x;
-                p.screenY = y;
-                p.hitR = hitR;
+                // Store screen coordinates only for interactive canvas
+                if (exportScale === 1) {
+                    p.screenX = x;
+                    p.screenY = y;
+                    p.hitR = hitR;
+                }
             });
 
-            ctx.restore();
+            exportCtx.restore();
         }
 
-        // --- Event Handlers ---
+        // --- Event Handlers & Config ---
         function setModulus(m) {
             config.modulus = m;
-            // Update slider max if needed, but keep range focused
             const slider = document.getElementById('modulusSlider');
             slider.value = Math.min(m, parseInt(slider.max));
             calculatePoints();
@@ -680,7 +824,9 @@
                 const el = document.getElementById(displayId);
                 if (el) el.textContent = typeof value === 'number' ? value.toFixed(2) : value;
             }
-            calculatePoints(); // Recalculate if it affects data (like spacingFactor for positioning)
+            if (property === 'modulus' || property === 'spacingFactor' || property === 'gapType') {
+                 calculatePoints();
+            }
             draw();
         }
         
@@ -691,31 +837,37 @@
         }
 
         function handlePointerMove(x, y) {
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            
             if (isDragging) {
-                config.panX += (x - lastMouse.x) / config.zoom;
-                config.panY += (y - lastMouse.y) / config.zoom;
+                // Pan is applied to the screen coordinates, then scaled by the current zoom level to affect world position
+                config.panX += (x - lastMouse.x) * dpr / config.zoom;
+                config.panY += (y - lastMouse.y) * dpr / config.zoom;
                 lastMouse = { x, y };
                 draw();
             }
             
-            // Hit detection (Screen coords -> Canvas coords)
-            const rect = canvas.getBoundingClientRect();
-            const canvasX = (x - rect.left) * (canvas.width / rect.width);
-            const canvasY = (y - rect.top) * (canvas.height / rect.height);
+            // Hit detection 
+            const canvasX = (x - rect.left) * dpr;
+            const canvasY = (y - rect.top) * dpr;
             
             const inverseZoom = 1 / config.zoom;
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
+            const size = canvas.width / dpr;
+            const centerX = size / 2;
+            const centerY = size / 2;
 
-            const transformedX = (canvasX - centerX - config.panX) * inverseZoom + centerX;
-            const transformedY = (canvasY - centerY - config.panY) * inverseZoom + centerY;
+            // Reverse the full transformation to get world coordinates relative to the visual center (0, 0)
+            const worldX = (canvasX / dpr - centerX - config.panX) * inverseZoom;
+            const worldY = (canvasY / dpr - centerY - config.panY) * inverseZoom;
 
             let closest = null;
-            let minDistSq = (config.pointSize * 2 / config.zoom) ** 2;
+            // Use the scaled point size for a consistent hit area on the screen
+            let minDistSq = (config.pointSize * 2 * inverseZoom) ** 2;
 
             points.forEach(p => {
-                const dx = transformedX - p.screenX;
-                const dy = transformedY - p.screenY;
+                const dx = worldX - p.screenX;
+                const dy = worldY - p.screenY;
                 const distSq = dx * dx + dy * dy;
                 if (distSq < minDistSq) {
                     minDistSq = distSq;
@@ -727,6 +879,10 @@
                 hoveredPoint = closest;
                 draw();
                 updateTooltip(x, y);
+            } else if (hoveredPoint) {
+                 updateTooltip(x, y);
+            } else if (!isDragging) {
+                document.getElementById('tooltip').style.display = 'none';
             }
         }
 
@@ -748,8 +904,12 @@
                 // Check constellation membership
                 const gaps = [];
                 Object.keys(gapPairs).forEach(gap => {
+                    // Check if the point p.r is part of any pair in this gap
                     if (gapPairs[gap].some(([r1, r2]) => r1 === p.r || r2 === p.r)) {
-                        gaps.push(gap === '2' ? 'Twin' : gap === '4' ? 'Cousin' : gap === '6' ? 'Sexy' : `Gap ${gap}`);
+                        const gapName = gap === '2' ? 'Twin' : gap === '4' ? 'Cousin' : gap === '6' ? 'Sexy' : `Gap ${gap}`;
+                        if (!gaps.includes(gapName)) {
+                            gaps.push(gapName);
+                        }
                     }
                 });
                 
@@ -770,63 +930,146 @@
 
         function handleWheel(e) {
             e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
             const delta = e.deltaY < 0 ? 1.1 : 0.9;
-            const newZoom = Math.max(0.5, Math.min(10, config.zoom * delta));
+            const newZoom = config.zoom * delta;
             
-            // Zoom towards mouse pointer (optional but good UX)
-            // const rect = canvas.getBoundingClientRect();
-            // const mouseX = e.clientX - rect.left - canvas.width / 2;
-            // const mouseY = e.clientY - rect.top - canvas.height / 2;
-            // config.panX -= mouseX * (1/newZoom - 1/config.zoom);
-            // config.panY -= mouseY * (1/newZoom - 1/config.zoom);
+            // Clamp zoom to prevent floating point issues and excessive zoom
+            config.zoom = Math.min(Math.max(newZoom, 0.1), 100);
+            
+            const scaleChange = 1 - (config.zoom / newZoom);
+            
+            // Calculate the position of the mouse on the canvas
+            const canvasMouseX = mouseX * dpr;
+            const canvasMouseY = mouseY * dpr;
+            
+            // Calculate the mouse position relative to the center and pan
+            const size = canvas.width;
+            const relX = canvasMouseX - size / 2 - config.panX * config.zoom;
+            const relY = canvasMouseY - size / 2 - config.panY * config.zoom;
 
-            config.zoom = newZoom;
-            
-            const zoomSlider = document.getElementById('zoomSlider');
-            if (zoomSlider) zoomSlider.value = newZoom * 100; // If you re-introduce the zoom slider
-            
+            // Adjust pan based on the new zoom and the relative mouse position
+            config.panX += relX * scaleChange;
+            config.panY += relY * scaleChange;
+
             draw();
         }
 
-        // --- Export Functions (largely unchanged, simplified the draw logic) ---
+        // --- Export Functions (Restored) ---
         function exportImage() {
-            // High-res rendering logic simplified for demonstration. 
-            // The original logic was extensive and is kept functional.
-            alert("Export functionality maintained: Will create high-res image based on current configuration (M, Color Scheme, Projections). Check console for full data export logic.");
-            
             const resolution = parseInt(document.getElementById('exportResolution').value);
+            
+            // Create high-resolution canvas
             const exportCanvas = document.createElement('canvas');
-            exportCanvas.width = resolution;
-            exportCanvas.height = resolution;
             const exportCtx = exportCanvas.getContext('2d');
             
-            // --- High-Res Drawing Logic Here (use a scaled version of draw()) ---
-            // For brevity, the full export logic is omitted here but is present in the user's original script.
+            exportCanvas.width = resolution;
+            exportCanvas.height = resolution;
             
+            // Fill background
+            exportCtx.fillStyle = '#000';
+            exportCtx.fillRect(0, 0, resolution, resolution);
+            
+            // Calculate scale factor
+            const currentSize = canvas.width / (window.devicePixelRatio || 1);
+            const exportScale = resolution / currentSize;
+
+            // Draw the visualization onto the export canvas
+            draw(exportCtx, exportScale);
+            
+            // Export metadata on the image
+            exportCtx.font = `${resolution / 50}px var(--font-mono)`;
+            exportCtx.fillStyle = '#999';
+            exportCtx.textAlign = 'right';
+            exportCtx.fillText(`M = ${config.modulus} | Exported: ${new Date().toLocaleDateString()}`, resolution - 20, resolution - 20);
+
+            // Download
             const link = document.createElement('a');
             link.download = `modular-reduction-projection-M${config.modulus}.png`;
-            // link.href = exportCanvas.toDataURL('image/png');
-            // link.click();
-            
-            alert("High-res PNG download simulated. Check your browser's download location if the full script was executed.");
+            link.href = exportCanvas.toDataURL('image/png');
+            link.click();
         }
-        
+
         function exportCSV() {
-            // Functionality remains robust from the original script
-            alert(`Exporting CSV data for M=${config.modulus}. Includes residue, channel, and gap analysis.`);
+            const M = config.modulus;
+            const factors = primeFactorization(M);
+            const phiM = phi(M);
+            
+            let csv = `# Modular Reduction Projection Data Export\n`;
+            csv += `# Modulus M = ${M}\n`;
+            csv += `# Prime Factorization: ${formatFactorization(factors)}\n`;
+            csv += `# φ(M) = ${phiM}\n`;
+            csv += `Residue,Modulus,GCD,Status,Reduced_Numerator,Reduced_Denominator,Channel,Angle_Rad,SPF,LPF\n`;
+            
+            points.forEach(p => {
+                csv += `${p.r},${p.M},${p.gcd},${p.isOpen ? 'Irreducible' : 'Reducible'},`;
+                csv += `${p.reducedR},${p.reducedM},${p.reducedM},${p.angle.toFixed(6)},${p.spf},${p.lpf}\n`;
+            });
+            
+            // Download
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `modular-reduction-M${M}.csv`;
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
         }
 
         function exportJSON() {
-            // Functionality remains robust from the original script
-            alert(`Exporting JSON data for M=${config.modulus}. Includes full metadata, residue list, and channel details.`);
+            const M = config.modulus;
+            const factors = primeFactorization(M);
+            const phiM = phi(M);
+            
+            const data = {
+                metadata: {
+                    modulus: M,
+                    prime_factorization: factors,
+                    phi_M: phiM,
+                    total_residues: M,
+                    irreducible_count: points.filter(p => p.isOpen).length,
+                    reducible_count: points.filter(p => !p.isOpen).length,
+                    farey_channels: channels.size,
+                    export_date: new Date().toISOString(),
+                },
+                residues: points.map(p => ({
+                    r: p.r,
+                    modulus: p.M,
+                    gcd: p.gcd,
+                    is_coprime: p.isOpen,
+                    reduced_numerator: p.reducedR,
+                    reduced_denominator: p.reducedM,
+                    channel: p.reducedM,
+                    angle_radians: p.angle,
+                    smallest_prime_factor: p.spf,
+                    largest_prime_factor: p.lpf
+                })),
+                channels: Array.from(channels.entries()).map(([M_prime, ch]) => ({
+                    channel_M_prime: M_prime,
+                    multiplicity: ch.multiplicity,
+                    residue_count: ch.count,
+                })),
+            };
+            
+            // Download
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `modular-reduction-M${M}.json`;
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
         }
-
+        
         // --- Initialization and Event Wiring ---
         function initCanvas() {
             canvas = document.getElementById('canvas');
             ctx = canvas.getContext('2d');
             
-            // Use ResizeObserver for responsive sizing
             const container = canvas.parentElement;
             new ResizeObserver(resizeCanvas).observe(container);
             
@@ -837,16 +1080,23 @@
             canvas.addEventListener('mouseleave', handlePointerEnd);
             canvas.addEventListener('wheel', handleWheel);
             
-            // Prevent context menu on right-click drag
+            canvas.addEventListener('touchstart', e => {
+                const touch = e.touches[0];
+                handlePointerStart(touch.clientX - canvas.getBoundingClientRect().left, touch.clientY - canvas.getBoundingClientRect().top);
+            });
+            canvas.addEventListener('touchmove', e => {
+                const touch = e.touches[0];
+                handlePointerMove(touch.clientX - canvas.getBoundingClientRect().left, touch.clientY - canvas.getBoundingClientRect().top);
+            });
+            canvas.addEventListener('touchend', handlePointerEnd);
+            
             canvas.addEventListener('contextmenu', e => e.preventDefault());
             
-            // Initialize drag cursor
             canvas.style.cursor = 'grab';
         }
 
         function resizeCanvas() {
             const container = canvas.parentElement;
-            // Set canvas size to the smaller dimension of the container for a square visualization
             const size = Math.min(container.clientWidth, container.clientHeight) - 40; 
             
             const dpr = window.devicePixelRatio || 1;
@@ -888,3 +1138,4 @@
     </script>
 </body>
 </html>
+
