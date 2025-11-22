@@ -188,8 +188,7 @@
             border-radius: 4px;
             background: #000000;
             cursor: crosshair;
-            max-width: 100%;
-            height: auto;
+            display: block;
         }
         
         .right-panel {
@@ -323,13 +322,6 @@
             margin-top: 5px;
         }
         
-        .export-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5px;
-            margin-top: 5px;
-        }
-        
         @media (max-width: 1400px) {
             .main-layout {
                 grid-template-columns: 1fr;
@@ -381,7 +373,7 @@
                                 <label for="displayMode">View Mode:</label>
                                 <select id="displayMode">
                                     <option value="projection">Projection Lines</option>
-                                    <option value="ring">Ring View</option>
+                                    <option value="ring">All Rings (Composite Projection)</option>
                                     <option value="coprime-only">Coprime Only</option>
                                 </select>
                             </div>
@@ -400,6 +392,10 @@
                             <div class="control-group checkbox-group">
                                 <input type="checkbox" id="showFareyLines" checked>
                                 <label for="showFareyLines">Show Farey Lines</label>
+                            </div>
+                            <div class="control-group checkbox-group">
+                                <input type="checkbox" id="showPointLabels">
+                                <label for="showPointLabels">Show Point Labels (r)</label>
                             </div>
                         </div>
                     </div>
@@ -441,23 +437,6 @@
                     </div>
                     
                     <div class="control-section">
-                        <div class="section-title">Coprime Sweep Animation</div>
-                        <div class="control-grid">
-                            <div class="control-group">
-                                <label>Speed: <span class="slider-value" id="sweepSpeedValue">1.0</span></label>
-                                <input type="range" id="sweepSpeed" min="10" max="500" value="100">
-                            </div>
-                            <div class="control-group">
-                                <label>Current: <span class="slider-value" id="currentCoprime">-</span></label>
-                            </div>
-                        </div>
-                        <div class="button-group" style="margin-top: 8px;">
-                            <button id="playSweepBtn" onclick="toggleSweep()">Play Sweep</button>
-                            <button onclick="resetSweep()">Reset</button>
-                        </div>
-                    </div>
-                    
-                    <div class="control-section">
                         <div class="section-title">Export Options</div>
                         <div class="export-section">
                             <div class="control-group">
@@ -476,7 +455,7 @@
                             </div>
                         </div>
                         <div class="button-group" style="margin-top: 8px;">
-                            <button onclick="exportPNG('1080p')">PNG (1080p)</button>
+                            <button onclick="exportPNG('2K')">PNG (2K)</button>
                             <button onclick="exportPNG('4K')">PNG (4K)</button>
                             <button onclick="exportPNG('8K')">PNG (8K)</button>
                             <button onclick="exportCSV()">CSV Data</button>
@@ -534,7 +513,7 @@
                     <div class="legend" id="colorLegend">
                         <div class="legend-item">
                             <div class="legend-color" style="background: #00ffff;"></div>
-                            <span>Cyan = Irreducible (gcd=1)</span>
+                            <span>Cyan = Coprime (gcd=1)</span>
                         </div>
                         <div class="legend-item">
                             <div class="legend-color" style="background: #ff0066;"></div>
@@ -542,15 +521,15 @@
                         </div>
                         <div class="legend-item">
                             <div class="legend-color" style="background: #ffd700;"></div>
-                            <span>Gold = Farey Channels & Lines</span>
+                            <span>Gold = Farey Projection Lines</span>
                         </div>
                         <div class="legend-item">
                             <div class="legend-color" style="background: #ffffff;"></div>
-                            <span>White = Outer ring (M circle)</span>
+                            <span>White = Outer ring (M)</span>
                         </div>
                     </div>
                     <div class="analysis-text" style="margin-top: 10px; font-size: 0.8em;">
-                        <strong>Farey Lines:</strong> Curved gold lines connect each reducible residue r/M on the outer ring to its reduced form r'/M' on the corresponding inner channel ring.
+                        <strong>Ring View:</strong> Each point r sits on its channel ring M' = M/gcd(r,M). Gold Farey lines show reduction paths r/M → r'/M'.
                     </div>
                 </div>
                 
@@ -566,7 +545,7 @@
                     <div class="analysis-text">
                         Every composite M has reducible residues projecting onto simpler Farey channels. The number projecting to channel M' is exactly <strong>d = M/M'</strong> (multiplicity).
                         <br><br>
-                        <strong>Note:</strong> r=0 (with gcd(0,M)=M) is always placed at the top of the circle (12 o'clock position). All points are plotted at angle <strong>θ = 2πr/M</strong> measured clockwise from the top.
+                        <strong>Note:</strong> r=0 (with gcd(0,M)=M) is always placed at the top (12 o'clock). All points are plotted at angle <strong>θ = 2πr/M</strong> measured clockwise from top.
                     </div>
                 </div>
                 
@@ -589,9 +568,6 @@
         
         let currentData = null;
         let animationFrame = null;
-        let sweepFrame = null;
-        let sweepIndex = 0;
-        let sweepActive = false;
         
         function gcd(a, b) {
             while (b !== 0) [a, b] = [b, a % b];
@@ -693,7 +669,7 @@
                     rRed: rRed,
                     mRed: mRed,
                     isIrreducible: isIrreducible,
-                    theta: (2 * Math.PI * r) / M - Math.PI / 2, // r=0 at top (12 o'clock), -π/2 offset
+                    theta: (2 * Math.PI * r) / M - Math.PI / 2,
                     spf: smallestPrimeFactor(d),
                     lpf: largestPrimeFactor(d)
                 };
@@ -752,28 +728,28 @@
             const colorScheme = document.getElementById('colorScheme').value;
             const showLabels = document.getElementById('showChannelLabels').checked;
             const showMult = document.getElementById('showMultiplicity').checked;
+            const showPointLabels = document.getElementById('showPointLabels').checked;
             
             const divisors = currentData.divisors.filter(d => d < currentData.M).reverse();
             const radiusMap = new Map();
             divisors.forEach((d, idx) => {
                 radiusMap.set(d, baseRadius * (1 - idx * 0.12));
             });
+            radiusMap.set(currentData.M, baseRadius);
             
             const showFareyLines = document.getElementById('showFareyLines').checked;
             
-            // Draw Farey lines connecting reducible points to their channel targets
+            // Draw Farey projection lines
             if (showFareyLines && displayMode !== 'coprime-only') {
                 ctx.globalAlpha = opacity * 1.5;
                 currentData.residues.forEach(pt => {
                     if (!pt.isIrreducible && pt.mRed < currentData.M && pt.r !== 0) {
-                        const outerR = baseRadius;
-                        const innerR = radiusMap.get(pt.mRed) || baseRadius * 0.3;
+                        const outerR = radiusMap.get(currentData.M);
+                        const innerR = radiusMap.get(pt.mRed);
                         const outerAngle = pt.theta + rotation;
                         
-                        // Find target point on inner ring with same reduced fraction
                         const targetAngle = (2 * Math.PI * pt.rRed) / pt.mRed - Math.PI / 2 + rotation;
                         
-                        // Draw curved Farey line
                         ctx.strokeStyle = '#ffd700';
                         ctx.lineWidth = 1.5;
                         ctx.beginPath();
@@ -782,7 +758,6 @@
                             centerY + outerR * Math.sin(outerAngle)
                         );
                         
-                        // Control point for quadratic curve
                         const midR = (outerR + innerR) / 2;
                         const midAngle = (outerAngle + targetAngle) / 2;
                         ctx.quadraticCurveTo(
@@ -797,29 +772,7 @@
                 ctx.globalAlpha = 1.0;
             }
             
-            // Draw projection lines
-            if (displayMode === 'projection' && !showFareyLines) {
-                ctx.globalAlpha = opacity;
-                currentData.channels.forEach((points, key) => {
-                    if (points.length > 1 && key !== '0/1') {
-                        ctx.strokeStyle = '#ffd700';
-                        ctx.lineWidth = 1;
-                        points.forEach(pt => {
-                            const outerR = baseRadius;
-                            const innerR = radiusMap.get(pt.mRed) || baseRadius * 0.3;
-                            const angle = pt.theta + rotation;
-                            
-                            ctx.beginPath();
-                            ctx.moveTo(centerX + outerR * Math.cos(angle), centerY + outerR * Math.sin(angle));
-                            ctx.lineTo(centerX + innerR * Math.cos(angle), centerY + innerR * Math.sin(angle));
-                            ctx.stroke();
-                        });
-                    }
-                });
-                ctx.globalAlpha = 1.0;
-            }
-            
-            // Draw rings
+            // Draw rings for all divisors
             divisors.forEach(d => {
                 const r = radiusMap.get(d);
                 ctx.strokeStyle = 'rgba(255, 215, 0, 0.2)';
@@ -843,36 +796,49 @@
                 }
             });
             
-            // Draw outer ring
+            // Draw outer ring (M)
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.arc(centerX, centerY, baseRadius, 0, 2 * Math.PI);
             ctx.stroke();
             
-            // Draw points
+            if (showLabels) {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 12px monospace';
+                ctx.textAlign = 'left';
+                ctx.fillText(`M=${currentData.M}`, centerX + baseRadius + 5, centerY);
+            }
+            
+            // Draw points on their respective rings
             currentData.residues.forEach((pt, idx) => {
                 if (displayMode === 'coprime-only' && !pt.isIrreducible) return;
                 
-                const isHighlighted = sweepActive && sweepIndex < currentData.coprimes.length && 
-                                      pt.r === currentData.coprimes[sweepIndex].r;
+                // Determine which ring this point belongs to
+                // For coprime points (gcd=1), mRed = M, so they sit on the outer ring
+                // For composite points (gcd>1), mRed < M, so they sit on inner rings
+                let radius;
+                if (displayMode === 'ring') {
+                    // In ring view, each point sits on its M' ring
+                    // mRed is the reduced denominator (M' in the channel notation)
+                    if (pt.mRed === currentData.M) {
+                        // Coprime point - sits on outer ring M
+                        radius = baseRadius;
+                    } else {
+                        // Composite point - sits on inner ring M'
+                        radius = radiusMap.get(pt.mRed) || baseRadius * 0.3;
+                    }
+                } else {
+                    // In projection view, all points on outer ring
+                    radius = baseRadius;
+                }
                 
-                let radius = displayMode === 'ring' ? radiusMap.get(pt.mRed) || baseRadius : baseRadius;
-                const angle = pt.theta + rotation; // theta already has -π/2 offset
+                const angle = pt.theta + rotation;
                 const x = centerX + radius * Math.cos(angle);
                 const y = centerY + radius * Math.sin(angle);
                 
                 const color = getColor(pt, colorScheme);
-                let size = pointSize;
-                
-                if (isHighlighted) {
-                    ctx.strokeStyle = '#ffff00';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.arc(x, y, size + 5, 0, 2 * Math.PI);
-                    ctx.stroke();
-                    size *= 1.3;
-                }
+                const size = pointSize;
                 
                 ctx.fillStyle = color;
                 ctx.beginPath();
@@ -890,6 +856,14 @@
                     ctx.textAlign = 'center';
                     ctx.fillText('r=0', x, y - size - 8);
                     ctx.fillText('gcd=M', x, y + size + 12);
+                }
+                
+                // Show point labels if enabled (for smaller M)
+                if (showPointLabels && currentData.M <= 60 && pt.r !== 0) {
+                    ctx.fillStyle = color;
+                    ctx.font = 'bold 9px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(pt.r.toString(), x, y - size - 4);
                 }
             });
             
@@ -921,6 +895,16 @@
             document.getElementById('statRatio').textContent = ((M - currentData.phi) / M * 100).toFixed(1) + '%';
             document.getElementById('statChannels').textContent = currentData.channels.size - 1;
             
+            // Update display mode text
+            const displaySelect = document.getElementById('displayMode');
+            document.getElementById('configDisplay').textContent = 'Display Mode: ' + 
+                displaySelect.options[displaySelect.selectedIndex].text;
+            
+            // Update color scheme text
+            const colorSelect = document.getElementById('colorScheme');
+            document.getElementById('configColor').textContent = 'Color Scheme: ' + 
+                colorSelect.options[colorSelect.selectedIndex].text;
+            
             // Update analysis
             let analysis = `<strong>Modulus M = ${M}</strong> = ${currentData.factorization}<br><br>`;
             analysis += `<strong>Coprime:</strong> ${currentData.phi} residues (φ(M))<br>`;
@@ -937,11 +921,6 @@
             
             document.getElementById('analysisText').innerHTML = analysis;
             
-            sweepIndex = 0;
-            sweepActive = false;
-            document.getElementById('playSweepBtn').textContent = 'Play Sweep';
-            document.getElementById('currentCoprime').textContent = '-';
-            
             drawVisualization();
         }
         
@@ -956,37 +935,13 @@
             setModulus(M);
         }
         
-        function toggleSweep() {
-            sweepActive = !sweepActive;
-            document.getElementById('playSweepBtn').textContent = sweepActive ? 'Pause' : 'Play Sweep';
-            if (sweepActive) animateSweep();
-        }
-        
-        function resetSweep() {
-            sweepIndex = 0;
-            sweepActive = false;
-            document.getElementById('playSweepBtn').textContent = 'Play Sweep';
-            document.getElementById('currentCoprime').textContent = '-';
-            drawVisualization();
-        }
-        
-        function animateSweep() {
-            if (!sweepActive || !currentData) return;
-            
-            const speed = parseFloat(document.getElementById('sweepSpeed').value);
-            
-            sweepIndex = (sweepIndex + 1) % currentData.coprimes.length;
-            document.getElementById('currentCoprime').textContent = currentData.coprimes[sweepIndex].r;
-            drawVisualization();
-            
-            setTimeout(() => animateSweep(), 5000 / speed);
-        }
-        
         function exportPNG(resolution) {
+            if (!currentData) return;
+            
             const resolutions = {
-                '1080p': [1920, 1080],
-                '4K': [3840, 2160],
-                '8K': [7680, 4320]
+                '2K': [1920, 1920],  // Square canvas
+                '4K': [3840, 3840],
+                '8K': [7680, 7680]
             };
             
             const [width, height] = resolutions[resolution];
@@ -995,21 +950,160 @@
             tempCanvas.height = height;
             const tempCtx = tempCanvas.getContext('2d');
             
-            const scale = width / canvas.width;
-            tempCtx.scale(scale, scale);
-            tempCtx.drawImage(canvas, 0, 0);
+            // Fill background
+            tempCtx.fillStyle = '#000000';
+            tempCtx.fillRect(0, 0, width, height);
             
-            // Add title and metadata
-            tempCtx.setTransform(1, 0, 0, 1, 0, 0);
+            // Add title at top
+            const titleHeight = height * 0.08;
             tempCtx.fillStyle = 'white';
-            tempCtx.font = `bold ${40 * scale}px Arial`;
+            tempCtx.font = `bold ${titleHeight * 0.4}px Arial`;
             tempCtx.textAlign = 'center';
             const title = document.getElementById('exportTitle').value;
-            tempCtx.fillText(title, width / 2, 60 * scale);
+            tempCtx.fillText(title, width / 2, titleHeight * 0.4);
             
-            tempCtx.font = `${20 * scale}px Arial`;
+            tempCtx.font = `${titleHeight * 0.25}px Arial`;
             tempCtx.fillText(`M = ${currentData.M} | φ(M) = ${currentData.phi} | Resolution: ${resolution} | ${new Date().toLocaleDateString()}`, 
-                width / 2, 100 * scale);
+                width / 2, titleHeight * 0.75);
+            
+            // Render the visualization in the remaining space
+            const vizTop = titleHeight;
+            const vizHeight = height - titleHeight;
+            const vizWidth = width;
+            
+            const centerX = vizWidth / 2;
+            const centerY = vizTop + vizHeight / 2;
+            const baseRadius = Math.min(vizWidth, vizHeight) * 0.42; // Leave margin
+            
+            const pointSize = Math.max(6, width / 200);
+            const opacity = parseFloat(document.getElementById('projectionOpacity').value) / 100;
+            const rotation = parseFloat(document.getElementById('rotation').value) * Math.PI / 180;
+            const displayMode = document.getElementById('displayMode').value;
+            const colorScheme = document.getElementById('colorScheme').value;
+            const showLabels = document.getElementById('showChannelLabels').checked;
+            const showMult = document.getElementById('showMultiplicity').checked;
+            const showFareyLines = document.getElementById('showFareyLines').checked;
+            
+            const divisors = currentData.divisors.filter(d => d < currentData.M).reverse();
+            const radiusMap = new Map();
+            divisors.forEach((d, idx) => {
+                radiusMap.set(d, baseRadius * (1 - idx * 0.12));
+            });
+            radiusMap.set(currentData.M, baseRadius);
+            
+            // Draw Farey lines
+            if (showFareyLines && displayMode !== 'coprime-only') {
+                tempCtx.globalAlpha = opacity * 1.5;
+                currentData.residues.forEach(pt => {
+                    if (!pt.isIrreducible && pt.mRed < currentData.M && pt.r !== 0) {
+                        const outerR = radiusMap.get(currentData.M);
+                        const innerR = radiusMap.get(pt.mRed);
+                        const outerAngle = pt.theta + rotation;
+                        const targetAngle = (2 * Math.PI * pt.rRed) / pt.mRed - Math.PI / 2 + rotation;
+                        
+                        tempCtx.strokeStyle = '#ffd700';
+                        tempCtx.lineWidth = width / 1000;
+                        tempCtx.beginPath();
+                        tempCtx.moveTo(
+                            centerX + outerR * Math.cos(outerAngle), 
+                            centerY + outerR * Math.sin(outerAngle)
+                        );
+                        
+                        const midR = (outerR + innerR) / 2;
+                        const midAngle = (outerAngle + targetAngle) / 2;
+                        tempCtx.quadraticCurveTo(
+                            centerX + midR * Math.cos(midAngle),
+                            centerY + midR * Math.sin(midAngle),
+                            centerX + innerR * Math.cos(targetAngle),
+                            centerY + innerR * Math.sin(targetAngle)
+                        );
+                        tempCtx.stroke();
+                    }
+                });
+                tempCtx.globalAlpha = 1.0;
+            }
+            
+            // Draw rings
+            divisors.forEach(d => {
+                const r = radiusMap.get(d);
+                tempCtx.strokeStyle = 'rgba(255, 215, 0, 0.2)';
+                tempCtx.lineWidth = width / 2000;
+                tempCtx.beginPath();
+                tempCtx.arc(centerX, centerY, r, 0, 2 * Math.PI);
+                tempCtx.stroke();
+                
+                if (showLabels && d !== currentData.M) {
+                    tempCtx.fillStyle = '#ffd700';
+                    tempCtx.font = `bold ${width / 150}px monospace`;
+                    tempCtx.textAlign = 'left';
+                    tempCtx.fillText(`M'=${d}`, centerX + r + width / 200, centerY);
+                    
+                    if (showMult && currentData.channelMultiplicity.has(d)) {
+                        const mult = currentData.M / d;
+                        tempCtx.fillStyle = '#ffaa00';
+                        tempCtx.font = `${width / 180}px monospace`;
+                        tempCtx.fillText(`d=${mult}`, centerX + r + width / 200, centerY + width / 80);
+                    }
+                }
+            });
+            
+            // Draw outer ring
+            tempCtx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            tempCtx.lineWidth = width / 700;
+            tempCtx.beginPath();
+            tempCtx.arc(centerX, centerY, baseRadius, 0, 2 * Math.PI);
+            tempCtx.stroke();
+            
+            if (showLabels) {
+                tempCtx.fillStyle = '#ffffff';
+                tempCtx.font = `bold ${width / 130}px monospace`;
+                tempCtx.textAlign = 'left';
+                tempCtx.fillText(`M=${currentData.M}`, centerX + baseRadius + width / 200, centerY);
+            }
+            
+            // Draw points
+            currentData.residues.forEach((pt) => {
+                if (displayMode === 'coprime-only' && !pt.isIrreducible) return;
+                
+                // Determine which ring this point belongs to
+                let radius;
+                if (displayMode === 'ring') {
+                    // In ring view, each point sits on its M' ring
+                    if (pt.mRed === currentData.M) {
+                        // Coprime point - sits on outer ring M
+                        radius = baseRadius;
+                    } else {
+                        // Composite point - sits on inner ring M'
+                        radius = radiusMap.get(pt.mRed) || baseRadius * 0.3;
+                    }
+                } else {
+                    // In projection view, all points on outer ring
+                    radius = baseRadius;
+                }
+                
+                const angle = pt.theta + rotation;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                const color = getColor(pt, colorScheme);
+                
+                tempCtx.fillStyle = color;
+                tempCtx.beginPath();
+                tempCtx.arc(x, y, pointSize, 0, 2 * Math.PI);
+                tempCtx.fill();
+                
+                tempCtx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                tempCtx.lineWidth = width / 2000;
+                tempCtx.stroke();
+            });
+            
+            // Center text
+            tempCtx.fillStyle = 'white';
+            tempCtx.font = `bold ${width / 60}px sans-serif`;
+            tempCtx.textAlign = 'center';
+            tempCtx.fillText(`M = ${currentData.M}`, centerX, centerY - width / 120);
+            tempCtx.font = `${width / 90}px sans-serif`;
+            tempCtx.fillText(`φ(M) = ${currentData.phi}`, centerX, centerY + width / 90);
             
             const link = document.createElement('a');
             link.download = `composite_projection_M${currentData.M}_${resolution}_${Date.now()}.png`;
@@ -1020,10 +1114,11 @@
         function exportCSV() {
             if (!currentData) return;
             
-            let csv = 'Residue,Modulus,GCD,Channel_Status,Reduced_Numerator,Reduced_Denominator,Angle_Radians,Angle_Degrees,SPF,LPF\n';
+            let csv = 'Residue,Modulus,GCD,Status,Reduced_Numerator,Reduced_Denominator,Channel_M_Prime,Multiplicity,Angle_Radians,Angle_Degrees,SPF,LPF\n';
             currentData.residues.forEach(pt => {
-                const angleDeg = (pt.theta * 180 / Math.PI).toFixed(2);
-                csv += `${pt.r},${currentData.M},${pt.d},${pt.isIrreducible ? 'Coprime' : 'Reducible'},${pt.rRed},${pt.mRed},${pt.theta.toFixed(6)},${angleDeg},${pt.spf},${pt.lpf}\n`;
+                const angleDeg = ((pt.theta + Math.PI / 2) * 180 / Math.PI).toFixed(2);
+                const mult = currentData.M / pt.mRed;
+                csv += `${pt.r},${currentData.M},${pt.d},${pt.isIrreducible ? 'Coprime' : 'Reducible'},${pt.rRed},${pt.mRed},${pt.mRed},${mult},${pt.theta.toFixed(6)},${angleDeg},${pt.spf},${pt.lpf}\n`;
             });
             
             const blob = new Blob([csv], { type: 'text/csv' });
@@ -1042,19 +1137,12 @@
         });
         
         document.getElementById('modulusInput').addEventListener('change', updateVisualization);
-        document.getElementById('displayMode').addEventListener('change', () => {
-            document.getElementById('configDisplay').textContent = 'Display Mode: ' + 
-                document.getElementById('displayMode').options[document.getElementById('displayMode').selectedIndex].text;
-            drawVisualization();
-        });
-        document.getElementById('colorScheme').addEventListener('change', () => {
-            document.getElementById('configColor').textContent = 'Color Scheme: ' + 
-                document.getElementById('colorScheme').options[document.getElementById('colorScheme').selectedIndex].text;
-            drawVisualization();
-        });
+        document.getElementById('displayMode').addEventListener('change', drawVisualization);
+        document.getElementById('colorScheme').addEventListener('change', drawVisualization);
         document.getElementById('showChannelLabels').addEventListener('change', drawVisualization);
         document.getElementById('showMultiplicity').addEventListener('change', drawVisualization);
         document.getElementById('showFareyLines').addEventListener('change', drawVisualization);
+        document.getElementById('showPointLabels').addEventListener('change', drawVisualization);
         
         ['pointSize', 'projectionOpacity', 'zoom', 'rotation'].forEach(id => {
             document.getElementById(id).addEventListener('input', (e) => {
@@ -1063,14 +1151,9 @@
                 if (id === 'projectionOpacity') value = (value / 100).toFixed(2);
                 else if (id === 'zoom') value = value + '%';
                 else if (id === 'rotation') value = value + '°';
-                else if (id === 'sweepSpeed') value = (value / 100).toFixed(1);
                 document.getElementById(valueId).textContent = value;
                 drawVisualization();
             });
-        });
-        
-        document.getElementById('sweepSpeed').addEventListener('input', (e) => {
-            document.getElementById('sweepSpeedValue').textContent = (e.target.value / 100).toFixed(1);
         });
         
         document.getElementById('animateRotation').addEventListener('change', (e) => {
@@ -1102,14 +1185,29 @@
             const zoom = parseFloat(document.getElementById('zoom').value) / 100;
             const baseRadius = Math.min(canvas.width, canvas.height) * 0.4 * zoom;
             const rotation = parseFloat(document.getElementById('rotation').value) * Math.PI / 180;
+            const displayMode = document.getElementById('displayMode').value;
+            
+            const divisors = currentData.divisors.filter(d => d < currentData.M).reverse();
+            const radiusMap = new Map();
+            divisors.forEach((d, idx) => {
+                radiusMap.set(d, baseRadius * (1 - idx * 0.12));
+            });
+            radiusMap.set(currentData.M, baseRadius);
             
             let hoveredPoint = null;
             let minDist = Infinity;
             
             currentData.residues.forEach(pt => {
-                const angle = pt.theta + rotation; // theta already includes -π/2
-                const x = centerX + baseRadius * Math.cos(angle);
-                const y = centerY + baseRadius * Math.sin(angle);
+                let radius;
+                if (displayMode === 'ring') {
+                    radius = pt.mRed === currentData.M ? baseRadius : (radiusMap.get(pt.mRed) || baseRadius * 0.3);
+                } else {
+                    radius = baseRadius;
+                }
+                
+                const angle = pt.theta + rotation;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
                 const dist = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
                 
                 if (dist < minDist && dist < 15) {
@@ -1127,12 +1225,11 @@
                 
                 tooltip.innerHTML = `
                     <strong>r = ${hoveredPoint.r}</strong><br>
-                    θ = 2πr/M = 2π(${hoveredPoint.r})/${currentData.M}<br>
-                    θ = ${angleDeg}° (from top)<br>
+                    θ = 2πr/M = ${angleDeg}° (from top)<br>
                     gcd(${hoveredPoint.r}, ${currentData.M}) = ${hoveredPoint.d}<br>
                     Status: ${hoveredPoint.isIrreducible ? 'Coprime' : 'Reducible'}<br>
                     ${hoveredPoint.r === 0 ? '<strong>r=0 at 12 o\'clock (gcd=M)</strong><br>' : ''}
-                    ${!hoveredPoint.isIrreducible && hoveredPoint.r !== 0 ? `${hoveredPoint.r}/${currentData.M} → ${hoveredPoint.rRed}/${hoveredPoint.mRed}<br>Projects to M' = ${hoveredPoint.mRed}` : ''}
+                    ${!hoveredPoint.isIrreducible && hoveredPoint.r !== 0 ? `${hoveredPoint.r}/${currentData.M} → ${hoveredPoint.rRed}/${hoveredPoint.mRed}<br>Channel M' = ${hoveredPoint.mRed}` : ''}
                 `;
             } else {
                 tooltip.style.display = 'none';
@@ -1151,14 +1248,29 @@
             const zoom = parseFloat(document.getElementById('zoom').value) / 100;
             const baseRadius = Math.min(canvas.width, canvas.height) * 0.4 * zoom;
             const rotation = parseFloat(document.getElementById('rotation').value) * Math.PI / 180;
+            const displayMode = document.getElementById('displayMode').value;
+            
+            const divisors = currentData.divisors.filter(d => d < currentData.M).reverse();
+            const radiusMap = new Map();
+            divisors.forEach((d, idx) => {
+                radiusMap.set(d, baseRadius * (1 - idx * 0.12));
+            });
+            radiusMap.set(currentData.M, baseRadius);
             
             let clickedPoint = null;
             let minDist = Infinity;
             
             currentData.residues.forEach(pt => {
-                const angle = pt.theta + rotation; // theta already includes -π/2
-                const x = centerX + baseRadius * Math.cos(angle);
-                const y = centerY + baseRadius * Math.sin(angle);
+                let radius;
+                if (displayMode === 'ring') {
+                    radius = pt.mRed === currentData.M ? baseRadius : (radiusMap.get(pt.mRed) || baseRadius * 0.3);
+                } else {
+                    radius = baseRadius;
+                }
+                
+                const angle = pt.theta + rotation;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
                 const dist = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
                 
                 if (dist < minDist && dist < 15) {
@@ -1173,7 +1285,8 @@
                 
                 if (clickedPoint.isIrreducible) {
                     info += `<strong>Status: COPRIME</strong><br>`;
-                    info += `Already in lowest terms: ${clickedPoint.r}/${currentData.M}`;
+                    info += `Already in lowest terms: ${clickedPoint.r}/${currentData.M}<br>`;
+                    info += `Sits on ring M' = ${clickedPoint.mRed}`;
                 } else {
                     info += `<strong>Status: REDUCIBLE</strong><br>`;
                     info += `Dividing by gcd = ${clickedPoint.d}:<br><br>`;
@@ -1184,6 +1297,10 @@
                 
                 document.getElementById('clickInfo').innerHTML = info;
             }
+        });
+        
+        canvas.addEventListener('mouseleave', () => {
+            tooltip.style.display = 'none';
         });
         
         // Initialize
