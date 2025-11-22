@@ -50,8 +50,7 @@
         }
 
         #overlay-header {
-            position: absolute; top: 20px; width: 100%; text-align: center;
-            pointer-events: none;
+            position: absolute; top: 20px; left: 20px; pointer-events: none;
             text-shadow: 0 2px 4px #000; z-index: 10;
         }
         h1 { margin: 0; font-size: 1.2rem; letter-spacing: -0.5px; }
@@ -200,7 +199,7 @@
     <canvas id="vizCanvas"></canvas>
     
     <div id="overlay-header">
-        <h1 id="disp-title">Composite Modulus M = 60</h1>
+        <h1 id="disp-title">M = 60</h1>
         <div id="disp-subtitle" class="subtitle">2² × 3 × 5</div>
         <div id="disp-zoom" class="subtitle" style="color:var(--accent); margin-top:2px;">Zoom: 100%</div>
     </div>
@@ -256,12 +255,6 @@
             <label>Opacity</label>
             <input type="range" style="width:100px" min="0.1" max="1" step="0.1" value="0.5" id="rng-opacity" oninput="updateConfig()">
         </div>
-    </div>
-
-    <div class="section">
-        <div class="section-title">Channel Statistics</div>
-        <div id="channel-stats-dynamic">
-            </div>
     </div>
 
     <div class="section">
@@ -346,18 +339,13 @@ function computeData() {
     State.residues = [];
     const channelMap = {};
 
-    for (let r = 0; r <= M; r++) { // Include 0 and M for Ford Circles / Lattice Map boundary
+    for (let r = 0; r <= M; r++) {
         const effectiveR = r === 0 ? M : r;
         const d = MathCore.gcd(effectiveR, M);
         const m_prime = M / d;
         const r_prime = effectiveR / d;
 
-        if (!channelMap[m_prime]) channelMap[m_prime] = { val: m_prime, d: d, count: 0, color: null };
-        
-        // Only count actual residues from 1 to M-1 for channel population stats
-        if (r > 0 && r < M) { 
-             channelMap[m_prime].count++;
-        }
+        if (!channelMap[m_prime]) channelMap[m_prime] = { val: m_prime, d: d, color: null };
 
         State.residues.push({
             r: r, d: d, m_prime: m_prime, r_prime: r_prime,
@@ -374,7 +362,6 @@ function computeData() {
     });
 
     render();
-    updateChannelStats();
 }
 
 /** * RENDERER (SQUARE ENGINE) 
@@ -406,8 +393,8 @@ window.addEventListener('resize', resize);
 function getPointColor(res) {
     if (State.colorMode === 'type') {
         if (res.d === 1) return '#58a6ff';
-        if (res.m_prime === 1) return '#ffd700'; // For M'=1 (center)
-        return '#ff6b6b'; // For other reducible
+        if (res.m_prime === 1) return '#ffd700';
+        return '#ff6b6b';
     }
     if (State.colorMode === 'gcd') {
         if (res.d === 1) return '#58a6ff';
@@ -437,12 +424,12 @@ function render() {
     ctx.restore();
     
     // UI Updates
-    document.getElementById('disp-title').innerText = `Composite Modulus M = ${State.M}`;
+    document.getElementById('disp-title').innerText = `M = ${State.M}`;
     document.getElementById('disp-subtitle').innerText = MathCore.getFactors(State.M);
     document.getElementById('disp-zoom').innerText = `Zoom: ${(State.zoom*100).toFixed(0)}%`;
 }
 
-// MODE: RADIAL (Projection & Rings)
+// MODE: RADIAL
 function renderRadial(ctx, size) {
     const baseRadius = size * 0.45;
 
@@ -450,9 +437,9 @@ function renderRadial(ctx, size) {
         if (State.isolatedChannel && State.isolatedChannel !== ch.val) return;
         const pct = (i + 1) / (State.channels.length + 1);
         let r = pct * baseRadius;
-        if (ch.val === State.M) r = baseRadius; // Outermost ring
-        if (ch.val === 1) r = baseRadius * 0.05; // Innermost ring (M'=1)
-        ch.renderR = r; // Store for hit testing
+        if (ch.val === State.M) r = baseRadius;
+        if (ch.val === 1) r = baseRadius * 0.05;
+        ch.renderR = r; 
 
         ctx.beginPath();
         ctx.arc(0, 0, r, 0, Math.PI * 2);
@@ -462,8 +449,7 @@ function renderRadial(ctx, size) {
     });
 
     State.residues.forEach(res => {
-        // Exclude r=0 and r=M points for radial views as they are edges/center
-        if (res.r === 0 || res.r === State.M) return; 
+        if (res.r === 0 || res.r === State.M) return;
         if (State.isolatedChannel && State.isolatedChannel !== res.m_prime) return;
 
         const color = getPointColor(res);
@@ -483,6 +469,7 @@ function renderRadial(ctx, size) {
         ctx.fillStyle = color; ctx.fill();
         
         // Save Screen Coords for hit testing
+        // Need to reverse transform later
         res.hit = { x: x2, y: y2, r: 5/State.zoom };
     });
 }
@@ -491,45 +478,30 @@ function renderRadial(ctx, size) {
 function renderFord(ctx, size) {
     const scale = size * 0.9;
     const groundY = size * 0.3;
-    const offsetX = -size * 0.45; // Start X for 0/1
-
-    // Draw Ground Line
+    const offsetX = -size * 0.45;
+    
     ctx.beginPath(); ctx.moveTo(-size, groundY); ctx.lineTo(size, groundY);
     ctx.strokeStyle = '#8b949e'; ctx.lineWidth = 2/State.zoom; ctx.stroke();
 
     const drawn = new Set();
     State.residues.forEach(res => {
         if (State.isolatedChannel && State.isolatedChannel !== res.m_prime) return;
-        
-        // Ford circles are defined for irreducible fractions p/q, where p/q is in [0,1]
-        // Our residues are r/M, which reduce to r'/M'. So p=r', q=M'
-        // Skip for r=0 and r=M as they overlap on 0/1 or 1/1
-        if (res.r === 0 || res.r === State.M) return; 
-
         const key = `${res.r_prime}/${res.m_prime}`;
-        if (drawn.has(key)) return; // Avoid drawing duplicate circles for same fraction
-        drawn.add(key);
+        if (drawn.has(key)) return; drawn.add(key);
 
         const q = res.m_prime;
         const p = res.r_prime;
+        const radius = (1 / (2 * q * q)) * scale * 1.5;
         
-        // Ford Radius Formula: R = 1 / (2 * q^2)
-        // Scaled up for visibility. Adjust 1.5 multiplier if too small/large
-        const radius = (1 / (2 * q * q)) * scale * 1.5; 
-        
-        // Position: x = p/q (normalized 0 to 1 range of the number line)
         const x = offsetX + (p/q) * scale;
-        const y = groundY - radius; // Circles sit on the ground line
-
-        if (radius * State.zoom < 0.5) return; // Cull very tiny circles when zoomed out
+        const y = groundY - radius;
+        
+        if (radius * State.zoom < 0.5) return;
 
         ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI*2);
         const ch = State.channels.find(c => c.val === q);
-        ctx.fillStyle = ch.color + '80'; // Add transparency
-        ctx.fill();
-        ctx.strokeStyle = ch.color;
-        ctx.lineWidth = 1/State.zoom;
-        ctx.stroke();
+        ctx.fillStyle = ch.color + '80'; ctx.fill();
+        ctx.strokeStyle = ch.color; ctx.lineWidth = 1/State.zoom; ctx.stroke();
         
         res.hit = { x: x, y: y, r: radius };
     });
@@ -542,29 +514,23 @@ function renderLattice(ctx, size) {
     const startX = -plotW/2;
     const startY = plotH/2;
 
-    // Draw Axes
     ctx.beginPath();
-    ctx.moveTo(startX, startY); ctx.lineTo(startX+plotW, startY); // X-axis (Residue)
-    ctx.moveTo(startX, startY); ctx.lineTo(startX, startY-plotH); // Y-axis (GCD)
+    ctx.moveTo(startX, startY); ctx.lineTo(startX+plotW, startY);
+    ctx.moveTo(startX, startY); ctx.lineTo(startX, startY-plotH);
     ctx.strokeStyle = '#30363d'; ctx.lineWidth = 2/State.zoom; ctx.stroke();
 
     State.residues.forEach(res => {
-        if (res.r === 0) return; // Skip r=0 as it is usually not plotted on a 1-M range for GCD
+        if (res.r === 0) return;
         if (State.isolatedChannel && State.isolatedChannel !== res.m_prime) return;
 
-        // X = Residue Index, Y = GCD Value
         const x = startX + (res.r / State.M) * plotW;
-        // Normalize GCD by the max GCD (which is M itself for r=M, or M/prime_factor for others)
-        const maxPossibleGCD = State.M; 
-        const y = startY - (res.d / maxPossibleGCD) * plotH; // Invert Y for "skyline" effect
+        const y = startY - (res.d / State.channels[State.channels.length-1].d) * plotH;
         const color = getPointColor(res);
 
-        // Draw Stick/Line
         ctx.beginPath(); ctx.moveTo(x, startY); ctx.lineTo(x, y);
         ctx.strokeStyle = color; ctx.globalAlpha = 0.3; ctx.lineWidth = Math.max(1, plotW/State.M)/State.zoom;
         ctx.stroke(); ctx.globalAlpha = 1.0;
 
-        // Draw Dot
         ctx.beginPath(); ctx.arc(x, y, 3/State.zoom, 0, Math.PI*2);
         ctx.fillStyle = color; ctx.fill();
         res.hit = { x: x, y: y, r: 5/State.zoom };
@@ -594,32 +560,101 @@ function updateConfig() {
     State.colorMode = document.getElementById('sel-color').value;
     State.opacity = parseFloat(document.getElementById('rng-opacity').value);
     render();
-    updateChannelStats(); // Color change might imply legend update
 }
 function toggleAnim() {
-    if(State.isAnimating) { clearInterval(State.animTimer); State.isAnimating=false; document.getElementById('btn-anim').classList.remove('active'); }
-    else { State.isAnimating=true; document.getElementById('btn-anim').classList.add('active'); State.animTimer = setInterval(() => {
+    if(State.isAnimating) { clearInterval(State.animTimer); State.isAnimating=false; }
+    else { State.isAnimating=true; State.animTimer = setInterval(() => {
         let n = State.M+1; if(n>2520) n=4; setM(n);
     }, 100); }
 }
 
-function updateChannelStats() {
-    const container = document.getElementById('channel-stats-dynamic');
-    container.innerHTML = ''; // Clear previous stats
+// Mouse/Touch Interaction
+function handlePointerStart(x, y) {
+    State.isDragging = true;
+    State.lastMouse = { x, y };
+}
+function handlePointerMove(x, y) {
+    if (State.isDragging) {
+        State.panX += x - State.lastMouse.x;
+        State.panY += y - State.lastMouse.y;
+        State.lastMouse = { x, y };
+        render();
+    }
+    
+    // Hover Test
+    // Normalize logic for hit testing in Square Canvas
+    const width = State.size;
+    const height = State.size;
+    const cx = width/2 + State.panX;
+    const cy = height/2 + State.panY;
+    
+    // Mouse relative to canvas center, scaled by zoom
+    const mx = (x - cx) / State.zoom;
+    const my = (y - cy) / State.zoom;
+    
+    let target = null;
+    let minD = 10 / State.zoom;
 
-    // Add summary stats first (Euler Totient, etc.)
-    container.innerHTML += `<div class="stat-row"><span>Euler Totient φ(M)</span><span class="stat-val">${MathCore.phi(State.M)}</span></div>`;
-    container.innerHTML += `<div class="stat-row"><span>Active Channels</span><span class="stat-val">${State.channels.length}</span></div>`;
-    container.innerHTML += `<div class="stat-row" style="margin-bottom:15px;"><span>Max Depth (GCD)</span><span class="stat-val">${State.channels[State.channels.length-1].d}</span></div>`;
+    State.residues.forEach(res => {
+        if (!res.hit) return;
+        const dist = Math.sqrt((mx-res.hit.x)**2 + (my-res.hit.y)**2);
+        const limit = Math.max(minD, res.hit.r);
+        if (dist < limit) { minD = dist; target = res; }
+    });
 
-    // Add detailed channel listing
-    State.channels.forEach(ch => {
-        if (ch.val === 1) return; // Don't list M'=1 as a regular channel, it's the center
-        const residuesInChannel = State.residues.filter(r => r.m_prime === ch.val && r.r > 0 && r.r < State.M).length;
-        container.innerHTML += `
-            <div class="legend-item" style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <div class="dot" style="background:${ch.color};"></div>
-                    M' = ${ch.val}
-                </div>
-                <span
+    const tip = document.getElementById('tooltip');
+    if (target) {
+        // Position tooltip using page coords
+        const rect = canvas.getBoundingClientRect();
+        tip.style.display = 'block';
+        tip.style.left = (rect.left + x + 10) + 'px';
+        tip.style.top = (rect.top + y + 10) + 'px';
+        tip.innerHTML = `r=${target.r} <span style="color:#aaa">(${target.d})</span>`;
+    } else {
+        tip.style.display = 'none';
+    }
+}
+
+// Event Listeners (Mouse + Touch)
+canvas.addEventListener('mousedown', e => handlePointerStart(e.offsetX, e.offsetY));
+window.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    if(e.target === canvas || State.isDragging) {
+        handlePointerMove(e.clientX - rect.left, e.clientY - rect.top);
+    }
+});
+window.addEventListener('mouseup', () => State.isDragging = false);
+
+// Touch Support
+canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    handlePointerStart(t.clientX - rect.left, t.clientY - rect.top);
+}, {passive: false});
+
+canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    handlePointerMove(t.clientX - rect.left, t.clientY - rect.top);
+}, {passive: false});
+
+// Export
+function exportPNG() {
+    const link = document.createElement('a');
+    link.download = `Projection_M${State.M}.png`;
+    link.href = canvas.toDataURL('image/png'); // Can export exact canvas state
+    link.click();
+}
+
+// Init
+document.getElementById('input-m').addEventListener('change', e=>setM(e.target.value));
+document.getElementById('slider-m').addEventListener('input', e=>setM(e.target.value));
+resize();
+computeData();
+
+</script>
+</body>
+</html>
+
