@@ -258,10 +258,10 @@
             <div class="control-group">
                 <label>
                     Modulus M
-                    <span class="value-display" id="modulusValue">120</span>
+                    <span class="value-display" id="modulusValue">42</span>
                 </label>
-                <input type="range" id="modulusSlider" min="4" max="500" value="120">
-                <input type="number" id="modulusInput" min="2" max="5000" value="120">
+                <input type="range" id="modulusSlider" min="4" max="500" value="42">
+                <input type="number" id="modulusInput" min="2" max="5000" value="42">
             </div>
 
             <div class="preset-buttons">
@@ -293,9 +293,9 @@
             <div class="control-group">
                 <label>
                     Projection Line Opacity
-                    <span class="value-display" id="opacityValue">0.30</span>
+                    <span class="value-display" id="opacityValue">1.00</span>
                 </label>
-                <input type="range" id="opacitySlider" min="0" max="100" value="30">
+                <input type="range" id="opacitySlider" min="0" max="100" value="100">
             </div>
 
             <div class="control-group">
@@ -309,9 +309,17 @@
             <div class="control-group">
                 <label>
                     Point Size
-                    <span class="value-display" id="pointSizeValue">5</span>
+                    <span class="value-display" id="pointSizeValue">3</span>
                 </label>
-                <input type="range" id="pointSizeSlider" min="3" max="12" value="5">
+                <input type="range" id="pointSizeSlider" min="1" max="20" value="3" step="0.5">
+            </div>
+
+            <div class="control-group">
+                <label>
+                    Ring Spacing Factor
+                    <span class="value-display" id="spacingValue">1.00</span>
+                </label>
+                <input type="range" id="spacingSlider" min="50" max="200" value="100">
             </div>
 
             <div class="control-group">
@@ -420,7 +428,7 @@
 
             <h2>Export</h2>
             <div class="control-group">
-                <label>Resolution</label>
+                <label>Image Resolution</label>
                 <select id="exportResolution">
                     <option value="2800">4K (2800×2800)</option>
                     <option value="5600">8K (5600×5600)</option>
@@ -428,7 +436,15 @@
                 </select>
             </div>
 
-            <button class="export-btn" onclick="exportImage()">Export PNG</button>
+            <button class="export-btn" onclick="exportImage()">Export PNG Image</button>
+            
+            <div style="margin-top: 10px;">
+                <button class="export-btn" style="background: #2a4a5a;" onclick="exportCSV()">Export CSV Data</button>
+            </div>
+            
+            <div style="margin-top: 10px;">
+                <button class="export-btn" style="background: #4a2a5a;" onclick="exportJSON()">Export JSON Data</button>
+            </div>
 
             <div class="info-text">
                 <strong>About:</strong> This tool visualizes the classical reduction of fractions r/M to lowest terms in modular arithmetic. It displays how residues project onto their reduced denominators (Farey sequence elements), showing the geometric structure of fraction reduction. Each reducible fraction r/M reduces to (r/d)/(M/d) where d = gcd(r,M).
@@ -547,11 +563,11 @@
 
         // Visualization state
         let config = {
-            modulus: 120,
+            modulus: 42,
             colorScheme: 'channel-type',
-            opacity: 0.3,
-            pointSize: 5,
-            labelType: 'farey',
+            opacity: 1.0,
+            pointSize: 3,
+            labelType: 'none',
             pointLabelType: 'none',
             showProjections: true,
             showAllRings: true,
@@ -561,6 +577,7 @@
             showCousinResidues: false,
             showSexyResidues: false,
             gapType: 'none',
+            spacingFactor: 1.0,
             zoom: 1.0
         };
 
@@ -750,7 +767,7 @@
                         const outerX = centerX + baseRadius * Math.cos(p.angle - Math.PI / 2);
                         const outerY = centerY + baseRadius * Math.sin(p.angle - Math.PI / 2);
                         
-                        const channelRadius = baseRadius * (p.reducedM / config.modulus);
+                        const channelRadius = baseRadius * Math.pow(p.reducedM / config.modulus, config.spacingFactor);
                         const targetAngle = (2 * Math.PI * p.reducedR) / p.reducedM;
                         const innerX = centerX + channelRadius * Math.cos(targetAngle - Math.PI / 2);
                         const innerY = centerY + channelRadius * Math.sin(targetAngle - Math.PI / 2);
@@ -769,7 +786,7 @@
             // Draw channel rings
             const divisors = getDivisors(config.modulus).filter(d => channels.has(d));
             divisors.forEach(d => {
-                const radius = baseRadius * (d / config.modulus);
+                const radius = baseRadius * Math.pow(d / config.modulus, config.spacingFactor);
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
                 ctx.strokeStyle = '#ffd700';
@@ -813,7 +830,7 @@
                     const ringPoints = allRingPoints.get(d);
                     if (!ringPoints) return;
                     
-                    const radius = baseRadius * (d / config.modulus);
+                    const radius = baseRadius * Math.pow(d / config.modulus, config.spacingFactor);
                     
                     ringPoints.forEach(p => {
                         if (!p.isOpen && !config.colorAllRings) return; // Only show coprime unless coloring all
@@ -847,7 +864,7 @@
             } else {
                 // Original behavior: only gold coprime points
                 channels.forEach((channel, M_prime) => {
-                    const radius = baseRadius * (M_prime / config.modulus);
+                    const radius = baseRadius * Math.pow(M_prime / config.modulus, config.spacingFactor);
                     for (let r = 0; r < M_prime; r++) {
                         if (gcd(r, M_prime) === 1) {
                             const angle = (2 * Math.PI * r) / M_prime;
@@ -1315,6 +1332,134 @@
             link.click();
         }
 
+        function exportCSV() {
+            const M = config.modulus;
+            const factors = primeFactorization(M);
+            const phiM = phi(M);
+            
+            let csv = `# Modular Reduction Projection Data Export\n`;
+            csv += `# Modulus M = ${M}\n`;
+            csv += `# Prime Factorization: ${formatFactorization(factors)}\n`;
+            csv += `# φ(M) = ${phiM}\n`;
+            csv += `# Total Residues: ${M}\n`;
+            csv += `# Irreducible: ${points.filter(p => p.isOpen).length}\n`;
+            csv += `# Reducible: ${points.filter(p => !p.isOpen).length}\n`;
+            csv += `# Farey Channels: ${channels.size}\n`;
+            csv += `# Twin Pairs: ${twinPairs.length}\n`;
+            csv += `# Cousin Pairs: ${cousinPairs.length}\n`;
+            csv += `# Sexy Pairs: ${sexyPairs.length}\n`;
+            csv += `#\n`;
+            csv += `Residue,Modulus,GCD,Status,Reduced_Numerator,Reduced_Denominator,Channel,Angle_Rad,SPF,LPF\n`;
+            
+            points.forEach(p => {
+                csv += `${p.r},${p.M},${p.gcd},${p.isOpen ? 'Irreducible' : 'Reducible'},`;
+                csv += `${p.reducedR},${p.reducedM},${p.reducedM},${p.angle.toFixed(6)},${p.spf},${p.lpf}\n`;
+            });
+            
+            csv += `\n# Channel Multiplicities\n`;
+            csv += `Channel_M',Multiplicity,Residue_Count\n`;
+            channels.forEach((ch, M_prime) => {
+                csv += `${M_prime},${ch.multiplicity},${ch.count}\n`;
+            });
+            
+            if (twinPairs.length > 0) {
+                csv += `\n# Twin Pairs (r, r+2)\n`;
+                csv += `r1,r2\n`;
+                twinPairs.forEach(([r1, r2]) => {
+                    csv += `${r1},${r2}\n`;
+                });
+            }
+            
+            if (cousinPairs.length > 0) {
+                csv += `\n# Cousin Pairs (r, r+4)\n`;
+                csv += `r1,r2\n`;
+                cousinPairs.forEach(([r1, r2]) => {
+                    csv += `${r1},${r2}\n`;
+                });
+            }
+            
+            if (sexyPairs.length > 0) {
+                csv += `\n# Sexy Pairs (r, r+6)\n`;
+                csv += `r1,r2\n`;
+                sexyPairs.forEach(([r1, r2]) => {
+                    csv += `${r1},${r2}\n`;
+                });
+            }
+            
+            // Download
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `modular-reduction-M${M}.csv`;
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportJSON() {
+            const M = config.modulus;
+            const factors = primeFactorization(M);
+            const phiM = phi(M);
+            
+            const data = {
+                metadata: {
+                    modulus: M,
+                    prime_factorization: factors,
+                    phi_M: phiM,
+                    total_residues: M,
+                    irreducible_count: points.filter(p => p.isOpen).length,
+                    reducible_count: points.filter(p => !p.isOpen).length,
+                    farey_channels: channels.size,
+                    twin_pairs_count: twinPairs.length,
+                    cousin_pairs_count: cousinPairs.length,
+                    sexy_pairs_count: sexyPairs.length,
+                    export_date: new Date().toISOString(),
+                    tool: "Modular Reduction Explorer"
+                },
+                residues: points.map(p => ({
+                    r: p.r,
+                    modulus: p.M,
+                    gcd: p.gcd,
+                    is_coprime: p.isOpen,
+                    reduced_numerator: p.reducedR,
+                    reduced_denominator: p.reducedM,
+                    channel: p.reducedM,
+                    angle_radians: p.angle,
+                    smallest_prime_factor: p.spf,
+                    largest_prime_factor: p.lpf
+                })),
+                channels: Array.from(channels.entries()).map(([M_prime, ch]) => ({
+                    channel_M_prime: M_prime,
+                    multiplicity: ch.multiplicity,
+                    residue_count: ch.count,
+                    residues: ch.residues
+                })),
+                twin_pairs: twinPairs,
+                cousin_pairs: cousinPairs,
+                sexy_pairs: sexyPairs,
+                all_rings: Array.from(allRingPoints.entries()).map(([d, ringPts]) => ({
+                    divisor: d,
+                    ring_size: d,
+                    phi_d: phi(d),
+                    points: ringPts.map(p => ({
+                        r: p.r,
+                        gcd: p.gcd,
+                        is_coprime: p.isOpen,
+                        angle_radians: p.angle
+                    }))
+                }))
+            };
+            
+            // Download
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `modular-reduction-M${M}.json`;
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
         function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
             const words = text.split(' ');
             let line = '';
@@ -1367,8 +1512,14 @@
         });
 
         document.getElementById('pointSizeSlider').addEventListener('input', (e) => {
-            config.pointSize = parseInt(e.target.value);
+            config.pointSize = parseFloat(e.target.value);
             document.getElementById('pointSizeValue').textContent = config.pointSize;
+            draw();
+        });
+
+        document.getElementById('spacingSlider').addEventListener('input', (e) => {
+            config.spacingFactor = parseInt(e.target.value) / 100;
+            document.getElementById('spacingValue').textContent = config.spacingFactor.toFixed(2);
             draw();
         });
 
