@@ -300,20 +300,42 @@
 
             <div class="control-group">
                 <label>
+                    Zoom Level
+                    <span class="value-display" id="zoomValue">100%</span>
+                </label>
+                <input type="range" id="zoomSlider" min="50" max="500" value="100">
+            </div>
+
+            <div class="control-group">
+                <label>
                     Point Size
                     <span class="value-display" id="pointSizeValue">5</span>
                 </label>
                 <input type="range" id="pointSizeSlider" min="3" max="12" value="5">
             </div>
 
-            <div class="checkbox-group">
-                <input type="checkbox" id="showLabels" checked>
-                <label for="showLabels">Show Channel Labels</label>
+            <div class="control-group">
+                <label>
+                    Channel Labels
+                </label>
+                <select id="labelType">
+                    <option value="farey">Farey (M')</option>
+                    <option value="gcd">GCD (d)</option>
+                    <option value="both">Both (M' and d)</option>
+                    <option value="none">None</option>
+                </select>
             </div>
 
-            <div class="checkbox-group">
-                <input type="checkbox" id="showMultiplicity" checked>
-                <label for="showMultiplicity">Show Multiplicity</label>
+            <div class="control-group">
+                <label>
+                    Point Labels
+                </label>
+                <select id="pointLabelType">
+                    <option value="none">None</option>
+                    <option value="residue">Residue (r)</option>
+                    <option value="fraction">Fraction (r/M)</option>
+                    <option value="gcd">GCD Value</option>
+                </select>
             </div>
 
             <div class="checkbox-group">
@@ -479,8 +501,8 @@
             colorScheme: 'channel-type',
             opacity: 0.3,
             pointSize: 5,
-            showLabels: true,
-            showMultiplicity: true,
+            labelType: 'farey',
+            pointLabelType: 'none',
             showProjections: true,
             zoom: 1.0
         };
@@ -635,19 +657,26 @@
                 ctx.lineWidth = 1;
                 ctx.stroke();
 
-                // Draw channel label
-                if (config.showLabels && d > 1) {
+                // Draw channel labels - improved positioning
+                if (config.labelType !== 'none' && d > 1) {
+                    const labelX = centerX + radius + 10;
+                    const labelY = centerY;
+                    
                     ctx.fillStyle = '#ffd700';
                     ctx.font = '11px monospace';
-                    ctx.fillText(`M' = ${d}`, centerX + radius + 5, centerY);
-                }
-
-                // Draw multiplicity
-                if (config.showMultiplicity && channels.has(d)) {
-                    const mult = channels.get(d).multiplicity;
-                    ctx.fillStyle = '#aaa';
-                    ctx.font = '10px monospace';
-                    ctx.fillText(`d = ${mult}`, centerX - radius - 40, centerY);
+                    ctx.textAlign = 'left';
+                    
+                    if (config.labelType === 'farey') {
+                        ctx.fillText(`M' = ${d}`, labelX, labelY);
+                    } else if (config.labelType === 'gcd' && channels.has(d)) {
+                        const mult = channels.get(d).multiplicity;
+                        ctx.fillText(`d = ${mult}`, labelX, labelY);
+                    } else if (config.labelType === 'both' && channels.has(d)) {
+                        const mult = channels.get(d).multiplicity;
+                        ctx.fillText(`M' = ${d}`, labelX, labelY - 6);
+                        ctx.fillStyle = '#aaa';
+                        ctx.fillText(`d = ${mult}`, labelX, labelY + 6);
+                    }
                 }
             });
 
@@ -696,6 +725,27 @@
                     ctx.strokeStyle = '#fff';
                     ctx.lineWidth = 2;
                     ctx.stroke();
+                }
+
+                // Draw point labels if enabled
+                if (config.pointLabelType !== 'none' && config.modulus <= 60) {
+                    ctx.fillStyle = '#ccc';
+                    ctx.font = '9px monospace';
+                    ctx.textAlign = 'center';
+                    const labelRadius = baseRadius + 15;
+                    const labelX = centerX + labelRadius * Math.cos(p.angle - Math.PI / 2);
+                    const labelY = centerY + labelRadius * Math.sin(p.angle - Math.PI / 2);
+                    
+                    let labelText = '';
+                    if (config.pointLabelType === 'residue') {
+                        labelText = p.r.toString();
+                    } else if (config.pointLabelType === 'fraction') {
+                        labelText = `${p.r}/${p.M}`;
+                    } else if (config.pointLabelType === 'gcd') {
+                        labelText = p.gcd.toString();
+                    }
+                    
+                    ctx.fillText(labelText, labelX, labelY);
                 }
 
                 // Store screen coordinates for hit detection
@@ -846,7 +896,7 @@
                 exportCtx.globalAlpha = 1.0;
             }
             
-            // Draw channel rings
+            // Draw channel rings with improved labels
             const divisors = getDivisors(config.modulus).filter(d => channels.has(d));
             divisors.forEach(d => {
                 const radius = baseRadius * (d / config.modulus);
@@ -856,19 +906,25 @@
                 exportCtx.lineWidth = scaleFactor;
                 exportCtx.stroke();
 
-                if (config.showLabels && d > 1) {
+                if (config.labelType !== 'none' && d > 1) {
+                    const labelX = vizCenterX + radius + 10 * scaleFactor;
+                    const labelY = vizCenterY;
+                    
                     exportCtx.fillStyle = '#ffd700';
                     exportCtx.font = `${resolution / 80}px monospace`;
                     exportCtx.textAlign = 'left';
-                    exportCtx.fillText(`M' = ${d}`, vizCenterX + radius + 10, vizCenterY);
-                }
-
-                if (config.showMultiplicity && channels.has(d)) {
-                    const mult = channels.get(d).multiplicity;
-                    exportCtx.fillStyle = '#aaa';
-                    exportCtx.font = `${resolution / 90}px monospace`;
-                    exportCtx.textAlign = 'right';
-                    exportCtx.fillText(`d = ${mult}`, vizCenterX - radius - 10, vizCenterY);
+                    
+                    if (config.labelType === 'farey') {
+                        exportCtx.fillText(`M' = ${d}`, labelX, labelY);
+                    } else if (config.labelType === 'gcd' && channels.has(d)) {
+                        const mult = channels.get(d).multiplicity;
+                        exportCtx.fillText(`d = ${mult}`, labelX, labelY);
+                    } else if (config.labelType === 'both' && channels.has(d)) {
+                        const mult = channels.get(d).multiplicity;
+                        exportCtx.fillText(`M' = ${d}`, labelX, labelY - 8 * scaleFactor);
+                        exportCtx.fillStyle = '#aaa';
+                        exportCtx.fillText(`d = ${mult}`, labelX, labelY + 8 * scaleFactor);
+                    }
                 }
             });
             
@@ -1003,31 +1059,15 @@
             const maxWidth = panelWidth - 40;
             const text = "Reducible residues of composite M project onto their reduced denominators (Farey channels). By elementary counting, exactly d = M/M' residues reduce to each channel M', where d = gcd(r,M) for those residues.";
             wrapText(exportCtx, text, panelX, panelY, maxWidth, lineHeight * 0.9);
-            panelY += lineHeight * 4;
             
-            // Metadata
-            exportCtx.fillStyle = '#fff';
-            exportCtx.font = `bold ${fontSize * 1.2}px Arial`;
-            exportCtx.fillText('METADATA', panelX, panelY);
-            panelY += lineHeight * 1.5;
-            
-            exportCtx.fillStyle = '#ccc';
+            // Bottom attribution
+            exportCtx.fillStyle = '#666';
             exportCtx.font = `${fontSize * 0.85}px Arial`;
-            const now = new Date();
-            exportCtx.fillText(`Generated: ${now.toLocaleString()}`, panelX, panelY);
-            panelY += lineHeight * 0.9;
-            
-            exportCtx.fillText('Author: Wessen Getachew', panelX, panelY);
-            panelY += lineHeight * 0.9;
-            
-            exportCtx.fillText('Tool: Modular Reduction Explorer', panelX, panelY);
-            panelY += lineHeight * 0.9;
-            
-            exportCtx.fillText(`Resolution: ${resolution}×${resolution}`, panelX, panelY);
+            exportCtx.textAlign = 'left';
+            exportCtx.fillText('Author: Wessen Getachew', panelX, totalHeight - 60);
+            exportCtx.fillText('Tool: Modular Reduction Explorer', panelX, totalHeight - 40);
             
             // Zoom indicator
-            exportCtx.fillStyle = '#666';
-            exportCtx.font = `${fontSize * 0.9}px Arial`;
             exportCtx.textAlign = 'right';
             exportCtx.fillText('Zoom: 100%', totalWidth - 20, totalHeight - 20);
             
@@ -1082,19 +1122,26 @@
             draw();
         });
 
+        document.getElementById('zoomSlider').addEventListener('input', (e) => {
+            config.zoom = parseInt(e.target.value) / 100;
+            document.getElementById('zoomValue').textContent = Math.round(config.zoom * 100) + '%';
+            document.getElementById('zoomLevel').textContent = Math.round(config.zoom * 100) + '%';
+            draw();
+        });
+
         document.getElementById('pointSizeSlider').addEventListener('input', (e) => {
             config.pointSize = parseInt(e.target.value);
             document.getElementById('pointSizeValue').textContent = config.pointSize;
             draw();
         });
 
-        document.getElementById('showLabels').addEventListener('change', (e) => {
-            config.showLabels = e.target.checked;
+        document.getElementById('labelType').addEventListener('change', (e) => {
+            config.labelType = e.target.value;
             draw();
         });
 
-        document.getElementById('showMultiplicity').addEventListener('change', (e) => {
-            config.showMultiplicity = e.target.checked;
+        document.getElementById('pointLabelType').addEventListener('change', (e) => {
+            config.pointLabelType = e.target.value;
             draw();
         });
 
