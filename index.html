@@ -3,214 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Composite Channel Projection Corollary</title>
+    <title>Composite Channel Projection | Research Suite</title>
     <style>
         :root {
-            --bg-color: #0f1115;
-            --panel-bg: #161b22;
-            --text-main: #e6edf3;
-            --text-muted: #8b949e;
-            --accent: #58a6ff;
-            --accent-hover: #79c0ff;
+            --bg: #0d1117;
+            --panel: #161b22;
             --border: #30363d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent: #58a6ff;
+            --success: #3fb950;
+            --danger: #f85149;
+            --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
         }
 
         body {
             margin: 0;
-            overflow: hidden;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            font-family: var(--font-ui);
+            display: grid;
+            grid-template-columns: 1fr 380px;
             height: 100vh;
+            overflow: hidden;
         }
 
-        /* Sidebar Controls */
-        #controls {
-            width: 320px;
-            background-color: var(--panel-bg);
+        /* LEFT: Visualization Stage */
+        #stage {
+            position: relative;
+            background: #000;
+            display: flex;
+            flex-direction: column;
             border-right: 1px solid var(--border);
-            padding: 20px;
+        }
+
+        #header-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        h1 { margin: 0; font-size: 1.5rem; letter-spacing: -0.5px; }
+        .subtitle { color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.9rem; margin-top: 4px; }
+
+        canvas { width: 100%; height: 100%; display: block; }
+
+        /* RIGHT: Analysis Panel */
+        #panel {
+            background: var(--panel);
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
-            z-index: 10;
+            gap: 1px; /* Borders between sections */
+            background-color: var(--border); 
         }
 
-        h1 { font-size: 1.2rem; margin: 0 0 10px 0; color: var(--accent); }
-        h2 { font-size: 0.9rem; text-transform: uppercase; color: var(--text-muted); margin: 15px 0 5px 0; letter-spacing: 1px; }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .section {
+            background: var(--panel);
+            padding: 20px;
         }
 
-        label { font-size: 0.85rem; display: flex; justify-content: space-between; }
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        /* Controls */
+        .input-group { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
         
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--accent);
-            cursor: pointer;
-        }
-
         input[type="number"] {
-            background: var(--bg-color);
+            background: var(--bg);
             border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 4px 8px;
+            color: white;
+            padding: 8px;
             border-radius: 4px;
-            width: 60px;
+            font-family: var(--font-mono);
+            width: 80px;
         }
 
+        input[type="range"] { flex-grow: 1; accent-color: var(--accent); }
+
+        .btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px; }
+        
         button {
-            background: #21262d;
+            background: var(--bg);
             border: 1px solid var(--border);
-            color: var(--accent);
-            padding: 6px 12px;
-            border-radius: 6px;
+            color: var(--text-secondary);
+            padding: 6px;
+            font-size: 0.8rem;
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: 600;
             transition: 0.2s;
         }
+        button:hover { border-color: var(--text-secondary); color: white; }
+        button.active { background: rgba(88, 166, 255, 0.15); color: var(--accent); border-color: var(--accent); }
+        button.primary { background: var(--success); color: white; border: none; font-weight: 600; }
+        button.primary:hover { opacity: 0.9; }
 
-        button:hover { background: #30363d; color: var(--accent-hover); }
-        button.active { background: var(--accent); color: white; border-color: var(--accent); }
+        /* Stats Table */
+        .data-table { width: 100%; font-size: 0.85rem; border-collapse: collapse; }
+        .data-table td { padding: 4px 0; color: var(--text-secondary); }
+        .data-table .val { text-align: right; color: var(--text-primary); font-family: var(--font-mono); }
 
-        .presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
-        
-        .stats-panel {
-            background: rgba(0,0,0,0.2);
-            padding: 10px;
+        /* Legend */
+        .legend-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.85rem; }
+        .swatch { width: 12px; height: 12px; border-radius: 2px; }
+
+        /* Export Section */
+        .export-box {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
             border-radius: 6px;
-            font-size: 0.8rem;
-            font-family: 'Courier New', monospace;
+            border: 1px solid var(--border);
+        }
+        .export-options { display: flex; gap: 10px; margin-top: 10px; }
+        .export-options button { flex: 1; }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            padding: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+            text-align: center;
         }
 
-        /* Main Canvas Area */
-        #canvas-container {
-            flex-grow: 1;
-            position: relative;
-            cursor: crosshair;
-            overflow: hidden;
-        }
-
-        canvas { display: block; }
-
-        /* Floating Tooltip */
         #tooltip {
             position: absolute;
-            background: rgba(22, 27, 34, 0.95);
-            border: 1px solid var(--accent);
-            padding: 10px;
-            border-radius: 4px;
+            background: rgba(13, 17, 23, 0.95);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 6px;
             pointer-events: none;
             font-size: 0.85rem;
             display: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            z-index: 20;
-            white-space: pre-line;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 100;
         }
-
-        .legend {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(22, 27, 34, 0.8);
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            pointer-events: none;
-        }
-        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; }
-
     </style>
 </head>
 <body>
 
-    <div id="controls">
-        <h1>Channel Projection</h1>
-        
-        <div class="control-group">
-            <label>
-                Modulus (M)
-                <input type="number" id="input-m" value="60" min="2" max="5000">
-            </label>
-            <input type="range" id="slider-m" min="2" max="1000" value="60">
-            <div class="presets">
+    <div id="stage">
+        <canvas id="vizCanvas"></canvas>
+        <div id="header-overlay">
+            <h1 id="disp-title">Modulus Projection</h1>
+            <div id="disp-subtitle" class="subtitle">Initialize...</div>
+        </div>
+        <div id="tooltip"></div>
+    </div>
+
+    <div id="panel">
+        <div class="section">
+            <div class="section-title">Configuration</div>
+            <div class="input-group">
+                <label>M =</label>
+                <input type="number" id="input-m" value="60">
+                <input type="range" id="slider-m" min="4" max="2520" value="60">
+            </div>
+            <div class="btn-grid">
                 <button onclick="setM(12)">12</button>
-                <button onclick="setM(30)">30</button>
                 <button onclick="setM(60)">60</button>
                 <button onclick="setM(210)">210</button>
                 <button onclick="setM(360)">360</button>
+                <button onclick="setM(840)">840</button>
                 <button onclick="setM(2310)">2310</button>
+                <button onclick="setM(2520)">2520</button>
+                <button onclick="setM(5040)">5040</button>
+            </div>
+            <div style="display: flex; gap:10px; margin-top:15px;">
+                <button id="btn-anim" style="flex:1" onclick="toggleAnim()">▶ Sequence</button>
+                <button style="flex:1" onclick="toggleView()">Mode: <span id="lbl-view">Projection</span></button>
             </div>
         </div>
 
-        <div class="stats-panel" id="global-stats">
+        <div class="section">
+            <div class="section-title">Analysis</div>
+            <table class="data-table">
+                <tr><td>Euler Totient φ(M)</td><td class="val" id="stat-phi">-</td></tr>
+                <tr><td>Active Channels</td><td class="val" id="stat-channels">-</td></tr>
+                <tr><td>Prime Factors</td><td class="val" id="stat-factors">-</td></tr>
+                <tr><td>Reduction Depth</td><td class="val" id="stat-depth">-</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Legend</div>
+            <div class="legend-row">
+                <div class="swatch" style="background:#58a6ff"></div>
+                <div>Irreducible (Coprime)</div>
             </div>
-
-        <h2>Visualization</h2>
-        <div class="control-group">
-            <label>View Mode</label>
-            <div class="presets" style="grid-template-columns: 1fr 1fr;">
-                <button id="btn-view-projection" class="active" onclick="setView('projection')">Projection</button>
-                <button id="btn-view-rings" onclick="setView('rings')">Rings</button>
+            <div class="legend-row">
+                <div class="swatch" style="background:#ff6b6b"></div>
+                <div>Reducible Residues</div>
+            </div>
+            <div class="legend-row">
+                <div class="swatch" style="background:#ffd700"></div>
+                <div>Center Well (M' = 1)</div>
+            </div>
+            <div class="legend-row">
+                <div class="swatch" style="border: 1px solid #30363d; background: transparent"></div>
+                <div>Farey Channel Rings</div>
+            </div>
+            <div style="margin-top:10px; font-size: 0.75rem; color: #8b949e; line-height: 1.4;">
+                <strong>d = gcd(r, M)</strong>: Reduction Factor<br>
+                <strong>M' = M/d</strong>: Target Channel<br>
+                <strong>Pop = φ(M')</strong>: Channel Capacity
             </div>
         </div>
 
-        <div class="control-group">
-            <label>Color Scheme</label>
-            <select id="color-scheme" style="background:var(--bg-color); color:white; padding:5px; border:1px solid var(--border);">
-                <option value="channel">By Channel (M')</option>
-                <option value="gcd">By Reduction Factor (d)</option>
-                <option value="prime">By Smallest Prime Factor</option>
-            </select>
+        <div class="section">
+            <div class="section-title">Export Data</div>
+            <div class="export-box">
+                <div style="margin-bottom:8px; font-weight:600; font-size:0.9rem;">Generate Figure</div>
+                <div class="export-options">
+                    <button onclick="exportPNG('2k')">PNG 2K</button>
+                    <button class="primary" onclick="exportPNG('4k')">PNG 4K</button>
+                </div>
+                <div style="margin-top:15px; font-weight:600; font-size:0.9rem;">Dataset</div>
+                <div class="export-options">
+                    <button onclick="exportCSV()">Download CSV</button>
+                </div>
+            </div>
         </div>
 
-        <div class="control-group">
-            <label>Line Opacity <span id="val-opacity">0.3</span></label>
-            <input type="range" id="slider-opacity" min="0" max="1" step="0.05" value="0.3">
-        </div>
-
-        <div class="control-group">
-            <label>Animation</label>
-            <button id="btn-animate" onclick="toggleAnimation()">Play Sequence</button>
-        </div>
-
-        <div style="margin-top: auto; font-size: 0.75rem; color: var(--text-muted);">
-            <strong>Corrected Math:</strong><br>
-            Channel Pop = &phi;(M')<br>
-            Reduction Factor = M/M'
-        </div>
-    </div>
-
-    <div id="canvas-container">
-        <canvas id="vizCanvas"></canvas>
-        <div id="tooltip"></div>
-        <div class="legend">
-            <div class="legend-item"><div class="dot" style="background:#58a6ff"></div>Irreducible (M' = M)</div>
-            <div class="legend-item"><div class="dot" style="background:#ff6b6b"></div>Reducible</div>
-            <div class="legend-item"><div class="dot" style="background:#ffd700"></div>Center (M' = 1)</div>
+        <div class="footer">
+            Tool by Wessen Getachew<br>
+            Composite Channel Projection Corollary
         </div>
     </div>
 
 <script>
 /**
- * MATHEMATICAL CORE
- * Optimized for performance up to M=5000
+ * MATHEMATICAL KERNEL
  */
-
 const MathCore = {
     gcd: (a, b) => {
         while (b) { [a, b] = [b, a % b]; }
         return a;
     },
 
-    // Euler's Totient Function
     phi: (n) => {
         let result = n;
         for (let i = 2; i * i <= n; i++) {
@@ -223,385 +263,390 @@ const MathCore = {
         return result;
     },
 
-    getSmallestPrimeFactor: (n) => {
-        if (n === 0 || n === 1) return 0;
-        if (n % 2 === 0) return 2;
-        if (n % 3 === 0) return 3;
-        for (let i = 5; i * i <= n; i += 6) {
-            if (n % i === 0) return i;
-            if (n % (i + 2) === 0) return i + 2;
-        }
-        return n;
-    },
-
-    getPrimeFactors: (n) => {
-        const factors = new Set();
-        let d = 2;
-        let temp = n;
+    getFactors: (n) => {
+        const f = new Set();
+        let d = 2, temp = n;
         while (d * d <= temp) {
-            if (temp % d === 0) {
-                factors.add(d);
-                temp /= d;
-            } else {
-                d++;
-            }
+            if (temp % d === 0) { f.add(d); temp /= d; } else { d++; }
         }
-        if (temp > 1) factors.add(temp);
-        return Array.from(factors);
+        if (temp > 1) f.add(temp);
+        return Array.from(f).join(" × ");
     }
 };
 
 /**
- * APPLICATION STATE & CONFIG
+ * STATE MANAGEMENT
  */
 const State = {
     M: 60,
-    viewMode: 'projection', // 'projection' or 'rings'
-    colorScheme: 'channel',
-    opacity: 0.3,
+    viewMode: 'projection', // 'projection' | 'rings'
     isAnimating: false,
-    animationId: null,
-    
-    // Calculated Data
     residues: [],
-    channels: {}, // Map of M_prime -> { count, d, radius }
-    sortedChannels: [] // Array of M_prime sorted by size
+    channels: [],
+    stats: {}
 };
 
 /**
- * DATA GENERATION
+ * DATA PROCESSING
  */
-function calculateData() {
+function computeData() {
     const M = State.M;
     State.residues = [];
-    State.channels = {};
+    const channelMap = {};
 
-    // 1. Generate Residues and identify Channels
+    // Generate Residues
     for (let r = 0; r < M; r++) {
-        // Special case for 0: acts as M
-        const effectiveR = (r === 0) ? M : r;
+        // Correct handling for r=0 mapping to r=M effectively in modular rings
+        const effectiveR = r === 0 ? M : r;
         const d = MathCore.gcd(effectiveR, M);
-        const M_prime = M / d; // The Channel
-        const r_prime = effectiveR / d; // Reduced numerator
+        const m_prime = M / d;
 
-        // Register Channel
-        if (!State.channels[M_prime]) {
-            State.channels[M_prime] = {
-                val: M_prime,
-                d: d, // Reduction factor
-                residues: [],
-                population: MathCore.phi(M_prime) // THE FIX: Using Totient
+        if (!channelMap[m_prime]) {
+            channelMap[m_prime] = {
+                val: m_prime,
+                d: d,
+                pop: MathCore.phi(m_prime),
+                residues: []
             };
         }
-        
-        // Store Residue
-        const residueObj = {
+
+        const res = {
             r: r,
+            r_eff: effectiveR,
             d: d,
-            M_prime: M_prime,
-            r_prime: r_prime,
-            angle: (r / M) * Math.PI * 2 - (Math.PI / 2), // Start at top
-            spf: MathCore.getSmallestPrimeFactor(d > 1 ? d : M),
-            isCoprime: (d === 1)
+            m_prime: m_prime,
+            angle: (r / M) * Math.PI * 2 - (Math.PI/2),
+            isCoprime: d === 1
         };
 
-        State.residues.push(residueObj);
-        State.channels[M_prime].residues.push(residueObj);
+        State.residues.push(res);
+        channelMap[m_prime].residues.push(res);
     }
 
-    // 2. Sort Channels for Visual Layout
-    // We sort by M_prime. M_prime=1 (center) to M_prime=M (outer)
-    State.sortedChannels = Object.values(State.channels).sort((a, b) => a.val - b.val);
-    
-    // 3. Assign Visual Radii
-    // Logic: Distributed evenly between inner padding and outer edge
-    const totalChannels = State.sortedChannels.length;
-    State.sortedChannels.forEach((ch, index) => {
-        // Normalized radius 0 to 1
-        // If M_prime is 1, it's at the center (index 0)
-        // If M_prime is M, it's at the edge
-        ch.radiusPct = (index + 1) / (totalChannels + 1); // +1 padding
-        
-        // Override for visual clarity in 'projection' mode
-        // The outer ring is always max radius
-        if (ch.val === M) ch.radiusPct = 1.0;
-        // The center point
-        if (ch.val === 1) ch.radiusPct = 0.05; 
-    });
+    // Sort Channels (Center M'=1 to Outer M'=M)
+    State.channels = Object.values(channelMap).sort((a,b) => a.val - b.val);
 
-    updateStatsUI();
-}
-
-function updateStatsUI() {
-    const phi = MathCore.phi(State.M);
-    const distinctPrimes = MathCore.getPrimeFactors(State.M).join(" × ");
+    // Update Text UI
+    document.getElementById('disp-title').innerText = `Modulus M = ${M}`;
+    document.getElementById('disp-subtitle').innerText = `Prime Factorization: ${MathCore.getFactors(M)}`;
     
-    let html = `
-        <div><strong>M = ${State.M}</strong></div>
-        <div>Factors: ${distinctPrimes}</div>
-        <div>φ(M): ${phi} (Coprimes)</div>
-        <div>Channels: ${State.sortedChannels.length}</div>
-        <div style="margin-top:5px; border-top:1px solid #444; padding-top:5px;">
-            <small>Hover chart for details</small>
-        </div>
-    `;
-    document.getElementById('global-stats').innerHTML = html;
+    document.getElementById('stat-phi').innerText = MathCore.phi(M);
+    document.getElementById('stat-channels').innerText = State.channels.length;
+    document.getElementById('stat-factors').innerText = MathCore.getFactors(M);
+    document.getElementById('stat-depth').innerText = "Max " + State.channels[0].d;
+
+    // Trigger Render
+    requestAnimationFrame(() => renderScreen());
 }
 
 /**
- * RENDERING ENGINE
+ * RENDERING ENGINE (Abstracted)
+ * Draws to ANY context (Screen or Export)
  */
-const canvas = document.getElementById('vizCanvas');
-const ctx = canvas.getContext('2d', { alpha: false }); // Optimization
-let centerX, centerY, maxRadius;
-
-function resize() {
-    const container = document.getElementById('canvas-container');
-    canvas.width = container.clientWidth;
-    canvas.height = container.clientHeight;
-    centerX = canvas.width / 2;
-    centerY = canvas.height / 2;
-    maxRadius = Math.min(centerX, centerY) - 40;
-    render();
-}
-
-function getColor(residue) {
-    const scheme = State.colorScheme;
+function drawScene(ctx, width, height, isExport = false) {
+    const cx = width / 2;
+    const cy = height / 2;
+    // Export needs padding for title/legend, screen is tight
+    const size = Math.min(width, height);
+    const maxR = isExport ? size * 0.35 : size * 0.42; 
     
-    if (scheme === 'channel') {
-        // Color based on the Channel (M_prime)
-        // Map index to hue
-        const chIndex = State.sortedChannels.findIndex(c => c.val === residue.M_prime);
-        const hue = (chIndex / State.sortedChannels.length) * 300;
-        if (residue.M_prime === 1) return '#ffd700'; // Gold for center
-        if (residue.M_prime === State.M) return '#58a6ff'; // Blue for outer
-        return `hsl(${hue}, 70%, 60%)`;
-    } 
-    else if (scheme === 'gcd') {
-        // Color based on GCD value
-        if (residue.d === 1) return '#58a6ff';
-        return `hsl(${(residue.d * 137.5) % 360}, 70%, 60%)`;
-    }
-    else if (scheme === 'prime') {
-        const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23];
-        const colors = ['#ff6b6b', '#51cf66', '#fcc419', '#339af0', '#cc5de8', '#ff922b'];
-        const pIndex = primes.indexOf(residue.spf);
-        if (pIndex === -1) return '#868e96';
-        return colors[pIndex % colors.length];
-    }
-    return '#fff';
-}
-
-function render() {
     // Background
-    ctx.fillStyle = '#0f1115';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = isExport ? '#0d1117' : '#000000'; // Slightly lighter black for print
+    ctx.fillRect(0, 0, width, height);
 
-    if (!State.sortedChannels.length) return;
+    if (State.channels.length === 0) return;
 
-    // 1. Draw Channel Rings
-    State.sortedChannels.forEach(ch => {
-        const r = ch.radiusPct * maxRadius;
+    // 1. Draw Rings
+    State.channels.forEach((ch, i) => {
+        // Calculate Radius based on index
+        // Ring 0 (M'=1) is center. Ring N (M'=M) is maxR.
+        // We use a non-linear scale to separate the inner rings better
+        const pct = (i + 1) / (State.channels.length + 1);
+        let r = pct * maxR;
         
+        // Force M ring to edge, M'=1 ring to center
+        if (ch.val === State.M) r = maxR;
+        if (ch.val === 1) r = maxR * 0.05;
+
+        ch.renderRadius = r; // Store for point projection
+
         ctx.beginPath();
-        ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
-        ctx.strokeStyle = '#30363d';
-        ctx.lineWidth = 1;
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.strokeStyle = '#21262d';
+        ctx.lineWidth = isExport ? 2 : 1;
         ctx.stroke();
 
-        // Label the ring if space permits
-        if (State.sortedChannels.length < 15 || ch.val === State.M || ch.val === 1) {
-            ctx.fillStyle = '#8b949e';
-            ctx.font = '10px monospace';
-            ctx.fillText(`M'=${ch.val}`, centerX + 5, centerY - r - 2);
+        // Ring Labels (Only on export or if sparse)
+        if (isExport || State.channels.length < 15) {
+            ctx.fillStyle = '#484f58';
+            ctx.font = isExport ? '24px monospace' : '10px monospace';
+            ctx.fillText(ch.val, cx + 5, cy - r - 5);
         }
     });
 
-    // 2. Draw Projections / Points
-    ctx.lineWidth = 1;
+    // 2. Draw Connections & Points
+    const opacity = Math.max(0.1, 30 / State.M); // Dynamic opacity
     
     State.residues.forEach(res => {
-        // Origin coordinates (Outer Ring)
-        const outerR = maxRadius;
-        const x1 = centerX + Math.cos(res.angle) * outerR;
-        const y1 = centerY + Math.sin(res.angle) * outerR;
+        // Source Coords (Outer Ring)
+        const outerR = maxR;
+        const sx = cx + Math.cos(res.angle) * outerR;
+        const sy = cy + Math.sin(res.angle) * outerR;
 
-        // Destination coordinates (Channel Ring)
-        // In 'rings' mode, the point stays on its channel ring
-        // In 'projection' mode, we draw a line from outer to channel
-        
-        const chObj = State.channels[res.M_prime];
-        const destR = chObj.radiusPct * maxRadius;
-        
-        // Angle logic: 
-        // In standard view, angle is fixed by r/M.
-        // In Ring view, we might want to rotate relative to M' but let's keep it simple first.
-        const x2 = centerX + Math.cos(res.angle) * destR;
-        const y2 = centerY + Math.sin(res.angle) * destR;
+        // Dest Coords (Channel Ring)
+        const ch = State.channels.find(c => c.val === res.m_prime);
+        const dr = ch.renderRadius;
+        const dx = cx + Math.cos(res.angle) * dr;
+        const dy = cy + Math.sin(res.angle) * dr;
 
-        const color = getColor(res);
+        // Color Logic
+        let color = '#58a6ff'; // Coprime Blue
+        if (!res.isCoprime) color = '#ff6b6b'; // Reducible Red
+        if (res.m_prime === 1) color = '#ffd700'; // Gold Center
 
+        // Draw Line (Projection Mode only)
         if (State.viewMode === 'projection' && res.d > 1) {
-            // Draw Line
             ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
+            ctx.moveTo(sx, sy);
+            ctx.lineTo(dx, dy);
             ctx.strokeStyle = color;
-            ctx.globalAlpha = State.opacity;
+            ctx.globalAlpha = isExport ? opacity * 1.5 : opacity;
+            ctx.lineWidth = isExport ? 2 : 1;
             ctx.stroke();
             ctx.globalAlpha = 1.0;
         }
 
-        // Draw Point at destination
-        const pointSize = (res.M_prime === State.M) ? 2 : 3;
+        // Draw Point (Destination)
+        const pSize = isExport ? (res.isCoprime ? 6 : 8) : (res.isCoprime ? 2 : 3);
         ctx.beginPath();
-        ctx.arc(x2, y2, pointSize, 0, Math.PI * 2);
+        ctx.arc(dx, dy, pSize, 0, Math.PI * 2);
         ctx.fillStyle = color;
         ctx.fill();
-
-        // Save coordinates for hover detection
-        res.hitX = x2;
-        res.hitY = y2;
-        res.hitR = pointSize + 2; // Hit radius
+        
+        // Store hit data if screen render
+        if (!isExport) {
+            res.hit = {x: dx, y: dy, r: pSize + 2};
+        }
     });
 }
 
 /**
- * INTERACTIVITY
+ * SCREEN RENDERER
  */
-function handleInteraction(e) {
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
+const canvas = document.getElementById('vizCanvas');
+const ctx = canvas.getContext('2d');
 
-    // Find closest point
-    let minDist = 10;
-    let target = null;
-
-    // Optimization: Iterate backward (draw order) or use quadtree for huge N
-    // Simple iteration is fine for N < 5000 on modern CPU
-    for (let i = 0; i < State.residues.length; i++) {
-        const res = State.residues[i];
-        const dx = mx - res.hitX;
-        const dy = my - res.hitY;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        
-        if (dist < minDist) {
-            minDist = dist;
-            target = res;
-        }
-    }
-
-    const tooltip = document.getElementById('tooltip');
-    
-    if (target) {
-        tooltip.style.display = 'block';
-        tooltip.style.left = (e.clientX + 15) + 'px';
-        tooltip.style.top = (e.clientY + 15) + 'px';
-        
-        const ch = State.channels[target.M_prime];
-        
-        tooltip.innerHTML = `
-            <span style="color:${getColor(target)}; font-weight:bold">r = ${target.r}</span> (mod ${State.M})
-            <hr style="border:0; border-top:1px solid #444; margin:4px 0">
-            <strong>Projection:</strong>
-            ${target.r}/${State.M} → <span style="color:var(--accent)">${target.r_prime}/${target.M_prime}</span>
-            <br>
-            <strong>Analysis:</strong>
-            GCD (Reduction): ${target.d}
-            Target Channel: M'=${target.M_prime}
-            <br>
-            <span style="font-size:0.8em; color:#8b949e">
-            Channel Population: ${ch.population} (φ(${target.M_prime}))
-            Channel Multiplicity: ${ch.d} (M/M')
-            </span>
-        `;
-        
-        // Highlight this specific line if in projection mode
-        if (State.viewMode === 'projection') {
-            requestAnimationFrame(() => {
-                render(); // clear
-                // Draw highlight
-                ctx.beginPath();
-                ctx.moveTo(centerX + Math.cos(target.angle) * maxRadius, centerY + Math.sin(target.angle) * maxRadius);
-                ctx.lineTo(target.hitX, target.hitY);
-                ctx.strokeStyle = 'white';
-                ctx.lineWidth = 2;
-                ctx.globalAlpha = 1;
-                ctx.stroke();
-                ctx.lineWidth = 1;
-            });
-        }
-    } else {
-        tooltip.style.display = 'none';
-        // Only re-render if we were highlighting something
-        // (Debounce this in prod)
-        render();
-    }
+function renderScreen() {
+    canvas.width = canvas.parentElement.offsetWidth;
+    canvas.height = canvas.parentElement.offsetHeight;
+    drawScene(ctx, canvas.width, canvas.height, false);
 }
 
 /**
- * EVENT LISTENERS & CONTROLS
+ * EXPORT: PNG GENERATOR (High Res)
  */
-document.getElementById('input-m').addEventListener('change', (e) => setM(parseInt(e.target.value)));
-document.getElementById('slider-m').addEventListener('input', (e) => setM(parseInt(e.target.value)));
+function exportPNG(res) {
+    const size = res === '4k' ? 4096 : 2048;
+    const exportCanvas = document.createElement('canvas');
+    exportCanvas.width = size;
+    exportCanvas.height = size * 0.75; // 4:3 Aspect Ratio for Papers
+    const eCtx = exportCanvas.getContext('2d');
 
-document.getElementById('slider-opacity').addEventListener('input', (e) => {
-    State.opacity = parseFloat(e.target.value);
-    document.getElementById('val-opacity').innerText = State.opacity;
-    render();
-});
+    // 1. Draw The Scene
+    // We offset the scene to the left to make room for Legend
+    const sceneWidth = size * 0.75; 
+    
+    // Fill Background
+    eCtx.fillStyle = '#0d1117';
+    eCtx.fillRect(0,0, size, size * 0.75);
 
-document.getElementById('color-scheme').addEventListener('change', (e) => {
-    State.colorScheme = e.target.value;
-    render();
-});
+    // Render Viz
+    drawScene(eCtx, sceneWidth, size * 0.75, true);
 
-canvas.addEventListener('mousemove', handleInteraction);
-window.addEventListener('resize', resize);
+    // 2. Draw "Paper" Meta Data
+    const margin = size * 0.05;
+    const textX = sceneWidth; 
+    
+    // Title Block
+    eCtx.fillStyle = '#f0f6fc';
+    eCtx.font = `bold ${size*0.04}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto`;
+    eCtx.textAlign = "left";
+    eCtx.fillText(`Modulus M = ${State.M}`, textX, margin + (size*0.05));
 
+    eCtx.fillStyle = '#8b949e';
+    eCtx.font = `${size*0.02}px monospace`;
+    eCtx.fillText(`Prime Factors: ${MathCore.getFactors(State.M)}`, textX, margin + (size*0.08));
+
+    // Stats Block
+    let y = margin + (size * 0.15);
+    const lineHeight = size * 0.025;
+    
+    eCtx.fillStyle = '#58a6ff';
+    eCtx.font = `bold ${size*0.018}px sans-serif`;
+    eCtx.fillText("STATISTICS", textX, y);
+    y += lineHeight * 1.5;
+
+    eCtx.fillStyle = '#f0f6fc';
+    eCtx.font = `${size*0.018}px monospace`;
+    eCtx.fillText(`φ(M) Count: ${MathCore.phi(State.M)}`, textX, y); y += lineHeight;
+    eCtx.fillText(`Channels:   ${State.channels.length}`, textX, y); y += lineHeight;
+    eCtx.fillText(`Max Depth:  ${State.channels[0].d}`, textX, y);
+
+    // Legend Block
+    y += lineHeight * 3;
+    eCtx.fillStyle = '#58a6ff';
+    eCtx.font = `bold ${size*0.018}px sans-serif`;
+    eCtx.fillText("LEGEND", textX, y);
+    y += lineHeight * 1.5;
+
+    function drawLegendItem(color, text) {
+        eCtx.fillStyle = color;
+        eCtx.beginPath();
+        eCtx.arc(textX + (size*0.008), y - (size*0.006), size*0.008, 0, Math.PI*2);
+        eCtx.fill();
+        
+        eCtx.fillStyle = '#c9d1d9';
+        eCtx.font = `${size*0.018}px sans-serif`;
+        eCtx.fillText(text, textX + (size*0.03), y);
+        y += lineHeight * 1.5;
+    }
+
+    drawLegendItem('#58a6ff', `Irreducible (Coprime)`);
+    drawLegendItem('#ff6b6b', `Reducible Residue`);
+    drawLegendItem('#ffd700', `Center (M'=1)`);
+    
+    y += lineHeight;
+    eCtx.fillStyle = '#8b949e';
+    eCtx.font = `italic ${size*0.015}px sans-serif`;
+    eCtx.fillText("Projection logic based on", textX, y); y += lineHeight;
+    eCtx.fillText("Composite Channel Corollary.", textX, y);
+
+    // Footer / Signature
+    eCtx.fillStyle = '#30363d';
+    eCtx.fillRect(textX, size*0.75 - margin - (size*0.04), size*0.2, 2);
+    
+    eCtx.fillStyle = '#8b949e';
+    eCtx.font = `${size*0.018}px sans-serif`;
+    eCtx.fillText("Analysis by", textX, size*0.75 - margin);
+    eCtx.fillStyle = '#f0f6fc';
+    eCtx.font = `bold ${size*0.02}px sans-serif`;
+    eCtx.fillText("Wessen Getachew", textX, size*0.75 - margin + (size*0.025));
+
+    // 3. Download
+    const link = document.createElement('a');
+    link.download = `Projection_M${State.M}_${res}.png`;
+    link.href = exportCanvas.toDataURL('image/png');
+    link.click();
+}
+
+/**
+ * EXPORT: CSV DATASET
+ */
+function exportCSV() {
+    let csv = "Residue_r,Modulus_M,GCD_d,Channel_M_Prime,Reduced_Fraction,Angle_Rad,Type\n";
+    
+    State.residues.forEach(r => {
+        const type = r.isCoprime ? "Irreducible" : "Reducible";
+        const frac = `${r.r/r.d}/${r.m_prime}`;
+        csv += `${r.r},${State.M},${r.d},${r.m_prime},${frac},${r.angle.toFixed(4)},${type}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Channel_Data_M${State.M}.csv`;
+    link.click();
+}
+
+/**
+ * UI INTERACTION
+ */
 function setM(val) {
-    if (val < 2) val = 2;
-    if (val > 5000) val = 5000;
-    State.M = val;
-    
-    // Sync Inputs
-    document.getElementById('input-m').value = val;
-    document.getElementById('slider-m').value = val;
-    
-    calculateData();
-    render();
+    State.M = parseInt(val);
+    document.getElementById('input-m').value = State.M;
+    document.getElementById('slider-m').value = State.M;
+    computeData();
 }
 
-function setView(mode) {
-    State.viewMode = mode;
-    document.getElementById('btn-view-projection').className = mode === 'projection' ? 'active' : '';
-    document.getElementById('btn-view-rings').className = mode === 'rings' ? 'active' : '';
-    render();
+document.getElementById('input-m').addEventListener('change', e => setM(e.target.value));
+document.getElementById('slider-m').addEventListener('input', e => setM(e.target.value));
+
+// View Toggle
+function toggleView() {
+    State.viewMode = State.viewMode === 'projection' ? 'rings' : 'projection';
+    document.getElementById('lbl-view').innerText = State.viewMode === 'projection' ? 'Projection' : 'Rings';
+    renderScreen();
 }
 
-function toggleAnimation() {
-    const btn = document.getElementById('btn-animate');
+// Animation
+let animInterval;
+function toggleAnim() {
+    const btn = document.getElementById('btn-anim');
     if (State.isAnimating) {
+        clearInterval(animInterval);
         State.isAnimating = false;
-        clearInterval(State.animationId);
-        btn.innerText = "Play Sequence";
-        btn.className = "";
+        btn.innerHTML = "▶ Sequence";
+        btn.classList.remove('active');
     } else {
         State.isAnimating = true;
-        btn.innerText = "Stop";
-        btn.className = "active";
-        State.animationId = setInterval(() => {
-            let nextM = parseInt(State.M) + 1;
-            if (nextM > 1000) nextM = 4;
-            setM(nextM);
-        }, 150); // Speed
+        btn.innerHTML = "⏹ Stop";
+        btn.classList.add('active');
+        animInterval = setInterval(() => {
+            let next = State.M + 1;
+            if (next > 2520) next = 4;
+            setM(next);
+        }, 100);
     }
 }
 
-// Initialize
-resize();
-calculateData(); // Initial calc for M=60
+// Tooltip Interaction
+canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Find nearest point
+    let minD = 1000;
+    let target = null;
+    
+    // Reverse search for layers on top
+    for(let i=State.residues.length-1; i>=0; i--) {
+        const r = State.residues[i];
+        if (!r.hit) continue;
+        const dist = Math.sqrt(Math.pow(x - r.hit.x, 2) + Math.pow(y - r.hit.y, 2));
+        if (dist < r.hit.r + 2 && dist < minD) {
+            minD = dist;
+            target = r;
+        }
+    }
+
+    const tt = document.getElementById('tooltip');
+    if (target) {
+        tt.style.display = 'block';
+        tt.style.left = (e.clientX + 15) + 'px';
+        tt.style.top = (e.clientY + 15) + 'px';
+        tt.innerHTML = `
+            <div style="color:${target.isCoprime?'#58a6ff':'#ff6b6b'}; font-weight:bold; margin-bottom:4px;">
+                Residue r = ${target.r}
+            </div>
+            <div style="font-family:monospace; font-size:0.8em; color:#8b949e">
+                Fraction: ${target.r}/${State.M}<br>
+                Reduces:  ${target.r/target.d}/${target.m_prime}<br>
+                GCD (d):  ${target.d}
+            </div>
+            <div style="margin-top:4px; border-top:1px solid #30363d; padding-top:4px; color:#f0f6fc">
+                Channel M' = ${target.m_prime}
+            </div>
+        `;
+    } else {
+        tt.style.display = 'none';
+    }
+});
+
+// Init
+window.addEventListener('resize', renderScreen);
+computeData();
 
 </script>
 </body>
