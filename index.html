@@ -950,25 +950,296 @@
         // Exports
         function exportPNG() {
             const res = parseInt(document.getElementById('exportRes').value);
+            const titleHeight = res * 0.12;
+            const vizWidth = res * 0.70;
+            const legendWidth = res * 0.30;
+            const vizHeight = res - titleHeight;
+            
             const canvas = document.createElement('canvas');
             canvas.width = res;
             canvas.height = res;
             const ctx = canvas.getContext('2d');
             
+            // Background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, res, res);
+            
+            // === TITLE SECTION ===
+            ctx.fillStyle = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            const gradient = ctx.createLinearGradient(0, 0, res, 0);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, res, titleHeight);
+            
+            // Title
+            ctx.font = `bold ${titleHeight * 0.35}px Georgia, serif`;
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText('Modular Reduction Projection Research Portal', res / 2, titleHeight * 0.15);
+            
+            // Subtitle - Modulus
+            ctx.font = `bold ${titleHeight * 0.25}px Georgia, serif`;
+            ctx.fillStyle = '#ffd700';
+            ctx.fillText(`M = ${config.M}`, res / 2, titleHeight * 0.55);
+            
+            // Factorization
+            const factors = primeFactorization(config.M);
+            ctx.font = `${titleHeight * 0.18}px Georgia, serif`;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(formatFactorization(factors), res / 2, titleHeight * 0.82);
+            
+            // === VISUALIZATION SECTION ===
+            const vizCanvas = document.createElement('canvas');
+            vizCanvas.width = vizWidth;
+            vizCanvas.height = vizHeight;
+            const vizCtx = vizCanvas.getContext('2d');
+            
+            // Black background for viz
+            vizCtx.fillStyle = '#000000';
+            vizCtx.fillRect(0, 0, vizWidth, vizHeight);
+            
+            // Render SVG to canvas
             const svgData = new XMLSerializer().serializeToString(document.getElementById('vizSVG'));
             const img = new Image();
             const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             
             img.onload = () => {
-                ctx.fillStyle = '#000';
-                ctx.fillRect(0, 0, res, res);
-                ctx.drawImage(img, 0, 0, res, res);
+                const vizSize = Math.min(vizWidth, vizHeight);
+                const offsetX = (vizWidth - vizSize) / 2;
+                const offsetY = (vizHeight - vizSize) / 2;
+                vizCtx.drawImage(img, offsetX, offsetY, vizSize, vizSize);
                 URL.revokeObjectURL(url);
                 
+                // Draw viz to main canvas
+                ctx.drawImage(vizCanvas, 0, titleHeight);
+                
+                // === LEGEND PANEL ===
+                const lx = vizWidth;
+                const ly = titleHeight;
+                
+                // Legend background
+                ctx.fillStyle = '#f8f9fa';
+                ctx.fillRect(lx, ly, legendWidth, vizHeight);
+                
+                // Legend border
+                ctx.strokeStyle = '#667eea';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(lx, ly, legendWidth, vizHeight);
+                
+                // Legend content
+                let yPos = ly + res * 0.025;
+                const leftMargin = lx + res * 0.02;
+                const rightMargin = lx + legendWidth - res * 0.02;
+                const fontSize = res * 0.012;
+                const lineHeight = res * 0.020;
+                const sectionGap = res * 0.030;
+                
+                ctx.textAlign = 'left';
+                
+                // === HEADER ===
+                ctx.font = `bold ${fontSize * 1.4}px Georgia, serif`;
+                ctx.fillStyle = '#667eea';
+                ctx.fillText('Statistical Analysis', leftMargin, yPos);
+                yPos += lineHeight * 1.8;
+                
+                // Divider line
+                ctx.strokeStyle = '#667eea';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(leftMargin, yPos);
+                ctx.lineTo(rightMargin, yPos);
+                ctx.stroke();
+                yPos += sectionGap;
+                
+                // === MODULUS PROPERTIES ===
+                ctx.font = `bold ${fontSize * 1.1}px Arial, sans-serif`;
+                ctx.fillStyle = '#34495e';
+                ctx.fillText('Modulus Properties', leftMargin, yPos);
+                yPos += lineHeight * 1.3;
+                
+                ctx.font = `${fontSize * 0.9}px Arial, sans-serif`;
+                ctx.fillStyle = '#555555';
+                
+                const M = config.M;
+                const phiM = phi(M);
+                const omegaM = omega(M);
+                const divisors = getDivisors(M);
+                const isPrimeM = isPrime(M);
+                
+                const modProps = [
+                    `Modulus (M): ${M}`,
+                    `Euler's Totient φ(M): ${phiM}`,
+                    `Distinct Prime Factors ω(M): ${omegaM}`,
+                    `Total Divisors τ(M): ${divisors.length}`,
+                    `Classification: ${isPrimeM ? 'Prime Number' : 'Composite Number'}`,
+                    `Prime Factorization: ${formatFactorization(factors)}`
+                ];
+                
+                modProps.forEach(prop => {
+                    ctx.fillText(prop, leftMargin + fontSize * 0.5, yPos);
+                    yPos += lineHeight * 0.95;
+                });
+                yPos += sectionGap * 0.7;
+                
+                // === RESIDUE DISTRIBUTION ===
+                ctx.font = `bold ${fontSize * 1.1}px Arial, sans-serif`;
+                ctx.fillStyle = '#34495e';
+                ctx.fillText('Residue Distribution', leftMargin, yPos);
+                yPos += lineHeight * 1.3;
+                
+                ctx.font = `${fontSize * 0.9}px Arial, sans-serif`;
+                ctx.fillStyle = '#555555';
+                
+                const coprime = points.filter(p => p.coprime).length;
+                const nonCoprime = M - coprime;
+                const density = (phiM / M * 100).toFixed(2);
+                
+                const distProps = [
+                    `Total Residues: ${M}`,
+                    `Coprime Residues: ${coprime}`,
+                    `Non-coprime Residues: ${nonCoprime}`,
+                    `Coprime Density: ${density}%`,
+                    `Reduction Ratio: ${coprime}:${nonCoprime}`
+                ];
+                
+                distProps.forEach(prop => {
+                    ctx.fillText(prop, leftMargin + fontSize * 0.5, yPos);
+                    yPos += lineHeight * 0.95;
+                });
+                yPos += sectionGap * 0.7;
+                
+                // === COLOR SCHEME LEGEND ===
+                ctx.font = `bold ${fontSize * 1.1}px Arial, sans-serif`;
+                ctx.fillStyle = '#34495e';
+                ctx.fillText('Color Scheme', leftMargin, yPos);
+                yPos += lineHeight * 1.3;
+                
+                ctx.font = `${fontSize * 0.85}px Arial, sans-serif`;
+                ctx.fillStyle = '#555555';
+                
+                const colorSchemeNames = {
+                    'type': 'Coprime vs Non-coprime',
+                    'spf': 'Smallest Prime Factor',
+                    'lpf': 'Largest Prime Factor',
+                    'gcd': 'GCD Value Gradient',
+                    'depth': 'Channel Depth',
+                    'rainbow': 'Rainbow Spectrum'
+                };
+                
+                ctx.fillText(`Mode: ${colorSchemeNames[config.colorScheme]}`, leftMargin + fontSize * 0.5, yPos);
+                yPos += lineHeight * 1.2;
+                
+                if (config.colorScheme === 'type') {
+                    // Coprime color swatch
+                    ctx.fillStyle = '#00ffff';
+                    ctx.fillRect(leftMargin + fontSize * 0.5, yPos - fontSize * 0.6, fontSize * 1.2, fontSize * 1.2);
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(leftMargin + fontSize * 0.5, yPos - fontSize * 0.6, fontSize * 1.2, fontSize * 1.2);
+                    ctx.fillStyle = '#555555';
+                    ctx.fillText('Coprime (GCD = 1)', leftMargin + fontSize * 2, yPos);
+                    yPos += lineHeight * 1.1;
+                    
+                    // Non-coprime color swatch
+                    ctx.fillStyle = '#ff1493';
+                    ctx.fillRect(leftMargin + fontSize * 0.5, yPos - fontSize * 0.6, fontSize * 1.2, fontSize * 1.2);
+                    ctx.strokeStyle = '#333';
+                    ctx.strokeRect(leftMargin + fontSize * 0.5, yPos - fontSize * 0.6, fontSize * 1.2, fontSize * 1.2);
+                    ctx.fillStyle = '#555555';
+                    ctx.fillText('Non-coprime (GCD > 1)', leftMargin + fontSize * 2, yPos);
+                    yPos += lineHeight * 1.1;
+                }
+                yPos += sectionGap * 0.7;
+                
+                // === REDUCTION CHANNELS ===
+                ctx.font = `bold ${fontSize * 1.1}px Arial, sans-serif`;
+                ctx.fillStyle = '#34495e';
+                ctx.fillText('Reduction Channels', leftMargin, yPos);
+                yPos += lineHeight * 1.3;
+                
+                ctx.font = `${fontSize * 0.9}px Arial, sans-serif`;
+                ctx.fillStyle = '#555555';
+                ctx.fillText(`Total Channels: ${channels.size}`, leftMargin + fontSize * 0.5, yPos);
+                yPos += lineHeight * 1.2;
+                
+                ctx.font = `${fontSize * 0.8}px Courier New, monospace`;
+                ctx.fillText('Top Channels by Population:', leftMargin + fontSize * 0.5, yPos);
+                yPos += lineHeight * 1.1;
+                
+                const topChannels = Array.from(channels.entries())
+                    .sort((a, b) => b[1].count - a[1].count)
+                    .slice(0, 7);
+                
+                topChannels.forEach(([m, ch]) => {
+                    ctx.fillText(`  M'=${m}: ${ch.count} points (×${ch.multiplicity})`, leftMargin + fontSize * 0.8, yPos);
+                    yPos += lineHeight * 0.9;
+                });
+                yPos += sectionGap * 0.7;
+                
+                // === PRIME CONSTELLATIONS ===
+                ctx.font = `bold ${fontSize * 1.1}px Arial, sans-serif`;
+                ctx.fillStyle = '#34495e';
+                ctx.fillText('Prime Constellations', leftMargin, yPos);
+                yPos += lineHeight * 1.3;
+                
+                ctx.font = `${fontSize * 0.85}px Arial, sans-serif`;
+                ctx.fillStyle = '#555555';
+                
+                const constellations = [
+                    { name: 'Twin Primes (gap 2)', count: gapPairs[2].length },
+                    { name: 'Cousin Primes (gap 4)', count: gapPairs[4].length },
+                    { name: 'Sexy Primes (gap 6)', count: gapPairs[6].length },
+                    { name: 'Gap 8 Pairs', count: gapPairs[8].length },
+                    { name: 'Gap 10 Pairs', count: gapPairs[10].length },
+                    { name: 'Gap 12 Pairs', count: gapPairs[12].length }
+                ];
+                
+                constellations.forEach(c => {
+                    ctx.fillText(`${c.name}: ${c.count}`, leftMargin + fontSize * 0.5, yPos);
+                    yPos += lineHeight * 0.95;
+                });
+                yPos += sectionGap * 0.7;
+                
+                // === VISUALIZATION PARAMETERS ===
+                ctx.font = `bold ${fontSize * 1.1}px Arial, sans-serif`;
+                ctx.fillStyle = '#34495e';
+                ctx.fillText('Visualization Parameters', leftMargin, yPos);
+                yPos += lineHeight * 1.3;
+                
+                ctx.font = `${fontSize * 0.85}px Arial, sans-serif`;
+                ctx.fillStyle = '#555555';
+                
+                const vizParams = [
+                    `Point Size: ${config.pointSize.toFixed(1)}`,
+                    `Line Opacity: ${(config.opacity * 100).toFixed(0)}%`,
+                    `Ring Spacing Factor: ${config.spacingFactor.toFixed(2)}`,
+                    `Minimum Ring (M'): ${config.minRing}`,
+                    `Projection Lines: ${config.showProjections ? 'Enabled' : 'Disabled'}`,
+                    `Channel Rings: ${config.showRings ? 'Enabled' : 'Disabled'}`,
+                    `Inner Ring Points: ${config.showInnerRings ? 'Enabled' : 'Disabled'}`
+                ];
+                
+                vizParams.forEach(param => {
+                    ctx.fillText(param, leftMargin + fontSize * 0.5, yPos);
+                    yPos += lineHeight * 0.95;
+                });
+                yPos += sectionGap;
+                
+                // === FOOTER ===
+                ctx.font = `${fontSize * 0.75}px Arial, sans-serif`;
+                ctx.fillStyle = '#999999';
+                ctx.textAlign = 'center';
+                const footerY = ly + vizHeight - res * 0.02;
+                ctx.fillText(`Generated: ${new Date().toLocaleString()}`, lx + legendWidth / 2, footerY);
+                ctx.fillText(`Resolution: ${res}×${res} pixels`, lx + legendWidth / 2, footerY + lineHeight * 0.8);
+                
+                // === DOWNLOAD ===
                 canvas.toBlob(blob => {
                     const a = document.createElement('a');
-                    a.download = `modular-M${config.M}-${res}px.png`;
+                    a.download = `modular-reduction-M${config.M}-${res}px.png`;
                     a.href = URL.createObjectURL(blob);
                     a.click();
                 });
@@ -1176,4 +1447,4 @@
         render();
     </script>
 </body>
-                        </html>
+</html>
