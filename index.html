@@ -651,7 +651,7 @@
 
     <nav class="tab-nav">
         <button class="tab-button active" onclick="switchTab('portal')">Interactive Portal</button>
-        <button class="tab-button" onclick="switchTab('chandelier')">3D Chandelier</button>
+        <button class="tab-button" onclick="switchTab('chandelier')">3D Divisor Lattice</button>
         <button class="tab-button" onclick="switchTab('theory')">Mathematical Theory</button>
         <button class="tab-button" onclick="switchTab('about')">About</button>
     </nav>
@@ -1236,6 +1236,184 @@
         </div>
     </div>
 
+    <!-- 3D FAREY DIVISOR LATTICE TAB -->
+    <div id="chandelier-tab" class="tab-content">
+        <div style="max-width: 1600px; margin: 2rem auto; padding: 0 2rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="color: #667eea; font-size: 2.5rem; margin-bottom: 0.5rem;">3D Farey Divisor Lattice</h1>
+                <p style="color: #666; font-size: 1.2rem; font-style: italic;">
+                    Hierarchical Structure of Modular Reduction in ℤ/Mℤ
+                </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 300px 1fr 300px; gap: 2rem; min-height: 800px;">
+                <!-- Left Panel -->
+                <div style="background: rgba(26, 26, 46, 0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(102, 126, 234, 0.3);">
+                    <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1rem;">Modulus</h3>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: #666;">M = <span id="chandM" style="color: #667eea; font-weight: bold;">30</span></label>
+                        <input type="range" id="chandMSlider" min="6" max="500" value="30" style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <input type="number" id="chandMInput" min="6" max="2000" value="30" 
+                               style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem;">
+                        <button onclick="setChandM(30)" style="padding: 0.5rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">30</button>
+                        <button onclick="setChandM(60)" style="padding: 0.5rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">60</button>
+                        <button onclick="setChandM(120)" style="padding: 0.5rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">120</button>
+                        <button onclick="setChandM(210)" style="padding: 0.5rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">210</button>
+                    </div>
+
+                    <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1rem;">3D Rotation</h3>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.3rem; font-size: 0.9rem; color: #666;">
+                            X-Tilt: <span id="chandXTiltVal" style="color: #667eea; font-weight: bold;">45</span>°
+                        </label>
+                        <input type="range" id="chandXTiltSlider" min="-90" max="90" value="45" style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.3rem; font-size: 0.9rem; color: #666;">
+                            Y-Rotation: <span id="chandYRotVal" style="color: #667eea; font-weight: bold;">0</span>°
+                        </label>
+                        <input type="range" id="chandYRotSlider" min="0" max="360" value="0" style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.3rem; font-size: 0.9rem; color: #666;">
+                            Z-Spin: <span id="chandZSpinVal" style="color: #667eea; font-weight: bold;">0</span>°
+                        </label>
+                        <input type="range" id="chandZSpinSlider" min="0" max="360" value="0" style="width: 100%;">
+                    </div>
+
+                    <button onclick="resetChandRotation()" style="width: 100%; padding: 0.7rem; background: #764ba2; color: white; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 1.5rem;">
+                        Reset Rotation
+                    </button>
+
+                    <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1rem;">Spacing</h3>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.3rem; font-size: 0.9rem; color: #666;">
+                            Vertical: <span id="chandVSpaceVal" style="color: #667eea; font-weight: bold;">1.0</span>
+                        </label>
+                        <input type="range" id="chandVSpaceSlider" min="0" max="200" value="100" style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.3rem; font-size: 0.9rem; color: #666;">
+                            Radial: <span id="chandRadScaleVal" style="color: #667eea; font-weight: bold;">1.0</span>
+                        </label>
+                        <input type="range" id="chandRadScaleSlider" min="50" max="150" value="100" style="width: 100%;">
+                    </div>
+
+                    <div style="background: rgba(102, 126, 234, 0.1); padding: 1rem; border-radius: 8px; margin-top: 1.5rem; font-size: 0.85rem; line-height: 1.6; color: #666;">
+                        <strong style="color: #667eea;">💡 Tip:</strong> Drag on canvas to rotate! Press Space for auto-rotate.
+                    </div>
+
+                    <div style="background: rgba(26, 26, 46, 0.05); padding: 1rem; border-radius: 8px; margin-top: 1rem; font-size: 0.8rem; line-height: 1.6; color: #666; border-left: 3px solid #667eea;">
+                        <strong style="color: #667eea;">Lattice Structure:</strong> The divisors of M form a partially ordered set (lattice) under divisibility. This visualization embeds the lattice vertically, with quotient rings ℤ/M'ℤ represented as horizontal layers. Farey chains connect each residue to its canonical representative under the reduction homomorphism.
+                    </div>
+                </div>
+
+                <!-- Center Canvas -->
+                <div style="background: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; position: relative; border: 2px solid #667eea;">
+                    <canvas id="chandelier-canvas" width="1200" height="1200" style="max-width: 100%; max-height: 100%; display: block;"></canvas>
+                    <div style="position: absolute; top: 1rem; left: 1rem; background: rgba(0,0,0,0.8); padding: 1rem; border-radius: 8px; border: 1px solid #667eea;">
+                        <div style="color: #ffd700; font-size: 1.1rem; font-weight: bold; margin-bottom: 0.3rem;">M = <span id="chandTitleM">30</span></div>
+                        <div style="color: #aaa; font-size: 0.85rem;">Lattice Levels: <span id="chandTitleRings">8</span></div>
+                        <div style="color: #aaa; font-size: 0.85rem;">Reduction Maps: <span id="chandTitleChains">22</span></div>
+                    </div>
+                </div>
+
+                <!-- Right Panel -->
+                <div style="background: rgba(26, 26, 46, 0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(102, 126, 234, 0.3);">
+                    <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1rem;">Ring Dynamics</h3>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.3rem; font-size: 0.9rem; color: #666;">
+                            Inner→Outer: <span id="chandInnerSpeedVal" style="color: #667eea; font-weight: bold;">0</span>°/s
+                        </label>
+                        <input type="range" id="chandInnerSpeedSlider" min="-50" max="50" value="0" style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.3rem; font-size: 0.9rem; color: #666;">
+                            Outer→Inner: <span id="chandOuterSpeedVal" style="color: #667eea; font-weight: bold;">0</span>°/s
+                        </label>
+                        <input type="range" id="chandOuterSpeedSlider" min="-50" max="50" value="0" style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.3rem; font-size: 0.9rem; color: #666;">
+                            Individual: <span id="chandIndivSpeedVal" style="color: #667eea; font-weight: bold;">0</span>°/s
+                        </label>
+                        <input type="range" id="chandIndivSpeedSlider" min="-50" max="50" value="0" style="width: 100%;">
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="chandAnimateCheck" style="margin-right: 0.5rem;">
+                            <span style="color: #666;">Animate Rings</span>
+                        </label>
+                    </div>
+
+                    <button onclick="resetChandRings()" style="width: 100%; padding: 0.7rem; background: #764ba2; color: white; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 1.5rem;">
+                        Reset Ring Rotations
+                    </button>
+
+                    <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1rem;">Display</h3>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="chandShowChains" checked style="margin-right: 0.5rem;">
+                            <span style="color: #666;">Show Farey Chains</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="chandShowLabels" style="margin-right: 0.5rem;">
+                            <span style="color: #666;">Show Labels</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="chandAutoRotate" style="margin-right: 0.5rem;">
+                            <span style="color: #666;">Auto-Rotate</span>
+                        </label>
+                    </div>
+
+                    <button onclick="exportChandelier()" style="width: 100%; padding: 0.7rem; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 1rem;">
+                        Export PNG
+                    </button>
+
+                    <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin: 1.5rem 0 1rem 0;">Color Legend</h3>
+                    
+                    <div style="padding: 0.8rem; background: rgba(0,0,0,0.05); border-radius: 6px;">
+                        <div style="margin-bottom: 0.6rem; display: flex; align-items: center;">
+                            <span style="display: inline-block; width: 16px; height: 16px; background: #00ffff; border-radius: 50%; margin-right: 0.5rem;"></span>
+                            <span style="color: #00ffff; font-weight: bold; font-size: 0.9rem;">Coprime (gcd(r,M)=1)</span>
+                        </div>
+                        <div style="margin-bottom: 0.6rem; display: flex; align-items: center;">
+                            <span style="display: inline-block; width: 16px; height: 16px; background: #ffff00; border-radius: 50%; margin-right: 0.5rem;"></span>
+                            <span style="color: #cc9900; font-weight: bold; font-size: 0.9rem;">Reducible (gcd(r,M)>1)</span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="display: inline-block; width: 16px; height: 16px; background: #ff0000; border-radius: 50%; margin-right: 0.5rem;"></span>
+                            <span style="color: #ff0000; font-weight: bold; font-size: 0.9rem;">Identity (r≡0)</span>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(102, 126, 234, 0.1); padding: 1rem; border-radius: 8px; margin-top: 1.5rem; font-size: 0.85rem; line-height: 1.6; color: #666;">
+                        <strong style="color: #667eea;">⌨️ Shortcuts:</strong><br>
+                        <code style="background: rgba(0,0,0,0.1); padding: 0.2rem 0.4rem; border-radius: 3px;">R</code> Reset rotation<br>
+                        <code style="background: rgba(0,0,0,0.1); padding: 0.2rem 0.4rem; border-radius: 3px;">Space</code> Auto-rotate<br>
+                        <code style="background: rgba(0,0,0,0.1); padding: 0.2rem 0.4rem; border-radius: 3px;">C</code> Toggle Farey chains<br>
+                        <code style="background: rgba(0,0,0,0.1); padding: 0.2rem 0.4rem; border-radius: 3px;">L</code> Toggle labels
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- THEORY TAB -->
     <div id="theory-tab" class="tab-content">
         <div class="theory-container">
@@ -1499,6 +1677,15 @@
                 setupEvents();
                 calculate();
                 render();
+                window.portalInitialized = true;
+            }
+            
+            // If switching to chandelier, initialize if needed
+            if (tabName === 'chandelier' && !window.chandelierInitialized) {
+                initChandelier();
+                window.chandelierInitialized = true;
+            }
+        }
                 window.portalInitialized = true;
             }
         }
@@ -3102,6 +3289,169 @@
             render();
             window.portalInitialized = true;
         });
+
+        // ═══════════════════════════════════════════════════════════
+        // 3D FAREY DIVISOR LATTICE TAB IMPLEMENTATION
+        // Visualizes the hierarchical structure of modular reduction
+        // through a geometric embedding of the divisor lattice
+        // ═══════════════════════════════════════════════════════════
+
+        window.chandelierInitialized = false;
+        let chandelier = {
+            canvas: null, ctx: null, M: 30, xTilt: 45, yRot: 0, zSpin: 0, vSpace: 1.0, radScale: 1.0,
+            innerSpeed: 0, outerSpeed: 0, indivSpeed: 0, animate: false, showChains: true, showLabels: false,
+            autoRotate: false, autoRotateAngle: 0, ringRotations: new Map(), animFrame: null,
+            isDragging: false, lastMouseX: 0, lastMouseY: 0
+        };
+
+        function initChandelier() {
+            chandelier.canvas = document.getElementById('chandelier-canvas');
+            chandelier.ctx = chandelier.canvas.getContext('2d');
+            setupChandelierEvents();
+            startChandelierAnimation();
+        }
+
+        function project3DChand(x, y, z) {
+            const xRad = chandelier.xTilt * Math.PI / 180;
+            const yRad = (chandelier.yRot + chandelier.autoRotateAngle) * Math.PI / 180;
+            const zRad = chandelier.zSpin * Math.PI / 180;
+            let x1 = x * Math.cos(zRad) - y * Math.sin(zRad);
+            let y1 = x * Math.sin(zRad) + y * Math.cos(zRad);
+            let x2 = x1;
+            let y2 = y1 * Math.cos(xRad) - z * Math.sin(xRad);
+            let z2 = y1 * Math.sin(xRad) + z * Math.cos(xRad);
+            let x3 = x2 * Math.cos(yRad) + z2 * Math.sin(yRad);
+            let y3 = y2;
+            let z3 = -x2 * Math.sin(yRad) + z2 * Math.cos(yRad);
+            const perspective = 1500;
+            const scale = perspective / (perspective + z3 + 500);
+            return { x: 600 + x3 * scale, y: 600 - y3 * scale, z: z3, scale: scale, depth: z3 + 500 };
+        }
+
+        function getRingHeightChand(channelM, totalM) {
+            return -chandelier.vSpace * 500 * (1 - channelM / totalM);
+        }
+
+        function calculateChandelierRings() {
+            const M = chandelier.M;
+            const divisors = getDivisors(M);
+            const allElements = [];
+            divisors.forEach(d => {
+                const ringHeight = getRingHeightChand(d, M);
+                const ringRot = (chandelier.ringRotations.get(d) || 0) * Math.PI / 180;
+                const radius = 400 * (d / M) * chandelier.radScale;
+                const circlePoints = [];
+                for (let i = 0; i <= Math.max(60, d * 2); i++) {
+                    const angle = (2 * Math.PI * i / Math.max(60, d * 2)) + ringRot;
+                    circlePoints.push({ x: radius * Math.cos(angle), y: radius * Math.sin(angle), z: ringHeight });
+                }
+                allElements.push({ type: 'ring-circle', points: circlePoints, depth: ringHeight + 500 });
+                for (let r = 0; r < d; r++) {
+                    const g = gcd(r, d);
+                    const angle = (2 * Math.PI * r / d) + ringRot;
+                    const x = radius * Math.cos(angle), y = radius * Math.sin(angle);
+                    allElements.push({ type: 'point', r: r, M: d, gcd: g, coprime: g === 1, x, y, z: ringHeight });
+                    if (!((g === 1)) && d > 1 && chandelier.showChains) {
+                        const targetM = d / g, targetR = r / g;
+                        const targetAngle = (2 * Math.PI * targetR / targetM) + ((chandelier.ringRotations.get(targetM) || 0) * Math.PI / 180);
+                        const targetRadius = 400 * (targetM / M) * chandelier.radScale;
+                        allElements.push({ type: 'chain', x1: x, y1: y, z1: ringHeight,
+                            x2: targetRadius * Math.cos(targetAngle), y2: targetRadius * Math.sin(targetAngle),
+                            z2: getRingHeightChand(targetM, M) });
+                    }
+                }
+            });
+            return allElements;
+        }
+
+        function renderChandelier() {
+            const ctx = chandelier.ctx, w = chandelier.canvas.width, h = chandelier.canvas.height;
+            ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h);
+            const projected = [];
+            calculateChandelierRings().forEach(el => {
+                if (el.type === 'point') {
+                    projected.push({ ...el, ...project3DChand(el.x, el.y, el.z) });
+                } else if (el.type === 'chain') {
+                    const p1 = project3DChand(el.x1, el.y1, el.z1), p2 = project3DChand(el.x2, el.y2, el.z2);
+                    projected.push({ type: 'chain', x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, depth: (p1.depth + p2.depth) / 2 });
+                } else if (el.type === 'ring-circle') {
+                    projected.push({ type: 'ring-circle', points: el.points.map(p => project3DChand(p.x, p.y, p.z)), depth: el.depth });
+                }
+            });
+            projected.sort((a, b) => a.depth - b.depth);
+            ctx.globalAlpha = 0.2; ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 1;
+            projected.forEach(el => { if (el.type === 'ring-circle') { ctx.beginPath(); el.points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)); ctx.stroke(); } });
+            ctx.globalAlpha = 0.4;
+            projected.forEach(el => { if (el.type === 'chain') { const g = ctx.createLinearGradient(el.x1, el.y1, el.x2, el.y2); g.addColorStop(0, '#ffd700'); g.addColorStop(1, '#ffaa00'); ctx.strokeStyle = g; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(el.x1, el.y1); ctx.lineTo(el.x2, el.y2); ctx.stroke(); } });
+            ctx.globalAlpha = 1.0;
+            projected.forEach(el => {
+                if (el.type === 'point') {
+                    const size = Math.max(2, 5 * el.scale);
+                    const [color, glow] = el.r === 0 ? ['#ff0000', 'rgba(255,0,0,0.5)'] : el.coprime ? ['#00ffff', 'rgba(0,255,255,0.5)'] : ['#ffff00', 'rgba(255,255,0,0.5)'];
+                    ctx.shadowBlur = 8; ctx.shadowColor = glow; ctx.fillStyle = color;
+                    ctx.beginPath(); ctx.arc(el.x, el.y, size, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+                    if (chandelier.showLabels && el.M === chandelier.M && el.r % Math.ceil(chandelier.M / 30) === 0) {
+                        ctx.save(); ctx.fillStyle = '#fff'; ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
+                        ctx.font = `bold ${Math.max(10, 12 * el.scale)}px Arial`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                        const ly = el.y - 15 * el.scale; ctx.strokeText(el.r, el.x, ly); ctx.fillText(el.r, el.x, ly); ctx.restore();
+                    }
+                }
+            });
+            const divisors = getDivisors(chandelier.M);
+            document.getElementById('chandTitleM').textContent = chandelier.M;
+            document.getElementById('chandTitleRings').textContent = divisors.length;
+            document.getElementById('chandTitleChains').textContent = chandelier.M - phi(chandelier.M);
+        }
+
+        function animateChandelier() {
+            if (chandelier.animate) {
+                const dt = 1/60, M = chandelier.M;
+                getDivisors(M).forEach(d => {
+                    let rot = chandelier.ringRotations.get(d) || 0;
+                    rot += chandelier.innerSpeed * (d / M) * dt + chandelier.outerSpeed * ((M - d) / M) * dt + chandelier.indivSpeed * dt;
+                    chandelier.ringRotations.set(d, rot % 360);
+                });
+            }
+            if (chandelier.autoRotate) chandelier.autoRotateAngle += 0.5;
+            renderChandelier();
+            chandelier.animFrame = requestAnimationFrame(animateChandelier);
+        }
+
+        function startChandelierAnimation() { if (!chandelier.animFrame) animateChandelier(); }
+        function setChandM(m) { chandelier.M = m; document.getElementById('chandMSlider').value = m; document.getElementById('chandMInput').value = m; document.getElementById('chandM').textContent = m; chandelier.ringRotations.clear(); renderChandelier(); }
+        function resetChandRotation() { chandelier.xTilt = 45; chandelier.yRot = 0; chandelier.zSpin = 0; chandelier.autoRotateAngle = 0; ['chandXTiltSlider', 'chandYRotSlider', 'chandZSpinSlider'].forEach((id, i) => document.getElementById(id).value = [45, 0, 0][i]); ['chandXTiltVal', 'chandYRotVal', 'chandZSpinVal'].forEach((id, i) => document.getElementById(id).textContent = [45, 0, 0][i]); renderChandelier(); }
+        function resetChandRings() { chandelier.ringRotations.clear(); renderChandelier(); }
+        function exportChandelier() { const a = document.createElement('a'); a.download = `farey-divisor-lattice-M${chandelier.M}.png`; a.href = chandelier.canvas.toDataURL(); a.click(); }
+
+        function setupChandelierEvents() {
+            ['chandMSlider', 'chandMInput'].forEach(id => document.getElementById(id).oninput = e => { const v = parseInt(e.target.value); if (v >= 6 && v <= 2000) setChandM(v); });
+            [['chandXTiltSlider', 'chandXTiltVal', 'xTilt'], ['chandYRotSlider', 'chandYRotVal', 'yRot'], ['chandZSpinSlider', 'chandZSpinVal', 'zSpin']].forEach(([sid, vid, prop]) => {
+                document.getElementById(sid).oninput = e => { chandelier[prop] = parseInt(e.target.value); document.getElementById(vid).textContent = e.target.value; renderChandelier(); };
+            });
+            document.getElementById('chandVSpaceSlider').oninput = e => { chandelier.vSpace = parseInt(e.target.value) / 100; document.getElementById('chandVSpaceVal').textContent = chandelier.vSpace.toFixed(1); renderChandelier(); };
+            document.getElementById('chandRadScaleSlider').oninput = e => { chandelier.radScale = parseInt(e.target.value) / 100; document.getElementById('chandRadScaleVal').textContent = chandelier.radScale.toFixed(1); renderChandelier(); };
+            [['chandInnerSpeedSlider', 'chandInnerSpeedVal', 'innerSpeed'], ['chandOuterSpeedSlider', 'chandOuterSpeedVal', 'outerSpeed'], ['chandIndivSpeedSlider', 'chandIndivSpeedVal', 'indivSpeed']].forEach(([sid, vid, prop]) => {
+                document.getElementById(sid).oninput = e => { chandelier[prop] = parseInt(e.target.value); document.getElementById(vid).textContent = e.target.value; };
+            });
+            ['chandAnimateCheck', 'chandShowChains', 'chandShowLabels', 'chandAutoRotate'].forEach((id, i) => {
+                document.getElementById(id).onchange = e => { chandelier[['animate', 'showChains', 'showLabels', 'autoRotate'][i]] = e.target.checked; if (i > 0 && i < 3) renderChandelier(); };
+            });
+            const c = chandelier.canvas;
+            c.addEventListener('mousedown', e => { chandelier.isDragging = true; chandelier.lastMouseX = e.clientX; chandelier.lastMouseY = e.clientY; c.style.cursor = 'grabbing'; });
+            c.addEventListener('mousemove', e => { if (!chandelier.isDragging) return; const dx = e.clientX - chandelier.lastMouseX, dy = e.clientY - chandelier.lastMouseY; chandelier.yRot = (chandelier.yRot + dx * 0.5) % 360; chandelier.xTilt = Math.max(-90, Math.min(90, chandelier.xTilt - dy * 0.5)); document.getElementById('chandYRotSlider').value = chandelier.yRot; document.getElementById('chandXTiltSlider').value = chandelier.xTilt; document.getElementById('chandYRotVal').textContent = Math.round(chandelier.yRot); document.getElementById('chandXTiltVal').textContent = Math.round(chandelier.xTilt); chandelier.lastMouseX = e.clientX; chandelier.lastMouseY = e.clientY; renderChandelier(); });
+            c.addEventListener('mouseup', () => { chandelier.isDragging = false; c.style.cursor = 'grab'; });
+            c.addEventListener('mouseleave', () => { chandelier.isDragging = false; c.style.cursor = 'grab'; });
+            c.style.cursor = 'grab';
+            document.addEventListener('keydown', e => {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (!activeTab || activeTab.id !== 'chandelier-tab') return;
+                const k = e.key.toLowerCase();
+                if (k === 'r') resetChandRotation();
+                else if (k === ' ') { e.preventDefault(); chandelier.autoRotate = !chandelier.autoRotate; document.getElementById('chandAutoRotate').checked = chandelier.autoRotate; }
+                else if (k === 'c') { chandelier.showChains = !chandelier.showChains; document.getElementById('chandShowChains').checked = chandelier.showChains; renderChandelier(); }
+                else if (k === 'l') { chandelier.showLabels = !chandelier.showLabels; document.getElementById('chandShowLabels').checked = chandelier.showLabels; renderChandelier(); }
+            });
+        }
     </script>
 </body>
 </html>
