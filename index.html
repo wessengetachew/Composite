@@ -1377,32 +1377,363 @@ A - Toggle analysis panel
         function exportImage() {
             const resolution = parseInt(document.getElementById('exportResolution').value);
             
+            // Calculate layout: left side for canvas, right side for legend
+            const canvasSize = resolution * 0.7; // 70% for canvas
+            const legendWidth = resolution * 0.3; // 30% for legend
+            const titleHeight = resolution * 0.08; // 8% for title area
+            
             const exportCanvas = document.createElement('canvas');
             const exportCtx = exportCanvas.getContext('2d');
             
             exportCanvas.width = resolution;
             exportCanvas.height = resolution;
             
+            // Fill background
             exportCtx.fillStyle = '#000';
             exportCtx.fillRect(0, 0, resolution, resolution);
             
+            // === TITLE SECTION (Centered) ===
+            exportCtx.fillStyle = var(--main-color);
+            exportCtx.fillRect(0, 0, resolution, titleHeight);
+            
+            // Main title
+            exportCtx.font = `bold ${titleHeight * 0.35}px ${getComputedStyle(document.documentElement).getPropertyValue('--font-sans')}`;
+            exportCtx.fillStyle = var(--highlight-color);
+            exportCtx.textAlign = 'center';
+            exportCtx.textBaseline = 'top';
+            exportCtx.fillText(`Modular Reduction Projection Explorer`, resolution / 2, titleHeight * 0.15);
+            
+            // Modulus value
+            exportCtx.font = `bold ${titleHeight * 0.25}px ${getComputedStyle(document.documentElement).getPropertyValue('--font-mono')}`;
+            exportCtx.fillStyle = '#fff';
+            exportCtx.fillText(`M = ${config.modulus}`, resolution / 2, titleHeight * 0.55);
+            
+            // Subtitle (factorization)
+            const factors = primeFactorization(config.modulus);
+            const factorText = formatFactorization(factors);
+            exportCtx.font = `${titleHeight * 0.18}px ${getComputedStyle(document.documentElement).getPropertyValue('--font-sans')}`;
+            exportCtx.fillStyle = var(--text-color);
+            exportCtx.fillText(factorText, resolution / 2, titleHeight * 0.82);
+            
+            // === CANVAS SECTION (Left side) ===
+            exportCtx.save();
+            exportCtx.translate(0, titleHeight);
+            
+            // Create temporary canvas for the visualization
+            const vizCanvas = document.createElement('canvas');
+            const vizCtx = vizCanvas.getContext('2d');
+            vizCanvas.width = canvasSize;
+            vizCanvas.height = canvasSize;
+            
+            vizCtx.fillStyle = '#000';
+            vizCtx.fillRect(0, 0, canvasSize, canvasSize);
+            
             const dpr = window.devicePixelRatio || 1;
             const currentSize = canvas.width / dpr;
-            const exportScale = resolution / currentSize;
-
-            draw(exportCtx, exportScale);
+            const exportScale = canvasSize / currentSize;
             
-            exportCtx.save();
-            exportCtx.font = `${resolution / 50}px var(--font-mono)`;
-            exportCtx.fillStyle = '#999';
-            exportCtx.textAlign = 'right';
-            exportCtx.fillText(`M = ${config.modulus} | ${new Date().toLocaleDateString()}`, resolution - 20, resolution - 20);
+            // Draw visualization to temporary canvas
+            drawVisualization(vizCtx, canvasSize, exportScale);
+            
+            // Copy visualization to export canvas
+            exportCtx.drawImage(vizCanvas, 0, 0);
             exportCtx.restore();
+            
+            // === LEGEND SECTION (Right side) ===
+            const legendX = canvasSize;
+            const legendY = titleHeight;
+            const legendH = resolution - titleHeight;
+            
+            // Legend background
+            exportCtx.fillStyle = '#1a1a2e';
+            exportCtx.fillRect(legendX, legendY, legendWidth, legendH);
+            
+            // Legend border
+            exportCtx.strokeStyle = var(--accent-color);
+            exportCtx.lineWidth = 3;
+            exportCtx.strokeRect(legendX, legendY, legendWidth, legendH);
+            
+            // Legend content
+            let yPos = legendY + resolution * 0.02;
+            const leftMargin = legendX + resolution * 0.015;
+            const lineHeight = resolution * 0.025;
+            const sectionSpacing = resolution * 0.035;
+            const fontSize = resolution * 0.014;
+            const smallFontSize = resolution * 0.012;
+            
+            exportCtx.textAlign = 'left';
+            exportCtx.textBaseline = 'top';
+            
+            // === LEGEND HEADER ===
+            exportCtx.font = `bold ${fontSize * 1.3}px sans-serif`;
+            exportCtx.fillStyle = var(--highlight-color);
+            exportCtx.fillText('Legend & Statistics', leftMargin, yPos);
+            yPos += sectionSpacing;
+            
+            // === COLOR SCHEME ===
+            exportCtx.font = `bold ${fontSize}px sans-serif`;
+            exportCtx.fillStyle = var(--accent-color);
+            exportCtx.fillText('Color Scheme:', leftMargin, yPos);
+            yPos += lineHeight * 1.2;
+            
+            exportCtx.font = `${smallFontSize}px sans-serif`;
+            exportCtx.fillStyle = var(--text-color);
+            
+            if (config.colorScheme === 'channel-type') {
+                // Irreducible
+                exportCtx.fillStyle = '#00ffff';
+                exportCtx.fillRect(leftMargin, yPos, lineHeight * 0.8, lineHeight * 0.8);
+                exportCtx.fillStyle = var(--text-color);
+                exportCtx.fillText('Irreducible (coprime)', leftMargin + lineHeight, yPos);
+                yPos += lineHeight;
+                
+                // Reducible
+                exportCtx.fillStyle = '#ff1493';
+                exportCtx.fillRect(leftMargin, yPos, lineHeight * 0.8, lineHeight * 0.8);
+                exportCtx.fillStyle = var(--text-color);
+                exportCtx.fillText('Reducible (non-coprime)', leftMargin + lineHeight, yPos);
+                yPos += lineHeight;
+            } else {
+                exportCtx.fillText(`Mode: ${config.colorScheme}`, leftMargin, yPos);
+                yPos += lineHeight;
+            }
+            yPos += sectionSpacing * 0.5;
+            
+            // === STATISTICS ===
+            exportCtx.font = `bold ${fontSize}px sans-serif`;
+            exportCtx.fillStyle = var(--accent-color);
+            exportCtx.fillText('Core Statistics:', leftMargin, yPos);
+            yPos += lineHeight * 1.2;
+            
+            exportCtx.font = `${smallFontSize}px monospace`;
+            exportCtx.fillStyle = var(--text-color);
+            
+            const stats = [
+                `Total Residues: ${config.modulus}`,
+                `φ(M): ${phi(config.modulus)}`,
+                `Irreducible: ${points.filter(p => p.isOpen).length}`,
+                `Reducible: ${points.filter(p => !p.isOpen).length}`,
+                `Density: ${(phi(config.modulus) / config.modulus * 100).toFixed(1)}%`,
+                `ω(M): ${omega(config.modulus)} prime factors`,
+                `Divisors: ${getDivisors(config.modulus).length}`,
+                `Prime: ${isPrime(config.modulus) ? 'Yes' : 'No'}`
+            ];
+            
+            stats.forEach(stat => {
+                exportCtx.fillText(stat, leftMargin, yPos);
+                yPos += lineHeight;
+            });
+            yPos += sectionSpacing * 0.5;
+            
+            // === REDUCTION CHANNELS ===
+            exportCtx.font = `bold ${fontSize}px sans-serif`;
+            exportCtx.fillStyle = var(--accent-color);
+            exportCtx.fillText('Reduction Channels:', leftMargin, yPos);
+            yPos += lineHeight * 1.2;
+            
+            exportCtx.font = `${smallFontSize}px monospace`;
+            exportCtx.fillStyle = var(--text-color);
+            exportCtx.fillText(`Total Channels: ${channels.size}`, leftMargin, yPos);
+            yPos += lineHeight * 1.2;
+            
+            // Top channels
+            const channelArray = Array.from(channels.entries())
+                .sort((a, b) => b[1].count - a[1].count)
+                .slice(0, 5);
+            
+            exportCtx.font = `${smallFontSize * 0.9}px monospace`;
+            channelArray.forEach(([m_prime, ch]) => {
+                const text = `M'=${m_prime}: ${ch.count} pts (×${ch.multiplicity})`;
+                exportCtx.fillText(text, leftMargin + fontSize * 0.5, yPos);
+                yPos += lineHeight * 0.9;
+            });
+            yPos += sectionSpacing * 0.5;
+            
+            // === PRIME CONSTELLATIONS ===
+            exportCtx.font = `bold ${fontSize}px sans-serif`;
+            exportCtx.fillStyle = var(--accent-color);
+            exportCtx.fillText('Prime Constellations:', leftMargin, yPos);
+            yPos += lineHeight * 1.2;
+            
+            exportCtx.font = `${smallFontSize}px monospace`;
+            exportCtx.fillStyle = var(--text-color);
+            
+            const constellations = [
+                `Twin (gap 2): ${gapPairs[2].length}`,
+                `Cousin (gap 4): ${gapPairs[4].length}`,
+                `Sexy (gap 6): ${gapPairs[6].length}`,
+                `Gap 8: ${gapPairs[8].length}`,
+                `Gap 10: ${gapPairs[10].length}`,
+                `Gap 12: ${gapPairs[12].length}`
+            ];
+            
+            constellations.forEach(const => {
+                exportCtx.fillText(const, leftMargin, yPos);
+                yPos += lineHeight;
+            });
+            yPos += sectionSpacing * 0.5;
+            
+            // === VISUALIZATION SETTINGS ===
+            exportCtx.font = `bold ${fontSize}px sans-serif`;
+            exportCtx.fillStyle = var(--accent-color);
+            exportCtx.fillText('Visualization:', leftMargin, yPos);
+            yPos += lineHeight * 1.2;
+            
+            exportCtx.font = `${smallFontSize}px sans-serif`;
+            exportCtx.fillStyle = var(--text-color);
+            
+            const vizSettings = [
+                `Spacing Factor: ${config.spacingFactor.toFixed(2)}`,
+                `Point Size: ${config.pointSize}`,
+                `Projection Lines: ${config.showProjections ? 'Yes' : 'No'}`,
+                `Inner Rings: ${config.showAllRings ? 'Yes' : 'No'}`
+            ];
+            
+            vizSettings.forEach(setting => {
+                exportCtx.fillText(setting, leftMargin, yPos);
+                yPos += lineHeight;
+            });
+            yPos += sectionSpacing;
+            
+            // === FOOTER ===
+            exportCtx.font = `${smallFontSize * 0.85}px sans-serif`;
+            exportCtx.fillStyle = '#666';
+            exportCtx.textAlign = 'center';
+            exportCtx.fillText(`Generated: ${new Date().toLocaleDateString()}`, legendX + legendWidth / 2, resolution - resolution * 0.015);
 
+            // Download
             const link = document.createElement('a');
-            link.download = `modular-reduction-M${config.modulus}.png`;
+            link.download = `modular-reduction-M${config.modulus}-${resolution}px.png`;
             link.href = exportCanvas.toDataURL('image/png');
             link.click();
+        }
+        
+        // Separate function for drawing just the visualization (no labels/legend)
+        function drawVisualization(drawCtx, canvasSize, exportScale) {
+            const size = canvasSize;
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const baseRadius = size * 0.45;
+            
+            drawCtx.save();
+            
+            drawCtx.translate(centerX, centerY);
+            drawCtx.scale(exportScale, exportScale);
+            
+            const scaledLineWidth = 1;
+            const scaledPointSize = config.pointSize;
+            const scaledTextSize = config.textSize;
+            const labelSpacing = 5;
+            const labelLineHeight = 6;
+
+            // Constellation gaps
+            if (config.gapType !== 'none') {
+                const gap = parseInt(config.gapType);
+                const pairs = gapPairs[gap] || [];
+                drawCtx.globalAlpha = 0.5;
+                pairs.forEach(([r1, r2]) => {
+                    const p1 = points[r1];
+                    const p2 = points[r2];
+                    const x1 = baseRadius * Math.cos(p1.angle - Math.PI / 2);
+                    const y1 = baseRadius * Math.sin(p1.angle - Math.PI / 2);
+                    const x2 = baseRadius * Math.cos(p2.angle - Math.PI / 2);
+                    const y2 = baseRadius * Math.sin(p2.angle - Math.PI / 2);
+                    
+                    drawCtx.beginPath();
+                    drawCtx.moveTo(x1, y1);
+                    drawCtx.lineTo(x2, y2);
+                    drawCtx.strokeStyle = '#ffcc00';
+                    drawCtx.lineWidth = 2 * scaledLineWidth;
+                    drawCtx.stroke();
+                });
+                drawCtx.globalAlpha = 1.0;
+            }
+
+            // Projection lines
+            if (config.showProjections) {
+                drawCtx.globalAlpha = config.opacity;
+                points.forEach(p => {
+                    if (!p.isOpen) {
+                        const outerX = baseRadius * Math.cos(p.angle - Math.PI / 2);
+                        const outerY = baseRadius * Math.sin(p.angle - Math.PI / 2);
+                        
+                        const channelRadius = baseRadius * Math.pow(p.reducedM / config.modulus, config.spacingFactor);
+                        const targetAngle = (2 * Math.PI * p.reducedR) / p.reducedM;
+                        const innerX = channelRadius * Math.cos(targetAngle - Math.PI / 2);
+                        const innerY = channelRadius * Math.sin(targetAngle - Math.PI / 2);
+
+                        drawCtx.beginPath();
+                        drawCtx.moveTo(outerX, outerY);
+                        drawCtx.lineTo(innerX, innerY);
+                        drawCtx.strokeStyle = '#ff1493';
+                        drawCtx.lineWidth = 0.5 * scaledLineWidth;
+                        drawCtx.stroke();
+                    }
+                });
+                drawCtx.globalAlpha = 1.0;
+            }
+
+            // Channel rings
+            if (config.showRings) {
+                const divisors = getDivisors(config.modulus).filter(d => channels.has(d) && d >= config.minRing);
+                divisors.forEach(d => {
+                    const radius = baseRadius * Math.pow(d / config.modulus, config.spacingFactor);
+                    
+                    drawCtx.beginPath();
+                    drawCtx.arc(0, 0, radius, 0, 2 * Math.PI);
+                    drawCtx.strokeStyle = '#ffd700';
+                    drawCtx.lineWidth = 1 * scaledLineWidth;
+                    drawCtx.stroke();
+                });
+            }
+
+            // Inner ring points
+            if (config.showAllRings) {
+                const selectedRingsSet = config.selectedRings ? 
+                    new Set(config.selectedRings.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n))) : 
+                    null;
+
+                const divisors = getDivisors(config.modulus).filter(d => d >= config.minRing);
+                divisors.forEach(d => {
+                    if (d === config.modulus) return;
+                    if (selectedRingsSet && !selectedRingsSet.has(d)) return;
+                    
+                    const ringPoints = allRingPoints.get(d);
+                    if (!ringPoints) return;
+                    
+                    const radius = baseRadius * Math.pow(d / config.modulus, config.spacingFactor);
+                    
+                    ringPoints.forEach(p => {
+                        if (config.highlightCoprime && !p.isOpen) return;
+                        if (!p.isOpen && !config.colorAllRings && !config.highlightCoprime) return;
+                        
+                        const x = radius * Math.cos(p.angle - Math.PI / 2);
+                        const y = radius * Math.sin(p.angle - Math.PI / 2);
+
+                        let color = '#ffd700';
+                        if (config.colorAllRings) color = getPointColor(p);
+
+                        drawCtx.beginPath();
+                        drawCtx.arc(x, y, scaledPointSize * 0.7, 0, 2 * Math.PI);
+                        drawCtx.fillStyle = color;
+                        drawCtx.fill();
+                    });
+                });
+            }
+
+            // Outer ring points
+            points.forEach(p => {
+                const x = baseRadius * Math.cos(p.angle - Math.PI / 2);
+                const y = baseRadius * Math.sin(p.angle - Math.PI / 2);
+                const color = getPointColor(p);
+
+                drawCtx.beginPath();
+                drawCtx.arc(x, y, scaledPointSize, 0, 2 * Math.PI);
+                drawCtx.fillStyle = color;
+                drawCtx.fill();
+            });
+
+            drawCtx.restore();
         }
 
         function exportCSV() {
