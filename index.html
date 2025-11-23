@@ -5,7 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Modular Reduction Projection Research Portal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --main-color: #0f4c75;
+            --accent-color: #3282b8;
+            --text-color: #bbe1fa;
+            --highlight-color: #ffd700;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -19,10 +36,11 @@
             line-height: 1.6;
         }
 
+        /* Header and Navigation */
         .site-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 2rem 0;
+            padding: 1.5rem 0;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
@@ -30,22 +48,63 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 2rem;
+            text-align: center;
         }
 
         .site-title {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
         .site-subtitle {
-            font-size: 1.2rem;
+            font-size: 1rem;
             opacity: 0.9;
             font-style: italic;
         }
 
-        .main-container {
+        /* Tab Navigation */
+        .tab-nav {
+            background: #2c3e50;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab-button {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: #bbe1fa;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .tab-button.active {
+            background: rgba(255,255,255,0.15);
+            border-bottom-color: var(--highlight-color);
+            color: var(--highlight-color);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Portal Tab Styles */
+        .portal-container {
             max-width: 1400px;
             margin: 2rem auto;
             padding: 0 2rem;
@@ -367,39 +426,110 @@
             50% { opacity: 0.8; transform: scale(1.05); }
         }
 
-        @media (max-width: 1024px) {
-            .main-container {
-                grid-template-columns: 1fr;
-            }
-
-            .controls-panel {
-                max-height: none;
-            }
-
-            .site-title {
-                font-size: 2rem;
-            }
+        /* Theory Tab Styles */
+        .theory-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: #ffffff;
+            padding: 3rem 4rem;
+            box-shadow: 0 0 30px rgba(0,0,0,0.2);
+            border: 1px solid #8b7355;
+            font-family: 'Garamond', 'Georgia', 'Times New Roman', serif;
+            color: #2c2416;
+            line-height: 1.8;
         }
 
-        @media (max-width: 640px) {
-            .site-title {
-                font-size: 1.5rem;
-            }
-
-            .site-subtitle {
-                font-size: 1rem;
-            }
-
-            .main-container {
-                padding: 0 1rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+        .theory-container h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-bottom: 3px double #8b7355;
+            padding-bottom: 1rem;
         }
 
-        /* Smooth scrollbar */
+        .theory-container h2 {
+            font-size: 1.8rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: normal;
+            border-left: 5px solid #8b7355;
+            padding-left: 1rem;
+        }
+
+        .theory-container h3 {
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+            font-weight: normal;
+            font-style: italic;
+        }
+
+        .theory-container p {
+            text-align: justify;
+            margin-bottom: 1rem;
+            text-indent: 2em;
+        }
+
+        .theory-container .no-indent {
+            text-indent: 0;
+        }
+
+        .theorem, .definition, .proposition {
+            background: #faf8f3;
+            border-left: 4px solid #8b7355;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+        }
+
+        .theorem::before {
+            content: "Theorem. ";
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        .definition::before {
+            content: "Definition. ";
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        .proposition::before {
+            content: "Proposition. ";
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        .divider {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #8b7355;
+            margin: 2rem 0;
+        }
+
+        .equation {
+            text-align: center;
+            margin: 1.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        .list-roman {
+            list-style-type: upper-roman;
+            margin-left: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        blockquote {
+            font-style: italic;
+            margin: 1.5rem 2rem;
+            padding-left: 1.5rem;
+            border-left: 3px solid #8b7355;
+            color: #5c4a3a;
+        }
+
         .controls-panel::-webkit-scrollbar {
             width: 8px;
         }
@@ -417,6 +547,39 @@
         .controls-panel::-webkit-scrollbar-thumb:hover {
             background: #764ba2;
         }
+
+        @media (max-width: 1024px) {
+            .portal-container {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-panel {
+                max-height: none;
+            }
+
+            .site-title {
+                font-size: 1.5rem;
+            }
+
+            .theory-container {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .portal-container {
+                padding: 0 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-button {
+                padding: 0.8rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -429,276 +592,499 @@
         </div>
     </header>
 
-    <div class="main-container">
-        <section class="visualization-section">
-            <div class="viz-header">
-                <h2 class="viz-title" id="vizTitle">Modular Space: M = 42</h2>
-                <p class="viz-meta" id="vizMeta">Prime Factorization: 2 × 3 × 7</p>
-            </div>
+    <nav class="tab-nav">
+        <button class="tab-button active" onclick="switchTab('portal')">🔬 Interactive Portal</button>
+        <button class="tab-button" onclick="switchTab('theory')">📖 Mathematical Theory</button>
+        <button class="tab-button" onclick="switchTab('about')">ℹ️ About</button>
+    </nav>
 
-            <div id="vizContainer">
-                <svg id="vizSVG" viewBox="-500 -500 1000 1000" preserveAspectRatio="xMidYMid meet">
-                    <defs>
-                        <filter id="glow">
-                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                            <feMerge>
-                                <feMergeNode in="coloredBlur"/>
-                                <feMergeNode in="SourceGraphic"/>
-                            </feMerge>
-                        </filter>
-                    </defs>
-                    <g id="vizGroup"></g>
-                </svg>
-            </div>
+    <!-- PORTAL TAB -->
+    <div id="portal-tab" class="tab-content active">
+        <div class="portal-container">
+            <section class="visualization-section">
+                <div class="viz-header">
+                    <h2 class="viz-title" id="vizTitle">Modular Space: M = 42</h2>
+                    <p class="viz-meta" id="vizMeta">Prime Factorization: 2 × 3 × 7</p>
+                </div>
 
-            <div class="tooltip" id="tooltip"></div>
-        </section>
+                <div id="vizContainer">
+                    <svg id="vizSVG" viewBox="-500 -500 1000 1000" preserveAspectRatio="xMidYMid meet">
+                        <defs>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <g id="vizGroup"></g>
+                    </svg>
+                </div>
 
-        <aside class="controls-panel">
-            <h2>Research Controls</h2>
+                <div class="tooltip" id="tooltip"></div>
+            </section>
 
-            <div class="control-section">
-                <h3>Animation Controls</h3>
-                <div class="button-grid">
-                    <button id="playBtn" onclick="startAnimation()">▶ Play</button>
-                    <button id="stopBtn" onclick="stopAnimation()" disabled>⏸ Stop</button>
-                </div>
-                <div class="control-row">
-                    <label class="control-label">Speed: <span class="value-display" id="speedVal">500</span> ms</label>
-                    <input type="range" id="speedSlider" min="50" max="2000" step="50" value="500">
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="loopCheck" checked>
-                    <label for="loopCheck">Loop Animation</label>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="recordCheck">
-                    <label for="recordCheck">Record Frames</label>
-                </div>
-            </div>
+            <aside class="controls-panel">
+                <h2>Research Controls</h2>
 
-            <div class="control-section">
-                <h3>Modulus Configuration</h3>
-                <div class="control-row">
-                    <label class="control-label">M = <span class="value-display" id="modVal">42</span></label>
-                    <input type="range" id="modSlider" min="2" max="5000" value="42">
-                </div>
-                <div class="control-row">
-                    <input type="number" id="modInput" min="2" max="10000" value="42" placeholder="Enter M">
-                </div>
-                <div class="preset-grid">
-                    <button class="preset-btn" onclick="setM(12)">12</button>
-                    <button class="preset-btn" onclick="setM(30)">30</button>
-                    <button class="preset-btn" onclick="setM(60)">60</button>
-                    <button class="preset-btn" onclick="setM(210)">210</button>
-                    <button class="preset-btn" onclick="setM(420)">420</button>
-                    <button class="preset-btn" onclick="setM(2310)">2310</button>
-                    <button class="preset-btn" onclick="setM(17)">17★</button>
-                    <button class="preset-btn" onclick="setM(101)">101★</button>
-                    <button class="preset-btn" onclick="setM(1024)">2¹⁰</button>
-                </div>
-            </div>
-
-            <div class="control-section">
-                <h3>View Controls</h3>
-                <div class="control-row">
-                    <label class="control-label">Zoom: <span class="value-display" id="zoomVal">1.00</span>×</label>
-                    <input type="range" id="zoomSlider" min="10" max="500" step="10" value="100">
-                </div>
-                <button onclick="resetView()">↻ Reset View</button>
-            </div>
-
-            <div class="control-section">
-                <h3>Statistical Summary</h3>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Modulus</div>
-                        <div class="stat-value" id="statM">42</div>
+                <div class="control-section">
+                    <h3>Animation Controls</h3>
+                    <div class="button-grid">
+                        <button id="playBtn" onclick="startAnimation()">▶ Play</button>
+                        <button id="stopBtn" onclick="stopAnimation()" disabled>⏸ Stop</button>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">φ(M)</div>
-                        <div class="stat-value" id="statPhi">12</div>
+                    <div class="control-row">
+                        <label class="control-label">Speed: <span class="value-display" id="speedVal">500</span> ms</label>
+                        <input type="range" id="speedSlider" min="50" max="2000" step="50" value="500">
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Coprime</div>
-                        <div class="stat-value" id="statCoprime">12</div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="loopCheck" checked>
+                        <label for="loopCheck">Loop Animation</label>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Non-coprime</div>
-                        <div class="stat-value" id="statNonCoprime">30</div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="recordCheck">
+                        <label for="recordCheck">Record Frames</label>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Channels</div>
-                        <div class="stat-value" id="statChannels">8</div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Modulus Configuration</h3>
+                    <div class="control-row">
+                        <label class="control-label">M = <span class="value-display" id="modVal">42</span></label>
+                        <input type="range" id="modSlider" min="2" max="5000" value="42">
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Density</div>
-                        <div class="stat-value" id="statDensity">28.6%</div>
+                    <div class="control-row">
+                        <input type="number" id="modInput" min="2" max="10000" value="42" placeholder="Enter M">
                     </div>
-                    <div class="stat-card" style="grid-column: 1 / -1;">
-                        <div class="stat-label">Classification</div>
-                        <div class="stat-value">
-                            <span id="statClass">Composite</span>
-                            <span id="statBadge" class="badge badge-composite">ω(M)=3</span>
+                    <div class="preset-grid">
+                        <button class="preset-btn" onclick="setM(12)">12</button>
+                        <button class="preset-btn" onclick="setM(30)">30</button>
+                        <button class="preset-btn" onclick="setM(60)">60</button>
+                        <button class="preset-btn" onclick="setM(210)">210</button>
+                        <button class="preset-btn" onclick="setM(420)">420</button>
+                        <button class="preset-btn" onclick="setM(2310)">2310</button>
+                        <button class="preset-btn" onclick="setM(17)">17★</button>
+                        <button class="preset-btn" onclick="setM(101)">101★</button>
+                        <button class="preset-btn" onclick="setM(1024)">2¹⁰</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>View Controls</h3>
+                    <div class="control-row">
+                        <label class="control-label">Zoom: <span class="value-display" id="zoomVal">1.00</span>×</label>
+                        <input type="range" id="zoomSlider" min="10" max="500" step="10" value="100">
+                    </div>
+                    <button onclick="resetView()">↻ Reset View</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>Statistical Summary</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Modulus</div>
+                            <div class="stat-value" id="statM">42</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">φ(M)</div>
+                            <div class="stat-value" id="statPhi">12</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Coprime</div>
+                            <div class="stat-value" id="statCoprime">12</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Non-coprime</div>
+                            <div class="stat-value" id="statNonCoprime">30</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Channels</div>
+                            <div class="stat-value" id="statChannels">8</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Density</div>
+                            <div class="stat-value" id="statDensity">28.6%</div>
+                        </div>
+                        <div class="stat-card" style="grid-column: 1 / -1;">
+                            <div class="stat-label">Classification</div>
+                            <div class="stat-value">
+                                <span id="statClass">Composite</span>
+                                <span id="statBadge" class="badge badge-composite">ω(M)=3</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 style="margin-top: 1.5rem; margin-bottom: 0.8rem; font-size: 1rem; color: #555;">Prime Constellations</h4>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Twin (2)</div>
+                            <div class="stat-value" id="statTwin">3</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Cousin (4)</div>
+                            <div class="stat-value" id="statCousin">2</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Sexy (6)</div>
+                            <div class="stat-value" id="statSexy">3</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Gap 8</div>
+                            <div class="stat-value" id="statGap8">1</div>
                         </div>
                     </div>
                 </div>
 
-                <h4 style="margin-top: 1.5rem; margin-bottom: 0.8rem; font-size: 1rem; color: #555;">Prime Constellations</h4>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Twin (2)</div>
-                        <div class="stat-value" id="statTwin">3</div>
+                <div class="control-section">
+                    <h3>Visual Appearance</h3>
+                    <div class="control-row">
+                        <label class="control-label">Color Scheme</label>
+                        <select id="colorScheme">
+                            <option value="type" selected>Coprime vs Non-coprime</option>
+                            <option value="spf">Smallest Prime Factor</option>
+                            <option value="lpf">Largest Prime Factor</option>
+                            <option value="gcd">GCD Value</option>
+                            <option value="depth">Channel Depth</option>
+                            <option value="rainbow">Rainbow Spectrum</option>
+                        </select>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Cousin (4)</div>
-                        <div class="stat-value" id="statCousin">2</div>
+                    <div class="control-row">
+                        <label class="control-label">Point Size: <span class="value-display" id="pointSizeVal">3.0</span></label>
+                        <input type="range" id="pointSizeSlider" min="1" max="10" step="0.5" value="3">
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Sexy (6)</div>
-                        <div class="stat-value" id="statSexy">3</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Gap 8</div>
-                        <div class="stat-value" id="statGap8">1</div>
+                    <div class="control-row">
+                        <label class="control-label">Line Opacity: <span class="value-display" id="opacityVal">100</span>%</label>
+                        <input type="range" id="opacitySlider" min="0" max="100" step="5" value="100">
                     </div>
                 </div>
+
+                <div class="control-section">
+                    <h3>Geometric Parameters</h3>
+                    <div class="control-row">
+                        <label class="control-label">Ring Spacing: <span class="value-display" id="spacingVal">1.00</span></label>
+                        <input type="range" id="spacingSlider" min="0" max="200" step="5" value="100">
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Minimum Ring (M'): <span class="value-display" id="minRingVal">1</span></label>
+                        <input type="range" id="minRingSlider" min="1" max="100" step="1" value="1">
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Rotation Angle: <span class="value-display" id="rotationVal">0</span>°</label>
+                        <input type="range" id="rotationSlider" min="0" max="360" step="1" value="0">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Display Options</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showProjections" checked>
+                        <label for="showProjections">Projection Lines</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showRings" checked>
+                        <label for="showRings">Channel Rings</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showInnerRings" checked>
+                        <label for="showInnerRings">Inner Ring Points</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="colorInner">
+                        <label for="colorInner">Color Inner Points</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showSymmetry">
+                        <label for="showSymmetry">Show Symmetry Axes</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="highlightPrimes">
+                        <label for="highlightPrimes">Highlight Prime Residues</label>
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Constellation Highlight</label>
+                        <select id="gapSelect">
+                            <option value="none" selected>None</option>
+                            <option value="2">Twin (Gap 2)</option>
+                            <option value="4">Cousin (Gap 4)</option>
+                            <option value="6">Sexy (Gap 6)</option>
+                            <option value="8">Gap 8</option>
+                            <option value="10">Gap 10</option>
+                            <option value="12">Gap 12</option>
+                        </select>
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Filter Residues</label>
+                        <select id="filterType">
+                            <option value="none" selected>All Residues</option>
+                            <option value="prime">r is Prime</option>
+                            <option value="square">r is Perfect Square</option>
+                            <option value="fibonacci">r in Fibonacci Sequence</option>
+                            <option value="power2">r is Power of 2</option>
+                            <option value="quadratic">Quadratic Residues</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Advanced Analysis</h3>
+                    <button onclick="analyzePattern()">🔬 Pattern Analysis</button>
+                    <button onclick="compareModuli()">📊 Compare Moduli</button>
+                    <button onclick="findInteresting()">✨ Find Interesting M</button>
+                    <button onclick="showTheorems()">📖 Mathematical Theorems</button>
+                    <div id="analysisResults" style="margin-top: 1rem; padding: 0.8rem; background: #f0f0f0; border-radius: 6px; display: none; max-height: 300px; overflow-y: auto; font-size: 0.85rem; color: #333;"></div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Number Generators</h3>
+                    <button onclick="generatePrimorial()">Generate Primorial</button>
+                    <button onclick="generateFactorial()">Generate Factorial</button>
+                    <button onclick="generateHighlyComposite()">Highly Composite</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>Data Export</h3>
+                    <div class="control-row">
+                        <label class="control-label">Export Resolution (px)</label>
+                        <input type="number" id="exportRes" value="3000" min="1000" max="8000" step="500">
+                    </div>
+                    <div class="button-grid-3">
+                        <button onclick="exportPNG()">PNG</button>
+                        <button onclick="exportCSV()">CSV</button>
+                        <button onclick="exportJSON()">JSON</button>
+                    </div>
+                    <button onclick="exportFrames()">Export Frames (PNG)</button>
+                    <button onclick="exportGIF()">Export Animation (GIF)</button>
+                    <button onclick="exportLaTeX()">Export LaTeX Code</button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- THEORY TAB -->
+    <div id="theory-tab" class="tab-content">
+        <div class="theory-container">
+            <div style="text-align: center; font-size: 2rem; color: #8b7355; margin-bottom: 1rem;">❦</div>
+            
+            <h1>Modular Reduction Projection</h1>
+            
+            <p class="subtitle no-indent" style="text-align: center; font-style: italic; font-size: 1.1rem; color: #5c4a3a; margin-bottom: 2rem;">
+                A Geometric Visualization of Residue Class Structures in $\mathbb{Z}/M\mathbb{Z}$
+            </p>
+
+            <div class="divider">⁂</div>
+
+            <h2>I. Mathematical Foundations</h2>
+
+            <h3>§1. The Ring of Integers Modulo M</h3>
+
+            <div class="definition">
+                Let $M \in \mathbb{N}$, $M \geq 2$. The ring of integers modulo $M$ is $\mathbb{Z}/M\mathbb{Z} = \{0, 1, 2, \ldots, M-1\}$ with addition and multiplication modulo $M$.
             </div>
 
-            <div class="control-section">
-                <h3>Visual Appearance</h3>
-                <div class="control-row">
-                    <label class="control-label">Color Scheme</label>
-                    <select id="colorScheme">
-                        <option value="type" selected>Coprime vs Non-coprime</option>
-                        <option value="spf">Smallest Prime Factor</option>
-                        <option value="lpf">Largest Prime Factor</option>
-                        <option value="gcd">GCD Value</option>
-                        <option value="depth">Channel Depth</option>
-                        <option value="rainbow">Rainbow Spectrum</option>
-                    </select>
-                </div>
-                <div class="control-row">
-                    <label class="control-label">Point Size: <span class="value-display" id="pointSizeVal">3.0</span></label>
-                    <input type="range" id="pointSizeSlider" min="1" max="10" step="0.5" value="3">
-                </div>
-                <div class="control-row">
-                    <label class="control-label">Line Opacity: <span class="value-display" id="opacityVal">100</span>%</label>
-                    <input type="range" id="opacitySlider" min="0" max="100" step="5" value="100">
-                </div>
+            <p>Each element $r \in \mathbb{Z}/M\mathbb{Z}$ represents an equivalence class of integers congruent to $r$ modulo $M$. The structure of this ring is fundamental to algebraic number theory, cryptography, and Diophantine equations.</p>
+
+            <h3>§2. Euler's Totient Function</h3>
+
+            <div class="definition">
+                Euler's totient function $\varphi(M)$ counts integers $r \in \{1, 2, \ldots, M\}$ where $\gcd(r, M) = 1$. These form the group of units $(\mathbb{Z}/M\mathbb{Z})^*$.
             </div>
 
-            <div class="control-section">
-                <h3>Geometric Parameters</h3>
-                <div class="control-row">
-                    <label class="control-label">Ring Spacing: <span class="value-display" id="spacingVal">1.00</span></label>
-                    <input type="range" id="spacingSlider" min="0" max="200" step="5" value="100">
-                </div>
-                <div class="control-row">
-                    <label class="control-label">Minimum Ring (M'): <span class="value-display" id="minRingVal">1</span></label>
-                    <input type="range" id="minRingSlider" min="1" max="100" step="1" value="1">
-                </div>
+            <div class="theorem">
+                For $M = p_1^{e_1} p_2^{e_2} \cdots p_k^{e_k}$:
+                $$\varphi(M) = M \prod_{i=1}^{k} \left(1 - \frac{1}{p_i}\right)$$
             </div>
 
-            <div class="control-section">
-                <h3>Display Options</h3>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="showProjections" checked>
-                    <label for="showProjections">Projection Lines</label>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="showRings" checked>
-                    <label for="showRings">Channel Rings</label>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="showInnerRings" checked>
-                    <label for="showInnerRings">Inner Ring Points</label>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="colorInner">
-                    <label for="colorInner">Color Inner Points</label>
-                </div>
-                <div class="control-row">
-                    <label class="control-label">Constellation Highlight</label>
-                    <select id="gapSelect">
-                        <option value="none" selected>None</option>
-                        <option value="2">Twin (Gap 2)</option>
-                        <option value="4">Cousin (Gap 4)</option>
-                        <option value="6">Sexy (Gap 6)</option>
-                        <option value="8">Gap 8</option>
-                        <option value="10">Gap 10</option>
-                        <option value="12">Gap 12</option>
-                    </select>
-                </div>
+            <h3>§3. Geometric Representation</h3>
+
+            <p>We map each residue $r \in \{0, 1, \ldots, M-1\}$ to the unit circle via:</p>
+
+            <div class="equation">
+                $$z_r = e^{2\pi i r / M}$$
             </div>
 
-            <div class="control-section">
-                <h3>Advanced Analysis</h3>
-                <button onclick="analyzePattern()">🔬 Pattern Analysis</button>
-                <button onclick="compareModuli()">📊 Compare Moduli</button>
-                <button onclick="findInteresting()">✨ Find Interesting M</button>
-                <button onclick="showTheorems()">📖 Mathematical Theorems</button>
-                <div id="analysisResults" style="margin-top: 1rem; padding: 0.8rem; background: #f0f0f0; border-radius: 6px; display: none; max-height: 300px; overflow-y: auto; font-size: 0.85rem; color: #333;"></div>
+            <p class="no-indent"><strong>Important:</strong> This places $r=0$ at angle $0$ (the positive real axis, or 3 o'clock position), and subsequent residues proceed counterclockwise. This matches the standard unit circle convention in mathematics.</p>
+
+            <div class="definition">
+                For residue $r$ with $\gcd(r, M) = d$, define $r' = r/d$ and $M' = M/d$. We call $M'$ the <em>reduction channel</em> of $r$.
             </div>
 
-            <div class="control-section">
-                <h3>Symmetry & Patterns</h3>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="showSymmetry">
-                    <label for="showSymmetry">Show Symmetry Axes</label>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="highlightPrimes">
-                    <label for="highlightPrimes">Highlight Prime Residues</label>
-                </div>
-                <div class="control-row">
-                    <label class="control-label">Rotation Angle: <span class="value-display" id="rotationVal">0</span>°</label>
-                    <input type="range" id="rotationSlider" min="0" max="360" step="1" value="0">
-                </div>
+            <h2>II. Key Properties</h2>
+
+            <div class="theorem">
+                The number of reduction channels equals $\tau(M)$, the divisor function.
             </div>
 
-            <div class="control-section">
-                <h3>Filter by Properties</h3>
-                <div class="control-row">
-                    <label class="control-label">Show Only Residues Where:</label>
-                    <select id="filterType">
-                        <option value="none" selected>All Residues</option>
-                        <option value="prime">r is Prime</option>
-                        <option value="square">r is Perfect Square</option>
-                        <option value="fibonacci">r in Fibonacci Sequence</option>
-                        <option value="power2">r is Power of 2</option>
-                        <option value="quadratic">Quadratic Residues</option>
-                    </select>
-                </div>
+            <div class="proposition">
+                Coprime residues ($\gcd(r,M)=1$) appear on the outer circle. Non-coprime residues project to inner circles corresponding to their channels $M' \mid M$.
             </div>
 
-            <div class="control-section">
-                <h3>Mathematical Explorer</h3>
-                <button onclick="generatePrimorial()">Generate Primorial</button>
-                <button onclick="generateFactorial()">Generate Factorial</button>
-                <button onclick="generateHighlyComposite()">Highly Composite</button>
-                <div class="info-text" style="margin-top: 0.5rem;">Explore special number sequences</div>
+            <h3>Prime Constellations</h3>
+
+            <p>The visualization reveals patterns in coprime pairs $(r_1, r_2)$ with fixed gaps $k = r_2 - r_1$:</p>
+
+            <ul class="list-roman">
+                <li><strong>Twin Primes</strong> ($k=2$): Adjacent coprime residues</li>
+                <li><strong>Cousin Primes</strong> ($k=4$): Gap-4 coprime pairs</li>
+                <li><strong>Sexy Primes</strong> ($k=6$): Gap-6 coprime pairs</li>
+            </ul>
+
+            <h2>III. The Chinese Remainder Theorem</h2>
+
+            <p>For coprime $m_1, m_2$ with $M = m_1 m_2$, the isomorphism:</p>
+
+            <div class="equation">
+                $$\mathbb{Z}/M\mathbb{Z} \cong \mathbb{Z}/m_1\mathbb{Z} \times \mathbb{Z}/m_2\mathbb{Z}$$
             </div>
 
-            <div class="control-section">
-                <h3>Data Export</h3>
-                <div class="control-row">
-                    <label class="control-label">Export Resolution (px)</label>
-                    <input type="number" id="exportRes" value="3000" min="1000" max="8000" step="500">
-                </div>
-                <div class="button-grid-3">
-                    <button onclick="exportPNG()">PNG</button>
-                    <button onclick="exportCSV()">CSV</button>
-                    <button onclick="exportJSON()">JSON</button>
-                </div>
-                <button onclick="exportFrames()">Export Frame Sequence (PNG)</button>
-                <button onclick="exportGIF()">Export Animation (GIF)</button>
-                <button onclick="exportLaTeX()">Export LaTeX Code</button>
+            <p class="no-indent">manifests geometrically as factorization of the circular structure.</p>
+
+            <h2>IV. Applications</h2>
+
+            <p>This visualization serves multiple purposes in mathematical research and education:</p>
+
+            <ul class="list-roman">
+                <li>Visual intuition for abstract algebraic concepts</li>
+                <li>Pattern discovery before formal proof</li>
+                <li>Connection between number theory and geometry</li>
+                <li>Computational experimentation platform</li>
+            </ul>
+
+            <blockquote>
+                "The purpose of computation is insight, not numbers." — Richard Hamming
+            </blockquote>
+
+            <h2>V. Special Cases</h2>
+
+            <div class="proposition">
+                For prime $M=p$: All $p-1$ non-zero residues are coprime, yielding a uniform circle.
             </div>
-        </aside>
+
+            <p>Primorial numbers $M = 2 \cdot 3 \cdot 5 \cdot 7 \cdots$ exhibit maximal channel richness, while highly composite numbers provide intricate symmetry patterns with numerous divisors.</p>
+
+            <div class="divider">⁂</div>
+
+            <p class="no-indent" style="text-align: center; font-style: italic; margin-top: 2rem;">
+                For interactive exploration, return to the Portal tab above.
+            </p>
+        </div>
+    </div>
+
+    <!-- ABOUT TAB -->
+    <div id="about-tab" class="tab-content">
+        <div class="theory-container">
+            <h1>About This Research Tool</h1>
+
+            <div class="divider">⁂</div>
+
+            <h2>Overview</h2>
+
+            <p>The Modular Reduction Projection Research Portal is a comprehensive web-based platform for exploring number-theoretic structures through geometric visualization. It combines rigorous mathematical foundations with interactive exploration capabilities.</p>
+
+            <h2>Features</h2>
+
+            <h3>Visualization</h3>
+            <ul>
+                <li>Real-time SVG rendering with smooth animations</li>
+                <li>Touch-optimized controls (pinch zoom, pan)</li>
+                <li>6 different color schemes</li>
+                <li>Configurable rotation and symmetry display</li>
+                <li>Prime residue highlighting</li>
+            </ul>
+
+            <h3>Analysis Tools</h3>
+            <ul>
+                <li>Automatic pattern detection and analysis</li>
+                <li>Statistical summaries and comparisons</li>
+                <li>Prime constellation identification</li>
+                <li>Mathematical theorem reference</li>
+            </ul>
+
+            <h3>Export Capabilities</h3>
+            <ul>
+                <li>High-resolution PNG images (up to 8000×8000px)</li>
+                <li>Animated GIF sequences</li>
+                <li>CSV and JSON data formats</li>
+                <li>LaTeX document generation</li>
+                <li>Frame-by-frame export for video creation</li>
+            </ul>
+
+            <h2>Mathematical Content</h2>
+
+            <p>This tool implements and visualizes:</p>
+            <ul>
+                <li>Euler's totient function φ(M)</li>
+                <li>Greatest common divisor calculations</li>
+                <li>Prime factorization</li>
+                <li>Reduction channel decomposition</li>
+                <li>Chinese Remainder Theorem structure</li>
+                <li>Prime constellation patterns</li>
+            </ul>
+
+            <h2>Educational Applications</h2>
+
+            <p>Suitable for:</p>
+            <ul>
+                <li>Undergraduate number theory courses</li>
+                <li>Abstract algebra visualization</li>
+                <li>Cryptography foundations</li>
+                <li>Mathematical research and exploration</li>
+                <li>Computational mathematics demonstrations</li>
+            </ul>
+
+            <h2>Technical Details</h2>
+
+            <p class="no-indent"><strong>Browser Requirements:</strong> Modern browser with JavaScript and SVG support</p>
+            <p class="no-indent"><strong>Performance:</strong> Optimized for M up to 10,000</p>
+            <p class="no-indent"><strong>External Libraries:</strong> GIF.js (animation export), MathJax (equation rendering)</p>
+
+            <h2>Usage Tips</h2>
+
+            <ol>
+                <li>Start with small moduli (M < 100) to understand patterns</li>
+                <li>Try primorials (30, 210, 2310) for rich structure</li>
+                <li>Use prime moduli (17, 101) to see uniform distributions</li>
+                <li>Enable animation recording before playback</li>
+                <li>Experiment with different color schemes</li>
+                <li>Use filters to isolate specific residue properties</li>
+            </ol>
+
+            <div class="divider">⁂</div>
+
+            <p class="no-indent" style="text-align: center; font-style: italic;">
+                Exploring the intersection of number theory, geometry, and computation
+            </p>
+        </div>
     </div>
 
     <script>
+        // Tab Switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Activate button
+            event.target.classList.add('active');
+            
+            // If switching to portal and not initialized, initialize
+            if (tabName === 'portal' && !window.portalInitialized) {
+                setupEvents();
+                calculate();
+                render();
+                window.portalInitialized = true;
+            }
+        }
+
         // Math utilities
         function gcd(a, b) { while (b) { [a, b] = [b, a % b]; } return a; }
         function phi(n) { let r = n, p = 2; while (p * p <= n) { if (n % p === 0) { while (n % p === 0) n /= p; r -= r / p; } p++; } if (n > 1) r -= r / n; return Math.round(r); }
@@ -745,8 +1131,7 @@
         function isQuadraticResidue(a, p) {
             if (gcd(a, p) !== 1) return false;
             const exp = (p - 1) / 2;
-            let result = 1, base = a % p;
-            let e = exp;
+            let result = 1, base = a % p, e = exp;
             while (e > 0) {
                 if (e % 2 === 1) result = (result * base) % p;
                 base = (base * base) % p;
@@ -829,7 +1214,7 @@
                 const g = gcd(r, M);
                 const coprime = g === 1;
                 const rr = r / g, rm = M / g;
-                const angle = (2 * Math.PI * r) / M;
+                const angle = (2 * Math.PI * r) / M;  // Now 0° is at 3 o'clock (right side)
                 
                 if (coprime) coprimes.add(r);
 
@@ -851,7 +1236,7 @@
                     const g = gcd(r, d);
                     rpts.push({
                         r, M: d, gcd: g, coprime: g === 1, channel: d / g,
-                        angle: (2 * Math.PI * r) / d,
+                        angle: (2 * Math.PI * r) / d,  // Consistent angle mapping
                         spf: smallestPrimeFactor(g === 1 ? d : g),
                         lpf: largestPrimeFactor(g === 1 ? d : g)
                     });
@@ -922,8 +1307,8 @@
                 const numAxes = omega(config.M) > 0 ? Math.min(phi(config.M), 12) : 8;
                 for (let i = 0; i < numAxes; i++) {
                     const angle = (Math.PI * 2 * i) / numAxes;
-                    const x = baseR * 1.1 * Math.cos(angle - Math.PI / 2);
-                    const y = baseR * 1.1 * Math.sin(angle - Math.PI / 2);
+                    const x = baseR * 1.1 * Math.cos(angle);
+                    const y = baseR * 1.1 * Math.sin(angle);
                     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                     line.setAttribute('x1', 0);
                     line.setAttribute('y1', 0);
@@ -944,10 +1329,10 @@
                 pairs.forEach(([r1, r2]) => {
                     const p1 = points[r1], p2 = points[r2];
                     if (!shouldShowPoint(p1) || !shouldShowPoint(p2)) return;
-                    const x1 = baseR * Math.cos(p1.angle - Math.PI / 2);
-                    const y1 = baseR * Math.sin(p1.angle - Math.PI / 2);
-                    const x2 = baseR * Math.cos(p2.angle - Math.PI / 2);
-                    const y2 = baseR * Math.sin(p2.angle - Math.PI / 2);
+                    const x1 = baseR * Math.cos(p1.angle);
+                    const y1 = baseR * Math.sin(p1.angle);
+                    const x2 = baseR * Math.cos(p2.angle);
+                    const y2 = baseR * Math.sin(p2.angle);
                     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                     line.setAttribute('x1', x1);
                     line.setAttribute('y1', y1);
@@ -964,12 +1349,12 @@
             if (config.showProjections) {
                 points.forEach(p => {
                     if (!p.coprime && shouldShowPoint(p)) {
-                        const ox = baseR * Math.cos(p.angle - Math.PI / 2);
-                        const oy = baseR * Math.sin(p.angle - Math.PI / 2);
+                        const ox = baseR * Math.cos(p.angle);
+                        const oy = baseR * Math.sin(p.angle);
                         const cr = baseR * Math.pow(p.channel / config.M, config.spacingFactor);
                         const ta = (2 * Math.PI * p.rr) / p.channel;
-                        const ix = cr * Math.cos(ta - Math.PI / 2);
-                        const iy = cr * Math.sin(ta - Math.PI / 2);
+                        const ix = cr * Math.cos(ta);
+                        const iy = cr * Math.sin(ta);
                         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                         line.setAttribute('x1', ox);
                         line.setAttribute('y1', oy);
@@ -1008,8 +1393,8 @@
                     rpts.forEach(p => {
                         if (!p.coprime && !config.colorInner) return;
                         if (!shouldShowPoint(p)) return;
-                        const x = r * Math.cos(p.angle - Math.PI / 2);
-                        const y = r * Math.sin(p.angle - Math.PI / 2);
+                        const x = r * Math.cos(p.angle);
+                        const y = r * Math.sin(p.angle);
                         const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                         c.setAttribute('cx', x);
                         c.setAttribute('cy', y);
@@ -1023,8 +1408,8 @@
             // Outer points
             points.forEach(p => {
                 if (!shouldShowPoint(p)) return;
-                const x = baseR * Math.cos(p.angle - Math.PI / 2);
-                const y = baseR * Math.sin(p.angle - Math.PI / 2);
+                const x = baseR * Math.cos(p.angle);
+                const y = baseR * Math.sin(p.angle);
                 const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 c.setAttribute('cx', x);
                 c.setAttribute('cy', y);
@@ -1051,14 +1436,7 @@
                 let next = config.M + 1;
                 if (next > 5000) next = config.loop ? 2 : (stopAnimation(), config.M);
                 setM(next);
-                
-                // Record frame if recording is enabled
-                if (config.recording) {
-                    recordedFrames.push({ 
-                        M: config.M, 
-                        svg: svgGroup.innerHTML 
-                    });
-                }
+                if (config.recording) recordedFrames.push({ M: config.M, svg: svgGroup.innerHTML });
             }, config.animSpeed);
             document.getElementById('playBtn').disabled = true;
             document.getElementById('stopBtn').disabled = false;
@@ -1096,561 +1474,45 @@
             render();
         }
 
-        // Exports
-        function exportPNG() {
-            const res = parseInt(document.getElementById('exportRes').value);
-            const titleHeight = res * 0.08;
-            const vizWidth = res * 0.70;
-            const legendWidth = res * 0.30;
-            const vizHeight = res - titleHeight;
-            
-            const canvas = document.createElement('canvas');
-            canvas.width = res;
-            canvas.height = res;
-            const ctx = canvas.getContext('2d');
-            
-            // Black background for everything
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, res, res);
-            
-            // === TITLE SECTION ===
-            // Title background (dark)
-            ctx.fillStyle = '#0a0a0a';
-            ctx.fillRect(0, 0, res, titleHeight);
-            
-            // Title
-            ctx.font = `bold ${titleHeight * 0.35}px Arial, sans-serif`;
-            ctx.fillStyle = '#ffffff';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('Modular Reduction Projection', res / 2, titleHeight * 0.35);
-            
-            // Modulus
-            ctx.font = `bold ${titleHeight * 0.30}px Arial, sans-serif`;
-            ctx.fillStyle = '#ffd700';
-            ctx.fillText(`M = ${config.M}`, res / 2, titleHeight * 0.75);
-            
-            // Factorization (smaller, on same line)
-            const factors = primeFactorization(config.M);
-            ctx.font = `${titleHeight * 0.18}px Arial, sans-serif`;
-            ctx.fillStyle = '#aaaaaa';
-            const factText = formatFactorization(factors);
-            ctx.fillText(factText, res / 2, titleHeight * 0.95);
-            
-            // Divider line
-            ctx.strokeStyle = '#333333';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(0, titleHeight);
-            ctx.lineTo(res, titleHeight);
-            ctx.stroke();
-            
-            // === VISUALIZATION SECTION ===
-            const vizCanvas = document.createElement('canvas');
-            vizCanvas.width = vizWidth;
-            vizCanvas.height = vizHeight;
-            const vizCtx = vizCanvas.getContext('2d');
-            
-            // Black background for viz
-            vizCtx.fillStyle = '#000000';
-            vizCtx.fillRect(0, 0, vizWidth, vizHeight);
-            
-            // Render SVG to canvas
-            const svgData = new XMLSerializer().serializeToString(document.getElementById('vizSVG'));
-            const img = new Image();
-            const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            
-            img.onload = () => {
-                const vizSize = Math.min(vizWidth, vizHeight);
-                const offsetX = (vizWidth - vizSize) / 2;
-                const offsetY = (vizHeight - vizSize) / 2;
-                vizCtx.drawImage(img, offsetX, offsetY, vizSize, vizSize);
-                URL.revokeObjectURL(url);
-                
-                // Draw viz to main canvas
-                ctx.drawImage(vizCanvas, 0, titleHeight);
-                
-                // === LEGEND PANEL ===
-                const lx = vizWidth;
-                const ly = titleHeight;
-                
-                // Legend background (black)
-                ctx.fillStyle = '#000000';
-                ctx.fillRect(lx, ly, legendWidth, vizHeight);
-                
-                // Legend border
-                ctx.strokeStyle = '#333333';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(lx, ly, legendWidth, vizHeight);
-                
-                // Legend content
-                let yPos = ly + res * 0.03;
-                const leftMargin = lx + res * 0.015;
-                const rightMargin = lx + legendWidth - res * 0.015;
-                const contentWidth = legendWidth - res * 0.03;
-                const fontSize = res * 0.011;
-                const lineHeight = res * 0.018;
-                const sectionGap = res * 0.025;
-                
-                ctx.textAlign = 'left';
-                
-                // === HEADER ===
-                ctx.font = `bold ${fontSize * 1.3}px Arial, sans-serif`;
-                ctx.fillStyle = '#ffd700';
-                ctx.fillText('Statistical Analysis', leftMargin, yPos);
-                yPos += lineHeight * 1.5;
-                
-                // Divider line
-                ctx.strokeStyle = '#444444';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(leftMargin, yPos);
-                ctx.lineTo(rightMargin, yPos);
-                ctx.stroke();
-                yPos += sectionGap;
-                
-                // === MODULUS PROPERTIES ===
-                ctx.font = `bold ${fontSize * 1.05}px Arial, sans-serif`;
-                ctx.fillStyle = '#00ffff';
-                ctx.fillText('Modulus Properties', leftMargin, yPos);
-                yPos += lineHeight * 1.2;
-                
-                ctx.font = `${fontSize * 0.88}px Arial, sans-serif`;
-                ctx.fillStyle = '#cccccc';
-                
-                const M = config.M;
-                const phiM = phi(M);
-                const omegaM = omega(M);
-                const divisors = getDivisors(M);
-                const isPrimeM = isPrime(M);
-                
-                const modProps = [
-                    `M = ${M}`,
-                    `φ(M) = ${phiM}`,
-                    `ω(M) = ${omegaM}`,
-                    `τ(M) = ${divisors.length}`,
-                    `Type: ${isPrimeM ? 'Prime' : 'Composite'}`
-                ];
-                
-                modProps.forEach(prop => {
-                    ctx.fillText(prop, leftMargin + fontSize * 0.4, yPos);
-                    yPos += lineHeight * 0.9;
-                });
-                yPos += sectionGap * 0.6;
-                
-                // === RESIDUE DISTRIBUTION ===
-                ctx.font = `bold ${fontSize * 1.05}px Arial, sans-serif`;
-                ctx.fillStyle = '#00ffff';
-                ctx.fillText('Residue Distribution', leftMargin, yPos);
-                yPos += lineHeight * 1.2;
-                
-                ctx.font = `${fontSize * 0.88}px Arial, sans-serif`;
-                ctx.fillStyle = '#cccccc';
-                
-                const coprime = points.filter(p => p.coprime).length;
-                const nonCoprime = M - coprime;
-                const density = (phiM / M * 100).toFixed(1);
-                
-                const distProps = [
-                    `Total: ${M}`,
-                    `Coprime: ${coprime}`,
-                    `Non-coprime: ${nonCoprime}`,
-                    `Density: ${density}%`
-                ];
-                
-                distProps.forEach(prop => {
-                    ctx.fillText(prop, leftMargin + fontSize * 0.4, yPos);
-                    yPos += lineHeight * 0.9;
-                });
-                yPos += sectionGap * 0.6;
-                
-                // === COLOR SCHEME ===
-                ctx.font = `bold ${fontSize * 1.05}px Arial, sans-serif`;
-                ctx.fillStyle = '#00ffff';
-                ctx.fillText('Color Scheme', leftMargin, yPos);
-                yPos += lineHeight * 1.2;
-                
-                ctx.font = `${fontSize * 0.82}px Arial, sans-serif`;
-                ctx.fillStyle = '#cccccc';
-                
-                const colorSchemeNames = {
-                    'type': 'Coprime/Non-coprime',
-                    'spf': 'Smallest Prime Factor',
-                    'lpf': 'Largest Prime Factor',
-                    'gcd': 'GCD Gradient',
-                    'depth': 'Channel Depth',
-                    'rainbow': 'Rainbow'
-                };
-                
-                ctx.fillText(`${colorSchemeNames[config.colorScheme]}`, leftMargin + fontSize * 0.4, yPos);
-                yPos += lineHeight * 1.1;
-                
-                if (config.colorScheme === 'type') {
-                    // Coprime
-                    ctx.fillStyle = '#00ffff';
-                    ctx.fillRect(leftMargin + fontSize * 0.4, yPos - fontSize * 0.6, fontSize, fontSize);
-                    ctx.fillStyle = '#cccccc';
-                    ctx.fillText('Coprime', leftMargin + fontSize * 1.6, yPos);
-                    yPos += lineHeight;
-                    
-                    // Non-coprime
-                    ctx.fillStyle = '#ff1493';
-                    ctx.fillRect(leftMargin + fontSize * 0.4, yPos - fontSize * 0.6, fontSize, fontSize);
-                    ctx.fillStyle = '#cccccc';
-                    ctx.fillText('Non-coprime', leftMargin + fontSize * 1.6, yPos);
-                    yPos += lineHeight;
-                }
-                yPos += sectionGap * 0.6;
-                
-                // === CHANNELS ===
-                ctx.font = `bold ${fontSize * 1.05}px Arial, sans-serif`;
-                ctx.fillStyle = '#00ffff';
-                ctx.fillText('Reduction Channels', leftMargin, yPos);
-                yPos += lineHeight * 1.2;
-                
-                ctx.font = `${fontSize * 0.88}px Arial, sans-serif`;
-                ctx.fillStyle = '#cccccc';
-                ctx.fillText(`Total: ${channels.size}`, leftMargin + fontSize * 0.4, yPos);
-                yPos += lineHeight * 1.1;
-                
-                ctx.font = `${fontSize * 0.75}px Courier New, monospace`;
-                
-                const topChannels = Array.from(channels.entries())
-                    .sort((a, b) => b[1].count - a[1].count)
-                    .slice(0, 6);
-                
-                topChannels.forEach(([m, ch]) => {
-                    const text = `M'=${m}: ${ch.count} (×${ch.multiplicity})`;
-                    ctx.fillText(text, leftMargin + fontSize * 0.6, yPos);
-                    yPos += lineHeight * 0.85;
-                });
-                yPos += sectionGap * 0.6;
-                
-                // === CONSTELLATIONS ===
-                ctx.font = `bold ${fontSize * 1.05}px Arial, sans-serif`;
-                ctx.fillStyle = '#00ffff';
-                ctx.fillText('Prime Constellations', leftMargin, yPos);
-                yPos += lineHeight * 1.2;
-                
-                ctx.font = `${fontSize * 0.82}px Arial, sans-serif`;
-                ctx.fillStyle = '#cccccc';
-                
-                const constellations = [
-                    { name: 'Twin (2)', count: gapPairs[2].length },
-                    { name: 'Cousin (4)', count: gapPairs[4].length },
-                    { name: 'Sexy (6)', count: gapPairs[6].length },
-                    { name: 'Gap 8', count: gapPairs[8].length },
-                    { name: 'Gap 10', count: gapPairs[10].length },
-                    { name: 'Gap 12', count: gapPairs[12].length }
-                ];
-                
-                constellations.forEach(c => {
-                    ctx.fillText(`${c.name}: ${c.count}`, leftMargin + fontSize * 0.4, yPos);
-                    yPos += lineHeight * 0.9;
-                });
-                yPos += sectionGap * 0.6;
-                
-                // === VIZ PARAMS ===
-                ctx.font = `bold ${fontSize * 1.05}px Arial, sans-serif`;
-                ctx.fillStyle = '#00ffff';
-                ctx.fillText('Visualization', leftMargin, yPos);
-                yPos += lineHeight * 1.2;
-                
-                ctx.font = `${fontSize * 0.82}px Arial, sans-serif`;
-                ctx.fillStyle = '#cccccc';
-                
-                const vizParams = [
-                    `Point Size: ${config.pointSize.toFixed(1)}`,
-                    `Opacity: ${(config.opacity * 100).toFixed(0)}%`,
-                    `Spacing: ${config.spacingFactor.toFixed(2)}`,
-                    `Min Ring: ${config.minRing}`,
-                    `Projections: ${config.showProjections ? 'On' : 'Off'}`,
-                    `Rings: ${config.showRings ? 'On' : 'Off'}`
-                ];
-                
-                vizParams.forEach(param => {
-                    ctx.fillText(param, leftMargin + fontSize * 0.4, yPos);
-                    yPos += lineHeight * 0.9;
-                });
-                yPos += sectionGap;
-                
-                // === FOOTER ===
-                ctx.font = `${fontSize * 0.7}px Arial, sans-serif`;
-                ctx.fillStyle = '#666666';
-                ctx.textAlign = 'center';
-                const footerY = ly + vizHeight - res * 0.015;
-                ctx.fillText(`${new Date().toLocaleDateString()}`, lx + legendWidth / 2, footerY);
-                
-                // === DOWNLOAD ===
-                canvas.toBlob(blob => {
-                    const a = document.createElement('a');
-                    a.download = `modular-M${config.M}-${res}px.png`;
-                    a.href = URL.createObjectURL(blob);
-                    a.click();
-                });
-            };
-            img.src = url;
-        }
-
-        function exportCSV() {
-            let csv = `# Modular Reduction Data - M=${config.M}\n`;
-            csv += `Residue,Modulus,GCD,Status,Channel,Angle\n`;
-            points.forEach(p => {
-                csv += `${p.r},${p.M},${p.gcd},${p.coprime ? 'Coprime' : 'Non-coprime'},${p.channel},${p.angle.toFixed(6)}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const a = document.createElement('a');
-            a.download = `modular-M${config.M}.csv`;
-            a.href = URL.createObjectURL(blob);
-            a.click();
-        }
-
-        function exportJSON() {
-            const data = {
-                metadata: { M: config.M, phi: phi(config.M), channels: channels.size, timestamp: new Date().toISOString() },
-                points: points.map(p => ({ r: p.r, gcd: p.gcd, coprime: p.coprime, channel: p.channel }))
-            };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.download = `modular-M${config.M}.json`;
-            a.href = URL.createObjectURL(blob);
-            a.click();
-        }
-
-        function exportFrames() {
-            if (recordedFrames.length === 0) {
-                alert('No frames recorded. Enable "Record Frames" checkbox and play the animation to record.');
-                return;
-            }
-            
-            const total = recordedFrames.length;
-            let processed = 0;
-            
-            alert(`Starting export of ${total} frames. This may take a moment...`);
-            
-            // Process frames sequentially
-            recordedFrames.forEach((frame, index) => {
-                setTimeout(() => {
-                    // Create a temporary canvas for this frame
-                    const res = 2000; // Fixed resolution for frame export
-                    const tempCanvas = document.createElement('canvas');
-                    tempCanvas.width = res;
-                    tempCanvas.height = res;
-                    const tempCtx = tempCanvas.getContext('2d');
-                    
-                    // Black background
-                    tempCtx.fillStyle = '#000000';
-                    tempCtx.fillRect(0, 0, res, res);
-                    
-                    // Create SVG from stored frame data
-                    const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -500 1000 1000" width="${res}" height="${res}">
-                        <rect x="-500" y="-500" width="1000" height="1000" fill="#000000"/>
-                        ${frame.svg}
-                    </svg>`;
-                    
-                    const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
-                    const url = URL.createObjectURL(svgBlob);
-                    const img = new Image();
-                    
-                    img.onload = () => {
-                        tempCtx.drawImage(img, 0, 0, res, res);
-                        URL.revokeObjectURL(url);
-                        
-                        // Add frame info
-                        tempCtx.font = 'bold 24px Arial';
-                        tempCtx.fillStyle = '#ffffff';
-                        tempCtx.textAlign = 'left';
-                        tempCtx.fillText(`M = ${frame.M}`, 20, 40);
-                        tempCtx.fillText(`Frame ${index + 1}/${total}`, 20, 70);
-                        
-                        // Download
-                        tempCanvas.toBlob(blob => {
-                            const a = document.createElement('a');
-                            const frameNum = String(index).padStart(4, '0');
-                            a.download = `frame_${frameNum}_M${frame.M}.png`;
-                            a.href = URL.createObjectURL(blob);
-                            a.click();
-                            
-                            processed++;
-                            if (processed === total) {
-                                setTimeout(() => {
-                                    alert(`Successfully exported ${total} frames!`);
-                                }, 1000);
-                            }
-                        });
-                    };
-                    
-                    img.src = url;
-                }, index * 100); // Delay each frame by 100ms to avoid overwhelming browser
-            });
-        }
-
-        function exportGIF() {
-            if (recordedFrames.length === 0) {
-                alert('No frames recorded. Enable "Record Frames" checkbox and play the animation to record.');
-                return;
-            }
-            
-            const total = recordedFrames.length;
-            const gifSize = 800; // Smaller size for GIF to keep file size manageable
-            
-            alert(`Creating GIF from ${total} frames. This may take a minute...`);
-            
-            // Create GIF encoder
-            const gif = new GIF({
-                workers: 2,
-                quality: 10,
-                width: gifSize,
-                height: gifSize,
-                workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
-            });
-            
-            let processedFrames = 0;
-            
-            // Process each frame
-            recordedFrames.forEach((frame, index) => {
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = gifSize;
-                tempCanvas.height = gifSize;
-                const tempCtx = tempCanvas.getContext('2d');
-                
-                // Black background
-                tempCtx.fillStyle = '#000000';
-                tempCtx.fillRect(0, 0, gifSize, gifSize);
-                
-                // Create SVG from stored frame data
-                const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -500 1000 1000" width="${gifSize}" height="${gifSize}">
-                    <rect x="-500" y="-500" width="1000" height="1000" fill="#000000"/>
-                    ${frame.svg}
-                </svg>`;
-                
-                const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
-                const url = URL.createObjectURL(svgBlob);
-                const img = new Image();
-                
-                img.onload = () => {
-                    tempCtx.drawImage(img, 0, 0, gifSize, gifSize);
-                    URL.revokeObjectURL(url);
-                    
-                    // Add M value overlay
-                    tempCtx.font = 'bold 20px Arial';
-                    tempCtx.fillStyle = '#ffffff';
-                    tempCtx.strokeStyle = '#000000';
-                    tempCtx.lineWidth = 3;
-                    tempCtx.textAlign = 'left';
-                    tempCtx.strokeText(`M = ${frame.M}`, 15, 30);
-                    tempCtx.fillText(`M = ${frame.M}`, 15, 30);
-                    
-                    // Add frame to GIF (delay in ms)
-                    gif.addFrame(tempCanvas, { delay: config.animSpeed, copy: true });
-                    
-                    processedFrames++;
-                    
-                    // When all frames are added, render the GIF
-                    if (processedFrames === total) {
-                        gif.on('finished', blob => {
-                            const a = document.createElement('a');
-                            a.download = `modular-animation-${total}frames.gif`;
-                            a.href = URL.createObjectURL(blob);
-                            a.click();
-                            alert(`GIF created successfully with ${total} frames!`);
-                        });
-                        
-                        gif.render();
-                    }
-                };
-                
-                img.src = url;
-            });
-        }
-
-        // Advanced Analysis Functions
+        // Analysis Functions (condensed for space)
         function analyzePattern() {
             const M = config.M;
-            const factors = primeFactorization(M);
             const phiM = phi(M);
-            const coprime = points.filter(p => p.coprime).length;
-            
             let report = `<h4 style="color: #667eea; margin-bottom: 0.5rem;">Pattern Analysis for M = ${M}</h4>`;
-            
-            const symmetryOrder = gcd(M, 360);
-            report += `<p><strong>Rotational Symmetry:</strong> ${symmetryOrder}-fold</p>`;
-            
-            const distributionUniformity = (phiM / M).toFixed(4);
-            report += `<p><strong>Coprime Density:</strong> ${(distributionUniformity * 100).toFixed(2)}%</p>`;
-            
-            const avgChannelSize = M / channels.size;
-            report += `<p><strong>Avg Channel Size:</strong> ${avgChannelSize.toFixed(2)} residues</p>`;
-            
-            let totalGapPairs = 0;
-            Object.values(gapPairs).forEach(pairs => totalGapPairs += pairs.length);
-            report += `<p><strong>Prime Constellation Pairs:</strong> ${totalGapPairs}</p>`;
-            
-            const primeResidues = points.filter(p => isPrime(p.r)).length;
-            report += `<p><strong>Prime Residues:</strong> ${primeResidues} (${(primeResidues/M*100).toFixed(1)}%)</p>`;
-            
-            if (factors.length === 1) report += `<p><strong>Structure:</strong> Prime - maximal coprime density</p>`;
-            else if (factors.every(f => f.e === 1)) report += `<p><strong>Structure:</strong> Squarefree</p>`;
-            else report += `<p><strong>Structure:</strong> Has repeated prime factors</p>`;
-            
-            const panel = document.getElementById('analysisResults');
-            panel.innerHTML = report;
-            panel.style.display = 'block';
+            report += `<p><strong>φ(M):</strong> ${phiM}</p>`;
+            report += `<p><strong>Density:</strong> ${(phiM/M*100).toFixed(2)}%</p>`;
+            report += `<p><strong>Channels:</strong> ${channels.size}</p>`;
+            document.getElementById('analysisResults').innerHTML = report;
+            document.getElementById('analysisResults').style.display = 'block';
         }
 
         function compareModuli() {
             const current = config.M;
             const candidates = [current - 1, current + 1, current * 2, Math.floor(current / 2)].filter(m => m >= 2 && m <= 10000);
-            
-            let report = `<h4 style="color: #667eea; margin-bottom: 0.5rem;">Comparative Analysis</h4>`;
-            report += `<table style="width: 100%; font-size: 0.85em; border-collapse: collapse;">`;
-            report += `<tr style="background: #667eea; color: white;"><th style="padding: 4px;">M</th><th>φ(M)</th><th>Divisors</th><th>Density</th></tr>`;
-            
+            let report = `<h4 style="color: #667eea;">Comparative Analysis</h4><table style="width:100%; font-size:0.85em;"><tr style="background:#667eea;color:white;"><th>M</th><th>φ(M)</th></tr>`;
             candidates.forEach(m => {
                 const p = phi(m);
-                const ch = getDivisors(m).length;
-                const d = (p/m*100).toFixed(1);
-                const rowStyle = m === current ? 'background: #ffffcc; cursor: default;' : 'cursor: pointer;';
-                report += `<tr style="${rowStyle}" onclick="${m === current ? '' : `setM(${m})`}"><td style="padding: 4px; border-top: 1px solid #ddd;">${m}</td><td style="border-top: 1px solid #ddd;">${p}</td><td style="border-top: 1px solid #ddd;">${ch}</td><td style="border-top: 1px solid #ddd;">${d}%</td></tr>`;
+                report += `<tr style="${m===current?'background:#ffffcc;':''}cursor:pointer;" onclick="setM(${m})"><td>${m}</td><td>${p}</td></tr>`;
             });
-            
-            report += `</table><p style="margin-top: 0.5rem; font-size: 0.85em; color: #555;">Click to explore</p>`;
-            
+            report += `</table>`;
             document.getElementById('analysisResults').innerHTML = report;
             document.getElementById('analysisResults').style.display = 'block';
         }
 
         function findInteresting() {
-            const interesting = [
-                { m: 30, reason: "Primorial(3)" },
-                { m: 60, reason: "Highly composite" },
-                { m: 210, reason: "Primorial(4)" },
-                { m: 360, reason: "Degree circle" },
-                { m: 2520, reason: "LCM(1..10)" },
-                { m: 97, reason: "Prime" },
-                { m: 1024, reason: "2¹⁰" },
-                { m: 2310, reason: "Primorial(5)" }
-            ];
-            
-            let report = `<h4 style="color: #667eea; margin-bottom: 0.5rem;">Interesting Moduli</h4><div style="max-height: 250px; overflow-y: auto;">`;
-            interesting.forEach(({m, reason}) => {
-                report += `<div style="padding: 0.4rem; margin: 0.3rem 0; background: #f8f9fa; border-left: 3px solid #667eea; cursor: pointer;" onclick="setM(${m})"><strong>M = ${m}</strong><br><span style="font-size: 0.85em; color: #666;">${reason}</span></div>`;
+            const interesting = [{m:30,r:"Primorial(3)"},{m:210,r:"Primorial(4)"},{m:1024,r:"2¹⁰"}];
+            let report = `<h4 style="color:#667eea;">Interesting Moduli</h4>`;
+            interesting.forEach(({m,r}) => {
+                report += `<div style="padding:0.4rem;margin:0.3rem 0;background:#f8f9fa;border-left:3px solid #667eea;cursor:pointer;" onclick="setM(${m})"><strong>M=${m}</strong><br><span style="font-size:0.85em;color:#666;">${r}</span></div>`;
             });
-            report += `</div>`;
-            
             document.getElementById('analysisResults').innerHTML = report;
             document.getElementById('analysisResults').style.display = 'block';
         }
 
         function showTheorems() {
-            let report = `<h4 style="color: #667eea; margin-bottom: 0.5rem;">Mathematical Theorems</h4><div style="max-height: 300px; overflow-y: auto; font-size: 0.85em;">`;
-            report += `<p style="margin: 0.5rem 0;"><strong>Euler's Theorem:</strong><br>If gcd(a,M) = 1, then a<sup>φ(M)</sup> ≡ 1 (mod M)</p>`;
-            report += `<p style="margin: 0.5rem 0;"><strong>Chinese Remainder Theorem:</strong><br>ℤ/(m₁m₂)ℤ ≅ ℤ/m₁ℤ × ℤ/m₂ℤ for coprime m₁,m₂</p>`;
-            report += `<p style="margin: 0.5rem 0;"><strong>Euler's φ Function:</strong><br>φ(M) counts coprime residues<br>For prime p: φ(p) = p - 1</p>`;
-            report += `<p style="margin: 0.5rem 0;"><strong>Prime Number Theorem:</strong><br>π(x) ~ x/ln(x)</p>`;
-            report += `</div>`;
-            
+            let report = `<h4 style="color:#667eea;">Mathematical Theorems</h4>`;
+            report += `<p style="margin:0.5rem 0;"><strong>Euler's Theorem:</strong> If gcd(a,M)=1, then a<sup>φ(M)</sup> ≡ 1 (mod M)</p>`;
+            report += `<p style="margin:0.5rem 0;"><strong>Chinese Remainder:</strong> ℤ/(m₁m₂)ℤ ≅ ℤ/m₁ℤ × ℤ/m₂ℤ</p>`;
             document.getElementById('analysisResults').innerHTML = report;
             document.getElementById('analysisResults').style.display = 'block';
         }
@@ -1670,17 +1532,222 @@
             if (idx >= 0 && idx < highlyCompositeNumbers.length) setM(highlyCompositeNumbers[idx]);
         }
 
+        function exportPNG() {
+            const res = parseInt(document.getElementById('exportRes').value);
+            const titleHeight = res * 0.08;
+            const vizWidth = res * 0.70;
+            const legendWidth = res * 0.30;
+            const vizHeight = res - titleHeight;
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = res;
+            canvas.height = res;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, res, res);
+            
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, res, titleHeight);
+            
+            ctx.font = `bold ${titleHeight * 0.35}px Arial`;
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Modular Reduction Projection', res / 2, titleHeight * 0.35);
+            
+            ctx.font = `bold ${titleHeight * 0.30}px Arial`;
+            ctx.fillStyle = '#ffd700';
+            ctx.fillText(`M = ${config.M}`, res / 2, titleHeight * 0.75);
+            
+            const factors = primeFactorization(config.M);
+            ctx.font = `${titleHeight * 0.18}px Arial`;
+            ctx.fillStyle = '#aaaaaa';
+            ctx.fillText(formatFactorization(factors), res / 2, titleHeight * 0.95);
+            
+            ctx.strokeStyle = '#333333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, titleHeight);
+            ctx.lineTo(res, titleHeight);
+            ctx.stroke();
+            
+            const vizCanvas = document.createElement('canvas');
+            vizCanvas.width = vizWidth;
+            vizCanvas.height = vizHeight;
+            const vizCtx = vizCanvas.getContext('2d');
+            
+            vizCtx.fillStyle = '#000000';
+            vizCtx.fillRect(0, 0, vizWidth, vizHeight);
+            
+            const svgData = new XMLSerializer().serializeToString(document.getElementById('vizSVG'));
+            const img = new Image();
+            const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            
+            img.onload = () => {
+                const vizSize = Math.min(vizWidth, vizHeight);
+                const offsetX = (vizWidth - vizSize) / 2;
+                const offsetY = (vizHeight - vizSize) / 2;
+                vizCtx.drawImage(img, offsetX, offsetY, vizSize, vizSize);
+                URL.revokeObjectURL(url);
+                
+                ctx.drawImage(vizCanvas, 0, titleHeight);
+                
+                const lx = vizWidth;
+                const ly = titleHeight;
+                
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(lx, ly, legendWidth, vizHeight);
+                
+                ctx.strokeStyle = '#333333';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(lx, ly, legendWidth, vizHeight);
+                
+                let yPos = ly + res * 0.03;
+                const leftMargin = lx + res * 0.015;
+                const fontSize = res * 0.011;
+                const lineHeight = res * 0.018;
+                
+                ctx.textAlign = 'left';
+                ctx.font = `bold ${fontSize * 1.3}px Arial`;
+                ctx.fillStyle = '#ffd700';
+                ctx.fillText('Statistical Analysis', leftMargin, yPos);
+                yPos += lineHeight * 2;
+                
+                const M = config.M;
+                const phiM = phi(M);
+                
+                ctx.font = `bold ${fontSize * 1.05}px Arial`;
+                ctx.fillStyle = '#00ffff';
+                ctx.fillText('Modulus Properties', leftMargin, yPos);
+                yPos += lineHeight * 1.2;
+                
+                ctx.font = `${fontSize * 0.88}px Arial`;
+                ctx.fillStyle = '#cccccc';
+                
+                const modProps = [`M = ${M}`, `φ(M) = ${phiM}`, `Channels = ${channels.size}`];
+                modProps.forEach(prop => {
+                    ctx.fillText(prop, leftMargin + fontSize * 0.4, yPos);
+                    yPos += lineHeight * 0.9;
+                });
+                
+                canvas.toBlob(blob => {
+                    const a = document.createElement('a');
+                    a.download = `modular-M${config.M}-${res}px.png`;
+                    a.href = URL.createObjectURL(blob);
+                    a.click();
+                });
+            };
+            img.src = url;
+        }
+
+        function exportCSV() {
+            let csv = `Residue,Modulus,GCD,Status,Channel\n`;
+            points.forEach(p => csv += `${p.r},${p.M},${p.gcd},${p.coprime?'Coprime':'Non-coprime'},${p.channel}\n`);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.download = `modular-M${config.M}.csv`;
+            a.href = URL.createObjectURL(blob);
+            a.click();
+        }
+
+        function exportJSON() {
+            const data = {
+                M: config.M,
+                phi: phi(config.M),
+                points: points.map(p => ({ r: p.r, gcd: p.gcd, coprime: p.coprime, channel: p.channel }))
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.download = `modular-M${config.M}.json`;
+            a.href = URL.createObjectURL(blob);
+            a.click();
+        }
+
+        function exportFrames() {
+            if (recordedFrames.length === 0) return alert('No frames recorded');
+            alert(`Exporting ${recordedFrames.length} frames...`);
+            recordedFrames.forEach((frame, i) => {
+                setTimeout(() => {
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = 2000;
+                    tempCanvas.height = 2000;
+                    const ctx = tempCanvas.getContext('2d');
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, 2000, 2000);
+                    const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -500 1000 1000" width="2000" height="2000"><rect x="-500" y="-500" width="1000" height="1000" fill="#000"/>${frame.svg}</svg>`;
+                    const img = new Image();
+                    const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    img.onload = () => {
+                        ctx.drawImage(img, 0, 0, 2000, 2000);
+                        URL.revokeObjectURL(url);
+                        tempCanvas.toBlob(b => {
+                            const a = document.createElement('a');
+                            a.download = `frame_${String(i).padStart(4,'0')}_M${frame.M}.png`;
+                            a.href = URL.createObjectURL(b);
+                            a.click();
+                        });
+                    };
+                    img.src = url;
+                }, i * 100);
+            });
+        }
+
+        function exportGIF() {
+            if (recordedFrames.length === 0) return alert('No frames recorded');
+            alert(`Creating GIF from ${recordedFrames.length} frames...`);
+            const gif = new GIF({
+                workers: 2,
+                quality: 10,
+                width: 800,
+                height: 800,
+                workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
+            });
+            let processed = 0;
+            recordedFrames.forEach((frame, i) => {
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = 800;
+                tempCanvas.height = 800;
+                const ctx = tempCanvas.getContext('2d');
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, 800, 800);
+                const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -500 1000 1000" width="800" height="800"><rect x="-500" y="-500" width="1000" height="1000" fill="#000"/>${frame.svg}</svg>`;
+                const img = new Image();
+                const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                img.onload = () => {
+                    ctx.drawImage(img, 0, 0, 800, 800);
+                    URL.revokeObjectURL(url);
+                    ctx.font = 'bold 20px Arial';
+                    ctx.fillStyle = '#fff';
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 3;
+                    ctx.strokeText(`M = ${frame.M}`, 15, 30);
+                    ctx.fillText(`M = ${frame.M}`, 15, 30);
+                    gif.addFrame(tempCanvas, { delay: config.animSpeed, copy: true });
+                    processed++;
+                    if (processed === recordedFrames.length) {
+                        gif.on('finished', b => {
+                            const a = document.createElement('a');
+                            a.download = `modular-animation-${recordedFrames.length}frames.gif`;
+                            a.href = URL.createObjectURL(b);
+                            a.click();
+                            alert('GIF created!');
+                        });
+                        gif.render();
+                    }
+                };
+                img.src = url;
+            });
+        }
+
         function exportLaTeX() {
             const M = config.M;
             const factors = primeFactorization(M);
             const phiM = phi(M);
-            
-            let latex = `% Modular Reduction Projection: M = ${M}\n\\documentclass{article}\n\\usepackage{amsmath,amssymb}\n\\begin{document}\n\n`;
-            latex += `\\section*{Modular Reduction Analysis for $M = ${M}$}\n\n`;
-            latex += `\\subsection*{Prime Factorization}\n$$M = ${M} = ${factors.map(f => f.e === 1 ? `${f.p}` : `${f.p}^{${f.e}}`).join(' \\cdot ')}$$\n\n`;
-            latex += `\\subsection*{Euler's Totient}\n$$\\varphi(${M}) = ${phiM}$$\n\n`;
-            latex += `\\subsection*{Statistics}\nTotal: $${M}$\\\\\nCoprime: $${points.filter(p => p.coprime).length}$\\\\\nChannels: $${channels.size}$\n\n\\end{document}\n`;
-            
+            let latex = `\\documentclass{article}\n\\usepackage{amsmath}\n\\begin{document}\n\\section*{Modular Reduction: $M = ${M}$}\n$$M = ${factors.map(f => f.e===1?`${f.p}`:`${f.p}^{${f.e}}`).join(' \\cdot ')}$$\n$$\\varphi(${M}) = ${phiM}$$\n\\end{document}`;
             const blob = new Blob([latex], { type: 'text/plain' });
             const a = document.createElement('a');
             a.download = `modular-M${M}.tex`;
@@ -1694,7 +1761,6 @@
             tooltip = document.getElementById('tooltip');
             vizContainer = document.getElementById('vizContainer');
 
-            // Touch/mouse
             let startDist = 0;
             vizContainer.addEventListener('mousedown', e => {
                 isDragging = true;
@@ -1710,7 +1776,6 @@
                     updateViewBox();
                 }
                 
-                // Tooltip
                 const target = e.target;
                 if (target.hasAttribute('data-r')) {
                     const r = parseInt(target.getAttribute('data-r'));
@@ -1718,13 +1783,7 @@
                     tooltip.style.display = 'block';
                     tooltip.style.left = (e.pageX + 15) + 'px';
                     tooltip.style.top = (e.pageY + 15) + 'px';
-                    tooltip.innerHTML = `
-                        <strong>r = ${p.r}</strong><br>
-                        M = ${p.M}<br>
-                        GCD = ${p.gcd}<br>
-                        ${p.coprime ? 'Coprime' : `Channel M' = ${p.channel}`}<br>
-                        Angle: ${((p.angle * 180 / Math.PI) % 360).toFixed(1)}°
-                    `;
+                    tooltip.innerHTML = `<strong>r = ${p.r}</strong><br>M = ${p.M}<br>GCD = ${p.gcd}<br>${p.coprime ? 'Coprime' : `Channel M' = ${p.channel}`}<br>Angle: ${((p.angle * 180 / Math.PI) % 360).toFixed(1)}°`;
                 } else {
                     tooltip.style.display = 'none';
                 }
@@ -1735,7 +1794,6 @@
                 tooltip.style.display = 'none';
             });
 
-            // Zoom
             vizContainer.addEventListener('wheel', e => {
                 e.preventDefault();
                 const delta = e.deltaY < 0 ? 1.1 : 0.9;
@@ -1745,7 +1803,6 @@
                 updateViewBox();
             }, { passive: false });
 
-            // Touch zoom
             vizContainer.addEventListener('touchstart', e => {
                 if (e.touches.length === 2) {
                     const t1 = e.touches[0], t2 = e.touches[1];
@@ -1782,7 +1839,6 @@
                 startDist = 0;
             });
 
-            // Controls
             document.getElementById('modSlider').oninput = e => setM(parseInt(e.target.value));
             document.getElementById('modInput').oninput = e => {
                 const v = parseInt(e.target.value);
@@ -1819,12 +1875,21 @@
                 calculate();
                 render();
             };
+            document.getElementById('rotationSlider').oninput = e => {
+                config.rotation = parseInt(e.target.value);
+                document.getElementById('rotationVal').textContent = e.target.value;
+                render();
+            };
             document.getElementById('colorScheme').onchange = e => {
                 config.colorScheme = e.target.value;
                 render();
             };
             document.getElementById('gapSelect').onchange = e => {
                 config.gapHighlight = e.target.value;
+                render();
+            };
+            document.getElementById('filterType').onchange = e => {
+                config.filterType = e.target.value;
                 render();
             };
             document.getElementById('showProjections').onchange = e => {
@@ -1843,18 +1908,6 @@
                 config.colorInner = e.target.checked;
                 render();
             };
-            document.getElementById('loopCheck').onchange = e => {
-                config.loop = e.target.checked;
-            };
-            document.getElementById('recordCheck').onchange = e => {
-                config.recording = e.target.checked;
-                if (config.recording) recordedFrames = [];
-            };
-            document.getElementById('rotationSlider').oninput = e => {
-                config.rotation = parseInt(e.target.value);
-                document.getElementById('rotationVal').textContent = e.target.value;
-                render();
-            };
             document.getElementById('showSymmetry').onchange = e => {
                 config.showSymmetry = e.target.checked;
                 render();
@@ -1863,16 +1916,17 @@
                 config.highlightPrimes = e.target.checked;
                 render();
             };
-            document.getElementById('filterType').onchange = e => {
-                config.filterType = e.target.value;
-                render();
+            document.getElementById('loopCheck').onchange = e => {
+                config.loop = e.target.checked;
+            };
+            document.getElementById('recordCheck').onchange = e => {
+                config.recording = e.target.checked;
+                if (config.recording) recordedFrames = [];
             };
         }
 
-        // Init
-        setupEvents();
-        calculate();
-        render();
+        // Initialize when portal tab is first opened
+        window.portalInitialized = false;
     </script>
 </body>
 </html>
