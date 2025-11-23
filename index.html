@@ -633,6 +633,54 @@
             </div>
 
             <div class="control-section">
+                <h3>Advanced Analysis</h3>
+                <button onclick="analyzePattern()">🔬 Pattern Analysis</button>
+                <button onclick="compareModuli()">📊 Compare Moduli</button>
+                <button onclick="findInteresting()">✨ Find Interesting M</button>
+                <button onclick="showTheorems()">📖 Mathematical Theorems</button>
+                <div id="analysisResults" style="margin-top: 1rem; padding: 0.8rem; background: #f0f0f0; border-radius: 6px; display: none; max-height: 300px; overflow-y: auto; font-size: 0.85rem; color: #333;"></div>
+            </div>
+
+            <div class="control-section">
+                <h3>Symmetry & Patterns</h3>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showSymmetry">
+                    <label for="showSymmetry">Show Symmetry Axes</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="highlightPrimes">
+                    <label for="highlightPrimes">Highlight Prime Residues</label>
+                </div>
+                <div class="control-row">
+                    <label class="control-label">Rotation Angle: <span class="value-display" id="rotationVal">0</span>°</label>
+                    <input type="range" id="rotationSlider" min="0" max="360" step="1" value="0">
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Filter by Properties</h3>
+                <div class="control-row">
+                    <label class="control-label">Show Only Residues Where:</label>
+                    <select id="filterType">
+                        <option value="none" selected>All Residues</option>
+                        <option value="prime">r is Prime</option>
+                        <option value="square">r is Perfect Square</option>
+                        <option value="fibonacci">r in Fibonacci Sequence</option>
+                        <option value="power2">r is Power of 2</option>
+                        <option value="quadratic">Quadratic Residues</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Mathematical Explorer</h3>
+                <button onclick="generatePrimorial()">Generate Primorial</button>
+                <button onclick="generateFactorial()">Generate Factorial</button>
+                <button onclick="generateHighlyComposite()">Highly Composite</button>
+                <div class="info-text" style="margin-top: 0.5rem;">Explore special number sequences</div>
+            </div>
+
+            <div class="control-section">
                 <h3>Data Export</h3>
                 <div class="control-row">
                     <label class="control-label">Export Resolution (px)</label>
@@ -645,6 +693,7 @@
                 </div>
                 <button onclick="exportFrames()">Export Frame Sequence (PNG)</button>
                 <button onclick="exportGIF()">Export Animation (GIF)</button>
+                <button onclick="exportLaTeX()">Export LaTeX Code</button>
             </div>
         </aside>
     </div>
@@ -680,12 +729,65 @@
             return Array.from(d).sort((a, b) => a - b);
         }
 
+        function isPerfectSquare(n) {
+            const sqrt = Math.floor(Math.sqrt(n));
+            return sqrt * sqrt === n;
+        }
+
+        function isFibonacci(n) {
+            return isPerfectSquare(5 * n * n + 4) || isPerfectSquare(5 * n * n - 4);
+        }
+
+        function isPowerOf2(n) {
+            return n > 0 && (n & (n - 1)) === 0;
+        }
+
+        function isQuadraticResidue(a, p) {
+            if (gcd(a, p) !== 1) return false;
+            const exp = (p - 1) / 2;
+            let result = 1, base = a % p;
+            let e = exp;
+            while (e > 0) {
+                if (e % 2 === 1) result = (result * base) % p;
+                base = (base * base) % p;
+                e = Math.floor(e / 2);
+            }
+            return result === 1;
+        }
+
+        function getPrimorial(n) {
+            const primes = [];
+            for (let i = 2; primes.length < n; i++) {
+                if (isPrime(i)) primes.push(i);
+            }
+            return primes.reduce((a, b) => a * b, 1);
+        }
+
+        function factorial(n) {
+            let result = 1;
+            for (let i = 2; i <= n; i++) result *= i;
+            return result;
+        }
+
+        const highlyCompositeNumbers = [1, 2, 4, 6, 12, 24, 36, 48, 60, 120, 180, 240, 360, 720, 840, 1260, 1680, 2520, 5040];
+
+        function shouldShowPoint(p) {
+            if (config.filterType === 'none') return true;
+            if (config.filterType === 'prime') return isPrime(p.r);
+            if (config.filterType === 'square') return isPerfectSquare(p.r);
+            if (config.filterType === 'fibonacci') return isFibonacci(p.r);
+            if (config.filterType === 'power2') return isPowerOf2(p.r);
+            if (config.filterType === 'quadratic') return isQuadraticResidue(p.r, p.M);
+            return true;
+        }
+
         // State
         let config = {
             M: 42, zoom: 1, panX: 0, panY: 0, colorScheme: 'type', pointSize: 3,
             opacity: 1, spacingFactor: 1, minRing: 1, showProjections: true,
             showRings: true, showInnerRings: true, colorInner: false, gapHighlight: 'none',
-            animSpeed: 500, loop: true, recording: false
+            animSpeed: 500, loop: true, recording: false, rotation: 0, showSymmetry: false,
+            highlightPrimes: false, filterType: 'none'
         };
 
         let points = [], channels = new Map(), innerRings = new Map();
@@ -808,12 +910,40 @@
             svgGroup.innerHTML = '';
             const baseR = 400;
 
+            // Apply rotation
+            if (config.rotation !== 0) {
+                svgGroup.setAttribute('transform', `rotate(${config.rotation})`);
+            } else {
+                svgGroup.removeAttribute('transform');
+            }
+
+            // Symmetry axes
+            if (config.showSymmetry) {
+                const numAxes = omega(config.M) > 0 ? Math.min(phi(config.M), 12) : 8;
+                for (let i = 0; i < numAxes; i++) {
+                    const angle = (Math.PI * 2 * i) / numAxes;
+                    const x = baseR * 1.1 * Math.cos(angle - Math.PI / 2);
+                    const y = baseR * 1.1 * Math.sin(angle - Math.PI / 2);
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', 0);
+                    line.setAttribute('y1', 0);
+                    line.setAttribute('x2', x);
+                    line.setAttribute('y2', y);
+                    line.setAttribute('stroke', '#444444');
+                    line.setAttribute('stroke-width', '0.5');
+                    line.setAttribute('opacity', '0.3');
+                    line.setAttribute('stroke-dasharray', '5,5');
+                    svgGroup.appendChild(line);
+                }
+            }
+
             // Gap highlights
             if (config.gapHighlight !== 'none') {
                 const gap = parseInt(config.gapHighlight);
                 const pairs = gapPairs[gap] || [];
                 pairs.forEach(([r1, r2]) => {
                     const p1 = points[r1], p2 = points[r2];
+                    if (!shouldShowPoint(p1) || !shouldShowPoint(p2)) return;
                     const x1 = baseR * Math.cos(p1.angle - Math.PI / 2);
                     const y1 = baseR * Math.sin(p1.angle - Math.PI / 2);
                     const x2 = baseR * Math.cos(p2.angle - Math.PI / 2);
@@ -833,7 +963,7 @@
             // Projection lines
             if (config.showProjections) {
                 points.forEach(p => {
-                    if (!p.coprime) {
+                    if (!p.coprime && shouldShowPoint(p)) {
                         const ox = baseR * Math.cos(p.angle - Math.PI / 2);
                         const oy = baseR * Math.sin(p.angle - Math.PI / 2);
                         const cr = baseR * Math.pow(p.channel / config.M, config.spacingFactor);
@@ -877,6 +1007,7 @@
                     const r = baseR * Math.pow(d / config.M, config.spacingFactor);
                     rpts.forEach(p => {
                         if (!p.coprime && !config.colorInner) return;
+                        if (!shouldShowPoint(p)) return;
                         const x = r * Math.cos(p.angle - Math.PI / 2);
                         const y = r * Math.sin(p.angle - Math.PI / 2);
                         const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -891,13 +1022,22 @@
 
             // Outer points
             points.forEach(p => {
+                if (!shouldShowPoint(p)) return;
                 const x = baseR * Math.cos(p.angle - Math.PI / 2);
                 const y = baseR * Math.sin(p.angle - Math.PI / 2);
                 const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 c.setAttribute('cx', x);
                 c.setAttribute('cy', y);
                 c.setAttribute('r', config.pointSize);
-                c.setAttribute('fill', getColor(p));
+                
+                // Highlight primes
+                let color = getColor(p);
+                if (config.highlightPrimes && isPrime(p.r) && p.coprime) {
+                    color = '#ffff00';
+                    c.setAttribute('r', config.pointSize * 1.3);
+                }
+                
+                c.setAttribute('fill', color);
                 c.setAttribute('data-r', p.r);
                 c.style.cursor = 'pointer';
                 svgGroup.appendChild(c);
@@ -1425,6 +1565,129 @@
             });
         }
 
+        // Advanced Analysis Functions
+        function analyzePattern() {
+            const M = config.M;
+            const factors = primeFactorization(M);
+            const phiM = phi(M);
+            const coprime = points.filter(p => p.coprime).length;
+            
+            let report = `<h4 style="color: #667eea; margin-bottom: 0.5rem;">Pattern Analysis for M = ${M}</h4>`;
+            
+            const symmetryOrder = gcd(M, 360);
+            report += `<p><strong>Rotational Symmetry:</strong> ${symmetryOrder}-fold</p>`;
+            
+            const distributionUniformity = (phiM / M).toFixed(4);
+            report += `<p><strong>Coprime Density:</strong> ${(distributionUniformity * 100).toFixed(2)}%</p>`;
+            
+            const avgChannelSize = M / channels.size;
+            report += `<p><strong>Avg Channel Size:</strong> ${avgChannelSize.toFixed(2)} residues</p>`;
+            
+            let totalGapPairs = 0;
+            Object.values(gapPairs).forEach(pairs => totalGapPairs += pairs.length);
+            report += `<p><strong>Prime Constellation Pairs:</strong> ${totalGapPairs}</p>`;
+            
+            const primeResidues = points.filter(p => isPrime(p.r)).length;
+            report += `<p><strong>Prime Residues:</strong> ${primeResidues} (${(primeResidues/M*100).toFixed(1)}%)</p>`;
+            
+            if (factors.length === 1) report += `<p><strong>Structure:</strong> Prime - maximal coprime density</p>`;
+            else if (factors.every(f => f.e === 1)) report += `<p><strong>Structure:</strong> Squarefree</p>`;
+            else report += `<p><strong>Structure:</strong> Has repeated prime factors</p>`;
+            
+            const panel = document.getElementById('analysisResults');
+            panel.innerHTML = report;
+            panel.style.display = 'block';
+        }
+
+        function compareModuli() {
+            const current = config.M;
+            const candidates = [current - 1, current + 1, current * 2, Math.floor(current / 2)].filter(m => m >= 2 && m <= 10000);
+            
+            let report = `<h4 style="color: #667eea; margin-bottom: 0.5rem;">Comparative Analysis</h4>`;
+            report += `<table style="width: 100%; font-size: 0.85em; border-collapse: collapse;">`;
+            report += `<tr style="background: #667eea; color: white;"><th style="padding: 4px;">M</th><th>φ(M)</th><th>Divisors</th><th>Density</th></tr>`;
+            
+            candidates.forEach(m => {
+                const p = phi(m);
+                const ch = getDivisors(m).length;
+                const d = (p/m*100).toFixed(1);
+                const rowStyle = m === current ? 'background: #ffffcc; cursor: default;' : 'cursor: pointer;';
+                report += `<tr style="${rowStyle}" onclick="${m === current ? '' : `setM(${m})`}"><td style="padding: 4px; border-top: 1px solid #ddd;">${m}</td><td style="border-top: 1px solid #ddd;">${p}</td><td style="border-top: 1px solid #ddd;">${ch}</td><td style="border-top: 1px solid #ddd;">${d}%</td></tr>`;
+            });
+            
+            report += `</table><p style="margin-top: 0.5rem; font-size: 0.85em; color: #555;">Click to explore</p>`;
+            
+            document.getElementById('analysisResults').innerHTML = report;
+            document.getElementById('analysisResults').style.display = 'block';
+        }
+
+        function findInteresting() {
+            const interesting = [
+                { m: 30, reason: "Primorial(3)" },
+                { m: 60, reason: "Highly composite" },
+                { m: 210, reason: "Primorial(4)" },
+                { m: 360, reason: "Degree circle" },
+                { m: 2520, reason: "LCM(1..10)" },
+                { m: 97, reason: "Prime" },
+                { m: 1024, reason: "2¹⁰" },
+                { m: 2310, reason: "Primorial(5)" }
+            ];
+            
+            let report = `<h4 style="color: #667eea; margin-bottom: 0.5rem;">Interesting Moduli</h4><div style="max-height: 250px; overflow-y: auto;">`;
+            interesting.forEach(({m, reason}) => {
+                report += `<div style="padding: 0.4rem; margin: 0.3rem 0; background: #f8f9fa; border-left: 3px solid #667eea; cursor: pointer;" onclick="setM(${m})"><strong>M = ${m}</strong><br><span style="font-size: 0.85em; color: #666;">${reason}</span></div>`;
+            });
+            report += `</div>`;
+            
+            document.getElementById('analysisResults').innerHTML = report;
+            document.getElementById('analysisResults').style.display = 'block';
+        }
+
+        function showTheorems() {
+            let report = `<h4 style="color: #667eea; margin-bottom: 0.5rem;">Mathematical Theorems</h4><div style="max-height: 300px; overflow-y: auto; font-size: 0.85em;">`;
+            report += `<p style="margin: 0.5rem 0;"><strong>Euler's Theorem:</strong><br>If gcd(a,M) = 1, then a<sup>φ(M)</sup> ≡ 1 (mod M)</p>`;
+            report += `<p style="margin: 0.5rem 0;"><strong>Chinese Remainder Theorem:</strong><br>ℤ/(m₁m₂)ℤ ≅ ℤ/m₁ℤ × ℤ/m₂ℤ for coprime m₁,m₂</p>`;
+            report += `<p style="margin: 0.5rem 0;"><strong>Euler's φ Function:</strong><br>φ(M) counts coprime residues<br>For prime p: φ(p) = p - 1</p>`;
+            report += `<p style="margin: 0.5rem 0;"><strong>Prime Number Theorem:</strong><br>π(x) ~ x/ln(x)</p>`;
+            report += `</div>`;
+            
+            document.getElementById('analysisResults').innerHTML = report;
+            document.getElementById('analysisResults').style.display = 'block';
+        }
+
+        function generatePrimorial() {
+            const n = parseInt(prompt("Generate primorial(n) - enter n (1-8):", "4"));
+            if (n && n >= 1 && n <= 8) setM(getPrimorial(n));
+        }
+
+        function generateFactorial() {
+            const n = parseInt(prompt("Generate n! - enter n (2-7):", "5"));
+            if (n && n >= 2 && n <= 7) setM(factorial(n));
+        }
+
+        function generateHighlyComposite() {
+            const idx = parseInt(prompt(`Choose index (0-${highlyCompositeNumbers.length-1}):`, "10"));
+            if (idx >= 0 && idx < highlyCompositeNumbers.length) setM(highlyCompositeNumbers[idx]);
+        }
+
+        function exportLaTeX() {
+            const M = config.M;
+            const factors = primeFactorization(M);
+            const phiM = phi(M);
+            
+            let latex = `% Modular Reduction Projection: M = ${M}\n\\documentclass{article}\n\\usepackage{amsmath,amssymb}\n\\begin{document}\n\n`;
+            latex += `\\section*{Modular Reduction Analysis for $M = ${M}$}\n\n`;
+            latex += `\\subsection*{Prime Factorization}\n$$M = ${M} = ${factors.map(f => f.e === 1 ? `${f.p}` : `${f.p}^{${f.e}}`).join(' \\cdot ')}$$\n\n`;
+            latex += `\\subsection*{Euler's Totient}\n$$\\varphi(${M}) = ${phiM}$$\n\n`;
+            latex += `\\subsection*{Statistics}\nTotal: $${M}$\\\\\nCoprime: $${points.filter(p => p.coprime).length}$\\\\\nChannels: $${channels.size}$\n\n\\end{document}\n`;
+            
+            const blob = new Blob([latex], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.download = `modular-M${M}.tex`;
+            a.href = URL.createObjectURL(blob);
+            a.click();
+        }
+
         // Events
         function setupEvents() {
             svgGroup = document.getElementById('vizGroup');
@@ -1586,6 +1849,23 @@
             document.getElementById('recordCheck').onchange = e => {
                 config.recording = e.target.checked;
                 if (config.recording) recordedFrames = [];
+            };
+            document.getElementById('rotationSlider').oninput = e => {
+                config.rotation = parseInt(e.target.value);
+                document.getElementById('rotationVal').textContent = e.target.value;
+                render();
+            };
+            document.getElementById('showSymmetry').onchange = e => {
+                config.showSymmetry = e.target.checked;
+                render();
+            };
+            document.getElementById('highlightPrimes').onchange = e => {
+                config.highlightPrimes = e.target.checked;
+                render();
+            };
+            document.getElementById('filterType').onchange = e => {
+                config.filterType = e.target.value;
+                render();
             };
         }
 
