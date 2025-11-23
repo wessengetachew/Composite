@@ -564,6 +564,10 @@
             .theory-container {
                 padding: 2rem;
             }
+
+            #detailedAnalysis > div {
+                grid-template-columns: 1fr !important;
+            }
         }
 
         @media (max-width: 640px) {
@@ -579,11 +583,20 @@
                 padding: 0.8rem 1rem;
                 font-size: 0.9rem;
             }
+
+            #detailedAnalysis {
+                font-size: 0.8rem;
+                padding: 1rem;
+            }
+
+            #detailedAnalysis h3 {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="recording-badge" id="recordingBadge">● RECORDING</div>
+    <div class="recording-badge" id="recordingBadge">RECORDING</div>
 
     <header class="site-header">
         <div class="header-content">
@@ -593,9 +606,9 @@
     </header>
 
     <nav class="tab-nav">
-        <button class="tab-button active" onclick="switchTab('portal')">🔬 Interactive Portal</button>
-        <button class="tab-button" onclick="switchTab('theory')">📖 Mathematical Theory</button>
-        <button class="tab-button" onclick="switchTab('about')">ℹ️ About</button>
+        <button class="tab-button active" onclick="switchTab('portal')">Interactive Portal</button>
+        <button class="tab-button" onclick="switchTab('theory')">Mathematical Theory</button>
+        <button class="tab-button" onclick="switchTab('about')">About</button>
     </nav>
 
     <!-- PORTAL TAB -->
@@ -603,8 +616,8 @@
         <div class="portal-container">
             <section class="visualization-section">
                 <div class="viz-header">
-                    <h2 class="viz-title" id="vizTitle">Modular Space: M = 42</h2>
-                    <p class="viz-meta" id="vizMeta">Prime Factorization: 2 × 3 × 7</p>
+                    <h2 class="viz-title" id="vizTitle">Modular Space: M = 32</h2>
+                    <p class="viz-meta" id="vizMeta">Prime Factorization: 2⁵</p>
                 </div>
 
                 <div id="vizContainer">
@@ -623,6 +636,91 @@
                 </div>
 
                 <div class="tooltip" id="tooltip"></div>
+
+                <!-- Detailed Analysis Panel -->
+                <div id="detailedAnalysis" style="margin-top: 2rem; padding: 1.5rem; background: #1a1a1a; border-radius: 8px; color: #fff; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <div>
+                            <h3 style="color: #00ffff; margin-bottom: 1rem; font-size: 1.2rem;">Configuration</h3>
+                            <div id="configInfo" style="line-height: 1.8;">
+                                <div><strong style="color: #00ffff;">Modulus M =</strong> <span id="detailM">32</span></div>
+                                <div><strong>Prime Factorization:</strong> <span id="detailFactor">2⁵</span></div>
+                                <div><strong>Display Mode:</strong> <span id="detailMode">Projection Lines</span></div>
+                                <div><strong>Color Scheme:</strong> <span id="detailColor">Coprime vs Non-coprime</span></div>
+                            </div>
+                            
+                            <h3 style="color: #00ffff; margin-top: 1.5rem; margin-bottom: 1rem; font-size: 1.2rem;">Statistics</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                                <div style="background: #0a0a0a; padding: 0.8rem; border-radius: 6px; border-left: 3px solid #00ffff;">
+                                    <div style="font-size: 0.75rem; color: #aaa;">φ(M)</div>
+                                    <div style="font-size: 1.5rem; color: #00ffff;" id="detailPhi">16</div>
+                                </div>
+                                <div style="background: #0a0a0a; padding: 0.8rem; border-radius: 6px; border-left: 3px solid #ff1493;">
+                                    <div style="font-size: 0.75rem; color: #aaa;">Reducible Residues</div>
+                                    <div style="font-size: 1.5rem; color: #ff1493;" id="detailReducible">16</div>
+                                </div>
+                                <div style="background: #0a0a0a; padding: 0.8rem; border-radius: 6px; border-left: 3px solid #ffd700;">
+                                    <div style="font-size: 0.75rem; color: #aaa;">Reducibility Ratio</div>
+                                    <div style="font-size: 1.5rem; color: #ffd700;" id="detailRatio">50.0%</div>
+                                </div>
+                                <div style="background: #0a0a0a; padding: 0.8rem; border-radius: 6px; border-left: 3px solid #ffd700;">
+                                    <div style="font-size: 0.75rem; color: #aaa;">Farey Channels</div>
+                                    <div style="font-size: 1.5rem; color: #ffd700;" id="detailChannels">6</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 style="color: #00ffff; margin-bottom: 1rem; font-size: 1.2rem;">Color Key</h3>
+                            <div style="line-height: 2;">
+                                <div><span style="display: inline-block; width: 20px; height: 20px; background: #00ffff; border-radius: 3px; vertical-align: middle; margin-right: 10px;"></span><strong>Cyan</strong> = Irreducible (gcd=1)</div>
+                                <div><span style="display: inline-block; width: 20px; height: 20px; background: #ff1493; border-radius: 3px; vertical-align: middle; margin-right: 10px;"></span><strong>Red</strong> = Reducible (gcd>1)</div>
+                                <div><span style="display: inline-block; width: 20px; height: 20px; background: #ffd700; border-radius: 3px; vertical-align: middle; margin-right: 10px;"></span><strong>Gold</strong> = Farey Channels & Lines</div>
+                                <div><span style="display: inline-block; width: 20px; height: 20px; background: #ffffff; border-radius: 3px; vertical-align: middle; margin-right: 10px;"></span><strong>White</strong> = Outer ring (M circle)</div>
+                            </div>
+                            
+                            <div style="margin-top: 1rem; padding: 1rem; background: #0a0a0a; border-radius: 6px; border-left: 3px solid #00ffff;">
+                                <div style="color: #00ffff; font-weight: bold; margin-bottom: 0.5rem;">Farey Lines:</div>
+                                <div style="font-size: 0.85rem; line-height: 1.6;">Curved gold lines connect each reducible residue r/M on the outer ring to its reduced form r'/M' on the corresponding inner channel ring.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <div>
+                            <h3 style="color: #00ffff; margin-bottom: 1rem; font-size: 1.2rem;">Analysis</h3>
+                            <div style="line-height: 1.8;">
+                                <div><strong style="color: #00ffff;">Modulus M =</strong> <span id="analysisM">32</span> = <span id="analysisFactorization">2⁵</span></div>
+                                <div style="margin-top: 0.8rem;"><strong style="color: #00ffff;">Coprime:</strong> <span id="analysisCoprime">16</span> residues (φ(M))</div>
+                                <div><strong style="color: #ff1493;">Reducible:</strong> <span id="analysisReducible">16</span> residues</div>
+                                <div><strong style="color: #ffd700;">Ratio:</strong> <span id="analysisRatioPercent">50.0%</span> reducible</div>
+                            </div>
+                            
+                            <h4 style="color: #00ffff; margin-top: 1.5rem; margin-bottom: 0.8rem; font-size: 1rem;">Farey Channels:</h4>
+                            <div id="channelBreakdown" style="font-size: 0.85rem; line-height: 1.6; max-height: 200px; overflow-y: auto;">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 style="color: #00ffff; margin-bottom: 1rem; font-size: 1.2rem;">Key Result</h3>
+                            <div style="background: #0a0a0a; padding: 1.5rem; border-radius: 6px; border: 2px solid #00ffff;">
+                                <div style="line-height: 1.8; font-size: 0.95rem;">
+                                    <p style="margin-bottom: 1rem;">Every composite M has reducible residues projecting onto simpler Farey channels.</p>
+                                    <p style="margin-bottom: 1rem;">The number projecting to channel M' is exactly <strong style="color: #00ffff;">d = M/M'</strong> (multiplicity).</p>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 1rem; padding: 1rem; background: #0a0a0a; border-radius: 6px; border-left: 3px solid #ffd700;">
+                                <div style="color: #ffd700; font-weight: bold; margin-bottom: 0.5rem;">Note:</div>
+                                <div style="font-size: 0.85rem; line-height: 1.6;">
+                                    r=0 (with gcd(0,M)=M) is always placed at <strong style="color: #ffd700;">0° = 3 o'clock</strong> position. 
+                                    All points are plotted at angle <strong style="color: #ffd700;">θ = 2πr/M</strong> measured counterclockwise from the right.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <aside class="controls-panel">
@@ -651,11 +749,11 @@
                 <div class="control-section">
                     <h3>Modulus Configuration</h3>
                     <div class="control-row">
-                        <label class="control-label">M = <span class="value-display" id="modVal">42</span></label>
-                        <input type="range" id="modSlider" min="2" max="5000" value="42">
+                        <label class="control-label">M = <span class="value-display" id="modVal">32</span></label>
+                        <input type="range" id="modSlider" min="2" max="5000" value="32">
                     </div>
                     <div class="control-row">
-                        <input type="number" id="modInput" min="2" max="10000" value="42" placeholder="Enter M">
+                        <input type="number" id="modInput" min="2" max="10000" value="32" placeholder="Enter M">
                     </div>
                     <div class="preset-grid">
                         <button class="preset-btn" onclick="setM(12)">12</button>
@@ -664,8 +762,8 @@
                         <button class="preset-btn" onclick="setM(210)">210</button>
                         <button class="preset-btn" onclick="setM(420)">420</button>
                         <button class="preset-btn" onclick="setM(2310)">2310</button>
-                        <button class="preset-btn" onclick="setM(17)">17★</button>
-                        <button class="preset-btn" onclick="setM(101)">101★</button>
+                        <button class="preset-btn" onclick="setM(17)">17 Prime</button>
+                        <button class="preset-btn" onclick="setM(101)">101 Prime</button>
                         <button class="preset-btn" onclick="setM(1024)">2¹⁰</button>
                     </div>
                 </div>
@@ -684,27 +782,27 @@
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-label">Modulus</div>
-                            <div class="stat-value" id="statM">42</div>
+                            <div class="stat-value" id="statM">32</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-label">φ(M)</div>
-                            <div class="stat-value" id="statPhi">12</div>
+                            <div class="stat-value" id="statPhi">16</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-label">Coprime</div>
-                            <div class="stat-value" id="statCoprime">12</div>
+                            <div class="stat-value" id="statCoprime">16</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-label">Non-coprime</div>
-                            <div class="stat-value" id="statNonCoprime">30</div>
+                            <div class="stat-value" id="statNonCoprime">16</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-label">Channels</div>
-                            <div class="stat-value" id="statChannels">8</div>
+                            <div class="stat-value" id="statChannels">6</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-label">Density</div>
-                            <div class="stat-value" id="statDensity">28.6%</div>
+                            <div class="stat-value" id="statDensity">50.0%</div>
                         </div>
                         <div class="stat-card" style="grid-column: 1 / -1;">
                             <div class="stat-label">Classification</div>
@@ -828,10 +926,10 @@
 
                 <div class="control-section">
                     <h3>Advanced Analysis</h3>
-                    <button onclick="analyzePattern()"> Pattern Analysis</button>
-                    <button onclick="compareModuli()"> Compare Moduli</button>
-                    <button onclick="findInteresting()"> Find Interesting M</button>
-                    <button onclick="showTheorems()"> Mathematical Theorems</button>
+                    <button onclick="analyzePattern()">Pattern Analysis</button>
+                    <button onclick="compareModuli()">Compare Moduli</button>
+                    <button onclick="findInteresting()">Find Interesting M</button>
+                    <button onclick="showTheorems()">Mathematical Theorems</button>
                     <div id="analysisResults" style="margin-top: 1rem; padding: 0.8rem; background: #f0f0f0; border-radius: 6px; display: none; max-height: 300px; overflow-y: auto; font-size: 0.85rem; color: #333;"></div>
                 </div>
 
@@ -1211,7 +1309,7 @@
 
         // State
         let config = {
-            M: 42, zoom: 1, panX: 0, panY: 0, colorScheme: 'type', pointSize: 3,
+            M: 32, zoom: 1, panX: 0, panY: 0, colorScheme: 'type', pointSize: 3,
             opacity: 1, spacingFactor: 1, minRing: 1, showProjections: true,
             showRings: true, showInnerRings: true, colorInner: false, gapHighlight: 'none',
             animSpeed: 500, loop: true, recording: false, rotation: 0, showSymmetry: false,
@@ -1306,17 +1404,19 @@
             const f = primeFactorization(M);
             const p = phi(M);
             const coprime = points.filter(x => x.coprime).length;
+            const reducible = M - coprime;
             const prime = isPrime(M);
             const w = omega(M);
+            const formattedFactor = formatFactorization(f);
 
             document.getElementById('vizTitle').textContent = `Modular Space: M = ${M}`;
-            document.getElementById('vizMeta').textContent = `Prime Factorization: ${formatFactorization(f)}`;
+            document.getElementById('vizMeta').textContent = `Prime Factorization: ${formattedFactor}`;
             document.getElementById('modVal').textContent = M;
             document.getElementById('modInput').value = M;
             document.getElementById('statM').textContent = M;
             document.getElementById('statPhi').textContent = p;
             document.getElementById('statCoprime').textContent = coprime;
-            document.getElementById('statNonCoprime').textContent = M - coprime;
+            document.getElementById('statNonCoprime').textContent = reducible;
             document.getElementById('statChannels').textContent = channels.size;
             document.getElementById('statDensity').textContent = (p / M * 100).toFixed(1) + '%';
             document.getElementById('statClass').textContent = prime ? 'Prime' : 'Composite';
@@ -1329,6 +1429,56 @@
             document.getElementById('statCousin').textContent = gapPairs[4].length;
             document.getElementById('statSexy').textContent = gapPairs[6].length;
             document.getElementById('statGap8').textContent = gapPairs[8].length;
+
+            // Update detailed analysis panel
+            document.getElementById('detailM').textContent = M;
+            document.getElementById('detailFactor').textContent = formattedFactor;
+            document.getElementById('detailPhi').textContent = p;
+            document.getElementById('detailReducible').textContent = reducible;
+            document.getElementById('detailRatio').textContent = ((reducible / M) * 100).toFixed(1) + '%';
+            document.getElementById('detailChannels').textContent = channels.size;
+            
+            // Color scheme name
+            const colorNames = {
+                'type': 'Coprime vs Non-coprime',
+                'spf': 'Smallest Prime Factor',
+                'lpf': 'Largest Prime Factor',
+                'gcd': 'GCD Value',
+                'depth': 'Channel Depth',
+                'rainbow': 'Rainbow Spectrum'
+            };
+            document.getElementById('detailColor').textContent = colorNames[config.colorScheme];
+            
+            // Display mode
+            let displayMode = [];
+            if (config.showProjections) displayMode.push('Projection Lines');
+            if (config.showRings) displayMode.push('Channel Rings');
+            if (config.showInnerRings) displayMode.push('Inner Points');
+            document.getElementById('detailMode').textContent = displayMode.join(', ') || 'Basic';
+            
+            // Analysis section
+            document.getElementById('analysisM').textContent = M;
+            document.getElementById('analysisFactorization').textContent = formattedFactor;
+            document.getElementById('analysisCoprime').textContent = coprime;
+            document.getElementById('analysisReducible').textContent = reducible;
+            document.getElementById('analysisRatioPercent').textContent = ((reducible / M) * 100).toFixed(1) + '%';
+            
+            // Channel breakdown
+            const channelDiv = document.getElementById('channelBreakdown');
+            channelDiv.innerHTML = '';
+            
+            // Sort channels by M' descending
+            const sortedChannels = Array.from(channels.entries())
+                .filter(([mp, data]) => mp < M) // Exclude M itself
+                .sort((a, b) => b[0] - a[0]);
+            
+            sortedChannels.forEach(([mp, data]) => {
+                const d = M / mp;
+                const line = document.createElement('div');
+                line.style.marginBottom = '0.4rem';
+                line.innerHTML = `<strong>M' = ${mp}:</strong> ${data.count} residues (d = ${d})`;
+                channelDiv.appendChild(line);
+            });
         }
 
         // Render
@@ -1578,8 +1728,8 @@
         function exportPNG() {
             const res = parseInt(document.getElementById('exportRes').value);
             const titleHeight = res * 0.08;
-            const vizWidth = res * 0.70;
-            const legendWidth = res * 0.30;
+            const vizWidth = res * 0.65;
+            const legendWidth = res * 0.35;
             const vizHeight = res - titleHeight;
             
             const canvas = document.createElement('canvas');
@@ -1587,9 +1737,11 @@
             canvas.height = res;
             const ctx = canvas.getContext('2d');
             
+            // Background
             ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, res, res);
             
+            // Title bar
             ctx.fillStyle = '#0a0a0a';
             ctx.fillRect(0, 0, res, titleHeight);
             
@@ -1615,6 +1767,7 @@
             ctx.lineTo(res, titleHeight);
             ctx.stroke();
             
+            // Visualization
             const vizCanvas = document.createElement('canvas');
             vizCanvas.width = vizWidth;
             vizCanvas.height = vizHeight;
@@ -1637,6 +1790,7 @@
                 
                 ctx.drawImage(vizCanvas, 0, titleHeight);
                 
+                // Legend panel
                 const lx = vizWidth;
                 const ly = titleHeight;
                 
@@ -1647,33 +1801,194 @@
                 ctx.lineWidth = 2;
                 ctx.strokeRect(lx, ly, legendWidth, vizHeight);
                 
-                let yPos = ly + res * 0.03;
+                let yPos = ly + res * 0.025;
                 const leftMargin = lx + res * 0.015;
-                const fontSize = res * 0.011;
-                const lineHeight = res * 0.018;
+                const fontSize = res * 0.010;
+                const lineHeight = res * 0.016;
                 
                 ctx.textAlign = 'left';
-                ctx.font = `bold ${fontSize * 1.3}px Arial`;
-                ctx.fillStyle = '#ffd700';
-                ctx.fillText('Statistical Analysis', leftMargin, yPos);
-                yPos += lineHeight * 2;
+                
+                // Configuration section
+                ctx.font = `bold ${fontSize * 1.4}px Arial`;
+                ctx.fillStyle = '#00ffff';
+                ctx.fillText('Configuration', leftMargin, yPos);
+                yPos += lineHeight * 1.8;
+                
+                ctx.font = `bold ${fontSize * 1.1}px Arial`;
+                ctx.fillStyle = '#00ffff';
+                ctx.fillText(`Modulus M = ${config.M}`, leftMargin, yPos);
+                yPos += lineHeight * 1.2;
+                
+                ctx.font = `${fontSize * 0.9}px Arial`;
+                ctx.fillStyle = '#cccccc';
+                ctx.fillText(`Prime Factorization: ${formatFactorization(factors)}`, leftMargin, yPos);
+                yPos += lineHeight * 0.95;
+                
+                const colorNames = {
+                    'type': 'Coprime vs Non-coprime',
+                    'spf': 'Smallest Prime Factor',
+                    'lpf': 'Largest Prime Factor',
+                    'gcd': 'GCD Value',
+                    'depth': 'Channel Depth',
+                    'rainbow': 'Rainbow Spectrum'
+                };
+                ctx.fillText(`Color: ${colorNames[config.colorScheme]}`, leftMargin, yPos);
+                yPos += lineHeight * 1.8;
+                
+                // Statistics section
+                ctx.font = `bold ${fontSize * 1.4}px Arial`;
+                ctx.fillStyle = '#00ffff';
+                ctx.fillText('Statistics', leftMargin, yPos);
+                yPos += lineHeight * 1.8;
                 
                 const M = config.M;
                 const phiM = phi(M);
+                const coprime = points.filter(x => x.coprime).length;
+                const reducible = M - coprime;
+                const ratio = ((reducible / M) * 100).toFixed(1);
                 
-                ctx.font = `bold ${fontSize * 1.05}px Arial`;
+                // Stats grid
+                const statBoxWidth = legendWidth * 0.45;
+                const statBoxHeight = res * 0.045;
+                const statGap = res * 0.01;
+                
+                // Row 1: φ(M) and Reducible
+                ctx.fillStyle = '#0a0a0a';
+                ctx.fillRect(leftMargin, yPos, statBoxWidth, statBoxHeight);
+                ctx.strokeStyle = '#00ffff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(leftMargin, yPos, statBoxWidth, statBoxHeight);
+                
+                ctx.font = `${fontSize * 0.75}px Arial`;
+                ctx.fillStyle = '#aaaaaa';
+                ctx.fillText('φ(M)', leftMargin + res * 0.005, yPos + statBoxHeight * 0.35);
+                ctx.font = `bold ${fontSize * 1.5}px Arial`;
                 ctx.fillStyle = '#00ffff';
-                ctx.fillText('Modulus Properties', leftMargin, yPos);
+                ctx.fillText(phiM, leftMargin + res * 0.005, yPos + statBoxHeight * 0.75);
+                
+                const col2X = leftMargin + statBoxWidth + statGap;
+                ctx.fillStyle = '#0a0a0a';
+                ctx.fillRect(col2X, yPos, statBoxWidth, statBoxHeight);
+                ctx.strokeStyle = '#ff1493';
+                ctx.strokeRect(col2X, yPos, statBoxWidth, statBoxHeight);
+                
+                ctx.font = `${fontSize * 0.75}px Arial`;
+                ctx.fillStyle = '#aaaaaa';
+                ctx.fillText('Reducible Residues', col2X + res * 0.005, yPos + statBoxHeight * 0.35);
+                ctx.font = `bold ${fontSize * 1.5}px Arial`;
+                ctx.fillStyle = '#ff1493';
+                ctx.fillText(reducible, col2X + res * 0.005, yPos + statBoxHeight * 0.75);
+                
+                yPos += statBoxHeight + statGap;
+                
+                // Row 2: Ratio and Channels
+                ctx.fillStyle = '#0a0a0a';
+                ctx.fillRect(leftMargin, yPos, statBoxWidth, statBoxHeight);
+                ctx.strokeStyle = '#ffd700';
+                ctx.strokeRect(leftMargin, yPos, statBoxWidth, statBoxHeight);
+                
+                ctx.font = `${fontSize * 0.75}px Arial`;
+                ctx.fillStyle = '#aaaaaa';
+                ctx.fillText('Reducibility Ratio', leftMargin + res * 0.005, yPos + statBoxHeight * 0.35);
+                ctx.font = `bold ${fontSize * 1.5}px Arial`;
+                ctx.fillStyle = '#ffd700';
+                ctx.fillText(`${ratio}%`, leftMargin + res * 0.005, yPos + statBoxHeight * 0.75);
+                
+                ctx.fillStyle = '#0a0a0a';
+                ctx.fillRect(col2X, yPos, statBoxWidth, statBoxHeight);
+                ctx.strokeStyle = '#ffd700';
+                ctx.strokeRect(col2X, yPos, statBoxWidth, statBoxHeight);
+                
+                ctx.font = `${fontSize * 0.75}px Arial`;
+                ctx.fillStyle = '#aaaaaa';
+                ctx.fillText('Farey Channels', col2X + res * 0.005, yPos + statBoxHeight * 0.35);
+                ctx.font = `bold ${fontSize * 1.5}px Arial`;
+                ctx.fillStyle = '#ffd700';
+                ctx.fillText(channels.size, col2X + res * 0.005, yPos + statBoxHeight * 0.75);
+                
+                yPos += statBoxHeight + lineHeight * 2;
+                
+                // Color Key section
+                ctx.font = `bold ${fontSize * 1.4}px Arial`;
+                ctx.fillStyle = '#00ffff';
+                ctx.fillText('Color Key', leftMargin, yPos);
+                yPos += lineHeight * 1.6;
+                
+                ctx.font = `${fontSize * 0.9}px Arial`;
+                const colorBoxSize = res * 0.012;
+                
+                // Cyan
+                ctx.fillStyle = '#00ffff';
+                ctx.fillRect(leftMargin, yPos - colorBoxSize * 0.5, colorBoxSize, colorBoxSize);
+                ctx.fillStyle = '#cccccc';
+                ctx.fillText('Cyan = Irreducible (gcd=1)', leftMargin + colorBoxSize * 1.5, yPos);
+                yPos += lineHeight * 1.1;
+                
+                // Red
+                ctx.fillStyle = '#ff1493';
+                ctx.fillRect(leftMargin, yPos - colorBoxSize * 0.5, colorBoxSize, colorBoxSize);
+                ctx.fillStyle = '#cccccc';
+                ctx.fillText('Red = Reducible (gcd>1)', leftMargin + colorBoxSize * 1.5, yPos);
+                yPos += lineHeight * 1.1;
+                
+                // Gold
+                ctx.fillStyle = '#ffd700';
+                ctx.fillRect(leftMargin, yPos - colorBoxSize * 0.5, colorBoxSize, colorBoxSize);
+                ctx.fillStyle = '#cccccc';
+                ctx.fillText('Gold = Farey Channels', leftMargin + colorBoxSize * 1.5, yPos);
+                yPos += lineHeight * 1.1;
+                
+                // White
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(leftMargin, yPos - colorBoxSize * 0.5, colorBoxSize, colorBoxSize);
+                ctx.fillStyle = '#cccccc';
+                ctx.fillText('White = Outer ring (M)', leftMargin + colorBoxSize * 1.5, yPos);
+                yPos += lineHeight * 2;
+                
+                // Analysis section
+                ctx.font = `bold ${fontSize * 1.4}px Arial`;
+                ctx.fillStyle = '#00ffff';
+                ctx.fillText('Analysis', leftMargin, yPos);
+                yPos += lineHeight * 1.6;
+                
+                ctx.font = `${fontSize * 0.85}px Arial`;
+                ctx.fillStyle = '#cccccc';
+                ctx.fillText(`Coprime: ${coprime} residues (φ(M))`, leftMargin, yPos);
+                yPos += lineHeight * 0.9;
+                ctx.fillText(`Reducible: ${reducible} residues`, leftMargin, yPos);
+                yPos += lineHeight * 0.9;
+                ctx.fillText(`Ratio: ${ratio}% reducible`, leftMargin, yPos);
+                yPos += lineHeight * 1.6;
+                
+                // Channel breakdown
+                ctx.font = `bold ${fontSize * 1.1}px Arial`;
+                ctx.fillStyle = '#00ffff';
+                ctx.fillText('Farey Channels:', leftMargin, yPos);
                 yPos += lineHeight * 1.2;
                 
-                ctx.font = `${fontSize * 0.88}px Arial`;
+                ctx.font = `${fontSize * 0.8}px Arial`;
                 ctx.fillStyle = '#cccccc';
                 
-                const modProps = [`M = ${M}`, `φ(M) = ${phiM}`, `Channels = ${channels.size}`];
-                modProps.forEach(prop => {
-                    ctx.fillText(prop, leftMargin + fontSize * 0.4, yPos);
-                    yPos += lineHeight * 0.9;
+                const sortedChannels = Array.from(channels.entries())
+                    .filter(([mp, data]) => mp < M)
+                    .sort((a, b) => b[0] - a[0])
+                    .slice(0, 10); // Limit to top 10 for space
+                
+                sortedChannels.forEach(([mp, data]) => {
+                    const d = M / mp;
+                    ctx.fillText(`M' = ${mp}: ${data.count} residues (d = ${d})`, leftMargin, yPos);
+                    yPos += lineHeight * 0.85;
                 });
+                
+                // Footer
+                yPos = ly + vizHeight - lineHeight * 3;
+                ctx.font = `bold ${fontSize * 0.9}px Arial`;
+                ctx.fillStyle = '#ffd700';
+                ctx.fillText('By Wessen Getachew', leftMargin, yPos);
+                yPos += lineHeight * 1.1;
+                ctx.font = `${fontSize * 0.8}px Arial`;
+                ctx.fillStyle = '#888888';
+                ctx.fillText('@7dview', leftMargin, yPos);
                 
                 canvas.toBlob(blob => {
                     const a = document.createElement('a');
@@ -1970,6 +2285,14 @@
 
         // Initialize when portal tab is first opened
         window.portalInitialized = false;
+        
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            setupEvents();
+            calculate();
+            render();
+            window.portalInitialized = true;
+        });
     </script>
 </body>
 </html>
