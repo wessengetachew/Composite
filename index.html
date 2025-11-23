@@ -861,6 +861,9 @@
                                 <option value="consecutive">Consecutive (1 to M)</option>
                                 <option value="range">Range (M₁ to M₂)</option>
                                 <option value="custom">Custom List</option>
+                                <option value="splitscreen">Split Screen (2 or 4)</option>
+                                <option value="overlay">Overlay Comparison</option>
+                                <option value="difference">Difference Highlight</option>
                             </select>
                         </div>
 
@@ -899,6 +902,86 @@
                             </div>
                         </div>
 
+                        <div id="splitscreenControls" style="display: none;">
+                            <div class="control-row">
+                                <label class="control-label">Layout</label>
+                                <select id="splitLayout">
+                                    <option value="2h">2 Horizontal</option>
+                                    <option value="2v">2 Vertical</option>
+                                    <option value="4">2×2 Grid</option>
+                                </select>
+                            </div>
+                            <div class="control-row">
+                                <label class="control-label">Moduli to Compare</label>
+                                <input type="text" id="splitModList" value="30,60" 
+                                       style="width: 100%; padding: 0.5rem; background: rgba(0,0,0,0.5); 
+                                              border: 1px solid rgba(255,215,0,0.5); color: #fff; 
+                                              border-radius: 6px; font-family: monospace;">
+                                <p style="font-size: 0.75rem; color: #7f8c8d; margin-top: 0.3rem;">
+                                    2 or 4 values, e.g.: 30,60 or 30,60,90,120
+                                </p>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="splitSyncZoom" checked>
+                                <label for="splitSyncZoom">Sync Zoom & Pan</label>
+                            </div>
+                        </div>
+
+                        <div id="overlayControls" style="display: none;">
+                            <div class="control-row">
+                                <label class="control-label">Primary M: <span class="value-display" id="overlayPrimaryVal">30</span></label>
+                                <input type="number" id="overlayPrimaryInput" min="2" max="500" value="30" 
+                                       style="width: 100%; padding: 0.5rem; background: rgba(0,0,0,0.5); 
+                                              border: 1px solid rgba(255,215,0,0.5); color: #fff; 
+                                              border-radius: 6px;">
+                            </div>
+                            <div class="control-row">
+                                <label class="control-label">Overlay M: <span class="value-display" id="overlaySecondVal">60</span></label>
+                                <input type="number" id="overlaySecondInput" min="2" max="500" value="60" 
+                                       style="width: 100%; padding: 0.5rem; background: rgba(0,0,0,0.5); 
+                                              border: 1px solid rgba(255,215,0,0.5); color: #fff; 
+                                              border-radius: 6px;">
+                            </div>
+                            <div class="control-row">
+                                <label class="control-label">Blend Mode</label>
+                                <select id="overlayBlendMode">
+                                    <option value="alpha">Alpha Blend</option>
+                                    <option value="additive">Additive</option>
+                                    <option value="difference">Difference</option>
+                                    <option value="multiply">Multiply</option>
+                                </select>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="overlayHighlightCommon" checked>
+                                <label for="overlayHighlightCommon">Highlight Common Points</label>
+                            </div>
+                        </div>
+
+                        <div id="differenceControls" style="display: none;">
+                            <div class="control-row">
+                                <label class="control-label">Base M: <span class="value-display" id="diffBaseVal">30</span></label>
+                                <input type="number" id="diffBaseInput" min="2" max="500" value="30" 
+                                       style="width: 100%; padding: 0.5rem; background: rgba(0,0,0,0.5); 
+                                              border: 1px solid rgba(255,215,0,0.5); color: #fff; 
+                                              border-radius: 6px;">
+                            </div>
+                            <div class="control-row">
+                                <label class="control-label">Compare M: <span class="value-display" id="diffCompVal">60</span></label>
+                                <input type="number" id="diffCompInput" min="2" max="500" value="60" 
+                                       style="width: 100%; padding: 0.5rem; background: rgba(0,0,0,0.5); 
+                                              border: 1px solid rgba(255,215,0,0.5); color: #fff; 
+                                              border-radius: 6px;">
+                            </div>
+                            <div class="control-row">
+                                <label class="control-label">Highlight</label>
+                                <select id="diffHighlightMode">
+                                    <option value="unique">Unique to Each</option>
+                                    <option value="common">Common Points</option>
+                                    <option value="both">Both (Different Colors)</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="control-row">
                             <label class="control-label">Color Scheme</label>
                             <select id="multiModColorScheme">
@@ -918,6 +1001,11 @@
                             <input type="checkbox" id="multiStackMode">
                             <label for="multiStackMode">Stack Layers (Offset)</label>
                         </div>
+                        
+                        <button onclick="quickCompare()" style="width: 100%; padding: 0.7rem; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 0.5rem;">
+                            ⚡ Quick Compare (30 vs 60)
+                        </button>
+                    </div>
 
                         <div class="control-row" id="stackSpacingControl" style="display: none;">
                             <label class="control-label">Offset: <span class="value-display" id="stackSpacingVal">20</span>px</label>
@@ -1642,6 +1730,140 @@
         </div>
     </div>
 
+    <!-- SIEVE ANIMATION TAB -->
+    <div id="sieve-tab" class="tab-content">
+        <div style="max-width: 1600px; margin: 2rem auto; padding: 0 2rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="color: #667eea; font-size: 2.5rem; margin-bottom: 0.5rem;">Sieve Animation</h1>
+                <p style="color: #666; font-size: 1.2rem; font-style: italic;">
+                    Watch Prime & Modular Sieves in Action
+                </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 320px 1fr; gap: 2rem;">
+                <!-- Left Control Panel -->
+                <div style="background: rgba(26, 26, 46, 0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(102, 126, 234, 0.3);">
+                    <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1rem;">Sieve Algorithm</h3>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <select id="sieveAlgorithm" style="width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #ddd; font-size: 0.95rem;">
+                            <option value="eratosthenes">Eratosthenes (Primes)</option>
+                            <option value="modular">Modular Reduction</option>
+                            <option value="channel">Channel-by-Channel</option>
+                            <option value="sundaram">Sundaram (Odd Primes)</option>
+                        </select>
+                    </div>
+
+                    <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1rem;">Parameters</h3>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: #666;">Upper Limit N = <span id="sieveN" style="color: #667eea; font-weight: bold;">100</span></label>
+                        <input type="range" id="sieveNSlider" min="10" max="500" value="100" style="width: 100%;">
+                    </div>
+
+                    <div id="sieveModulusControl" style="margin-bottom: 1rem; display: none;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: #666;">Modulus M = <span id="sieveM" style="color: #667eea; font-weight: bold;">30</span></label>
+                        <input type="range" id="sieveMSlider" min="6" max="100" value="30" style="width: 100%;">
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: #666;">Speed: <span id="sieveSpeed" style="color: #667eea; font-weight: bold;">Medium</span></label>
+                        <input type="range" id="sieveSpeedSlider" min="1" max="5" value="3" style="width: 100%;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #999; margin-top: 0.3rem;">
+                            <span>Slow</span>
+                            <span>Fast</span>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem;">
+                        <button onclick="startSieve()" id="sieveStartBtn" style="padding: 0.8rem; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                            ▶ Start
+                        </button>
+                        <button onclick="pauseSieve()" id="sievePauseBtn" style="padding: 0.8rem; background: #ffc107; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; display: none;">
+                            ⏸ Pause
+                        </button>
+                        <button onclick="resetSieve()" style="padding: 0.8rem; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                            ↺ Reset
+                        </button>
+                        <button onclick="stepSieve()" id="sieveStepBtn" style="padding: 0.8rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                            ⏭ Step
+                        </button>
+                    </div>
+
+                    <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1rem;">Display</h3>
+                    
+                    <div style="margin-bottom: 0.8rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="sieveShowNumbers" checked style="margin-right: 0.5rem;">
+                            <span style="color: #666;">Show Numbers</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom: 0.8rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="sieveShowExplanation" checked style="margin-right: 0.5rem;">
+                            <span style="color: #666;">Show Explanation</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="sieveShowStats" checked style="margin-right: 0.5rem;">
+                            <span style="color: #666;">Show Statistics</span>
+                        </label>
+                    </div>
+
+                    <button onclick="exportSieveGIF()" style="width: 100%; padding: 0.7rem; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 1rem;">
+                        📹 Record & Export
+                    </button>
+
+                    <!-- Current Status -->
+                    <div style="background: rgba(102, 126, 234, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <h4 style="color: #667eea; margin-bottom: 0.5rem;">Current Status:</h4>
+                        <div id="sieveStatus" style="font-size: 0.9rem; color: #666; line-height: 1.6;"></div>
+                    </div>
+
+                    <!-- Algorithm Info -->
+                    <div style="background: rgba(102, 126, 234, 0.1); padding: 1rem; border-radius: 8px; font-size: 0.85rem; line-height: 1.6; color: #666;">
+                        <div id="sieveAlgoInfo"></div>
+                    </div>
+                </div>
+
+                <!-- Right Visualization Area -->
+                <div>
+                    <!-- Main Canvas -->
+                    <div style="background: #000; border-radius: 12px; margin-bottom: 1.5rem; position: relative;">
+                        <canvas id="sieveCanvas" width="1200" height="800" style="width: 100%; height: auto; display: block; border-radius: 12px;"></canvas>
+                    </div>
+
+                    <!-- Explanation Panel -->
+                    <div id="sieveExplanationPanel" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+                        <h3 style="color: #667eea; margin-bottom: 1rem;">Step Explanation</h3>
+                        <div id="sieveExplanation" style="font-size: 1rem; line-height: 1.8; color: #333;"></div>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div id="sieveStatsPanel" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;">
+                            <div style="font-size: 2rem; color: #667eea; font-weight: bold;" id="sieveCountProcessed">0</div>
+                            <div style="color: #666; margin-top: 0.5rem;">Numbers Processed</div>
+                        </div>
+                        <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;">
+                            <div style="font-size: 2rem; color: #28a745; font-weight: bold;" id="sieveCountKept">0</div>
+                            <div style="color: #666; margin-top: 0.5rem;">Kept (Primes/Coprime)</div>
+                        </div>
+                        <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;">
+                            <div style="font-size: 2rem; color: #dc3545; font-weight: bold;" id="sieveCountEliminated">0</div>
+                            <div style="color: #666; margin-top: 0.5rem;">Eliminated</div>
+                        </div>
+                        <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;">
+                            <div style="font-size: 2rem; color: #667eea; font-weight: bold;" id="sieveProgress">0%</div>
+                            <div style="color: #666; margin-top: 0.5rem;">Progress</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- THEORY TAB -->
     <div id="theory-tab" class="tab-content">
         <div class="theory-container">
@@ -1918,6 +2140,12 @@
             if (tabName === 'sequences' && !window.sequencesInitialized) {
                 initSequences();
                 window.sequencesInitialized = true;
+            }
+            
+            // If switching to sieve, initialize if needed
+            if (tabName === 'sieve' && !window.sieveInitialized) {
+                initSieve();
+                window.sieveInitialized = true;
             }
         }
 
@@ -3619,6 +3847,481 @@
         // Visualizes the hierarchical structure of modular reduction
         // through a geometric embedding of the divisor lattice
         // ═══════════════════════════════════════════════════════════
+
+        // ═══════════════════════════════════════════════════════════
+        // SIEVE ANIMATION TAB IMPLEMENTATION
+        // ═══════════════════════════════════════════════════════════
+
+        let sieveState = {
+            canvas: null, ctx: null,
+            algorithm: 'eratosthenes',
+            N: 100, M: 30,
+            numbers: [],
+            currentPrime: 2,
+            step: 0,
+            isRunning: false,
+            isPaused: false,
+            speed: 3,
+            animationFrame: null,
+            lastUpdate: 0
+        };
+
+        function initSieve() {
+            sieveState.canvas = document.getElementById('sieveCanvas');
+            sieveState.ctx = sieveState.canvas.getContext('2d');
+            setupSieveEvents();
+            updateAlgorithmInfo();
+            resetSieve();
+        }
+
+        function setupSieveEvents() {
+            document.getElementById('sieveAlgorithm').onchange = e => {
+                sieveState.algorithm = e.target.value;
+                const showM = e.target.value === 'modular' || e.target.value === 'channel';
+                document.getElementById('sieveModulusControl').style.display = showM ? 'block' : 'none';
+                updateAlgorithmInfo();
+                resetSieve();
+            };
+
+            document.getElementById('sieveNSlider').oninput = e => {
+                sieveState.N = parseInt(e.target.value);
+                document.getElementById('sieveN').textContent = e.target.value;
+                resetSieve();
+            };
+
+            document.getElementById('sieveMSlider').oninput = e => {
+                sieveState.M = parseInt(e.target.value);
+                document.getElementById('sieveM').textContent = e.target.value;
+                resetSieve();
+            };
+
+            document.getElementById('sieveSpeedSlider').oninput = e => {
+                sieveState.speed = parseInt(e.target.value);
+                const speeds = ['Very Slow', 'Slow', 'Medium', 'Fast', 'Very Fast'];
+                document.getElementById('sieveSpeed').textContent = speeds[e.target.value - 1];
+            };
+
+            ['sieveShowNumbers', 'sieveShowExplanation', 'sieveShowStats'].forEach(id => {
+                document.getElementById(id).onchange = () => {
+                    updateSieveDisplay();
+                    renderSieve();
+                };
+            });
+        }
+
+        function updateAlgorithmInfo() {
+            const infos = {
+                eratosthenes: '<strong>Sieve of Eratosthenes:</strong><br>Ancient algorithm to find all primes up to N. Iteratively mark multiples of each prime starting from 2.',
+                modular: '<strong>Modular Sieve:</strong><br>Find coprime residues in ℤ/Mℤ by eliminating multiples of each prime factor of M.',
+                channel: '<strong>Channel Sieve:</strong><br>Eliminate residues channel-by-channel based on GCD with M, showing Farey structure formation.',
+                sundaram: '<strong>Sieve of Sundaram:</strong><br>Generates odd primes by eliminating numbers of form i+j+2ij from {1,2,...,k}.'
+            };
+            document.getElementById('sieveAlgoInfo').innerHTML = infos[sieveState.algorithm];
+        }
+
+        function resetSieve() {
+            sieveState.isRunning = false;
+            sieveState.isPaused = false;
+            sieveState.step = 0;
+            sieveState.currentPrime = 2;
+            
+            if (sieveState.animationFrame) {
+                cancelAnimationFrame(sieveState.animationFrame);
+                sieveState.animationFrame = null;
+            }
+
+            // Initialize numbers based on algorithm
+            const N = sieveState.N;
+            const M = sieveState.M;
+            
+            if (sieveState.algorithm === 'eratosthenes') {
+                sieveState.numbers = Array.from({length: N+1}, (_, i) => ({
+                    value: i,
+                    state: i < 2 ? 'eliminated' : 'unmarked',
+                    highlight: false
+                }));
+            } else if (sieveState.algorithm === 'sundaram') {
+                const k = Math.floor((N - 1) / 2);
+                sieveState.numbers = Array.from({length: k+1}, (_, i) => ({
+                    value: i,
+                    state: i < 1 ? 'eliminated' : 'unmarked',
+                    highlight: false
+                }));
+            } else {
+                // Modular or channel
+                sieveState.numbers = Array.from({length: M}, (_, i) => ({
+                    value: i,
+                    state: 'unmarked',
+                    highlight: false,
+                    gcd: gcd(i, M)
+                }));
+            }
+
+            document.getElementById('sieveStartBtn').style.display = 'block';
+            document.getElementById('sievePauseBtn').style.display = 'none';
+            
+            updateSieveStats();
+            updateSieveStatus();
+            renderSieve();
+        }
+
+        function startSieve() {
+            if (!sieveState.isRunning) {
+                sieveState.isRunning = true;
+                sieveState.isPaused = false;
+                document.getElementById('sieveStartBtn').style.display = 'none';
+                document.getElementById('sievePauseBtn').style.display = 'block';
+                sieveState.lastUpdate = Date.now();
+                animateSieve();
+            }
+        }
+
+        function pauseSieve() {
+            sieveState.isPaused = true;
+            sieveState.isRunning = false;
+            document.getElementById('sieveStartBtn').style.display = 'block';
+            document.getElementById('sievePauseBtn').style.display = 'none';
+            if (sieveState.animationFrame) {
+                cancelAnimationFrame(sieveState.animationFrame);
+            }
+        }
+
+        function stepSieve() {
+            if (!sieveState.isRunning) {
+                executeNextSieveStep();
+                renderSieve();
+                updateSieveStats();
+                updateSieveStatus();
+            }
+        }
+
+        function animateSieve() {
+            if (!sieveState.isRunning) return;
+
+            const now = Date.now();
+            const delays = [1000, 500, 200, 100, 50]; // ms per step based on speed
+            const delay = delays[sieveState.speed - 1];
+
+            if (now - sieveState.lastUpdate >= delay) {
+                const shouldContinue = executeNextSieveStep();
+                renderSieve();
+                updateSieveStats();
+                updateSieveStatus();
+                sieveState.lastUpdate = now;
+
+                if (!shouldContinue) {
+                    pauseSieve();
+                    return;
+                }
+            }
+
+            sieveState.animationFrame = requestAnimationFrame(animateSieve);
+        }
+
+        function executeNextSieveStep() {
+            const algo = sieveState.algorithm;
+            
+            if (algo === 'eratosthenes') {
+                return stepEratosthenes();
+            } else if (algo === 'sundaram') {
+                return stepSundaram();
+            } else if (algo === 'modular') {
+                return stepModular();
+            } else if (algo === 'channel') {
+                return stepChannel();
+            }
+            return false;
+        }
+
+        function stepEratosthenes() {
+            const nums = sieveState.numbers;
+            const N = sieveState.N;
+            
+            // Clear previous highlights
+            nums.forEach(n => n.highlight = false);
+
+            // Find next prime
+            while (sieveState.currentPrime <= Math.sqrt(N)) {
+                if (nums[sieveState.currentPrime].state === 'unmarked') {
+                    nums[sieveState.currentPrime].state = 'prime';
+                    nums[sieveState.currentPrime].highlight = true;
+                    
+                    // Mark multiples
+                    for (let i = sieveState.currentPrime * sieveState.currentPrime; i <= N; i += sieveState.currentPrime) {
+                        if (nums[i].state === 'unmarked') {
+                            nums[i].state = 'eliminated';
+                        }
+                    }
+                    
+                    sieveState.currentPrime++;
+                    return true;
+                }
+                sieveState.currentPrime++;
+            }
+
+            // Mark remaining unmarked as prime
+            for (let i = 2; i <= N; i++) {
+                if (nums[i].state === 'unmarked') {
+                    nums[i].state = 'prime';
+                }
+            }
+            
+            return false;
+        }
+
+        function stepSundaram() {
+            const nums = sieveState.numbers;
+            const k = nums.length - 1;
+            
+            nums.forEach(n => n.highlight = false);
+
+            const i = Math.floor(Math.sqrt(sieveState.step)) + 1;
+            const j = sieveState.step - i * (i - 1);
+            
+            if (i <= k / 2) {
+                const eliminate = i + j + 2 * i * j;
+                if (eliminate <= k && nums[eliminate] && nums[eliminate].state === 'unmarked') {
+                    nums[eliminate].state = 'eliminated';
+                    nums[eliminate].highlight = true;
+                }
+                sieveState.step++;
+                return true;
+            }
+
+            // Convert remaining to primes
+            for (let i = 1; i < nums.length; i++) {
+                if (nums[i].state === 'unmarked') {
+                    nums[i].state = 'prime';
+                    nums[i].value = 2 * i + 1;
+                }
+            }
+            
+            return false;
+        }
+
+        function stepModular() {
+            const nums = sieveState.numbers;
+            const M = sieveState.M;
+            const primeFactors = getPrimeFactors(M);
+            
+            nums.forEach(n => n.highlight = false);
+
+            if (sieveState.step < primeFactors.length) {
+                const p = primeFactors[sieveState.step];
+                
+                for (let i = 0; i < M; i++) {
+                    if (i % p === 0 && nums[i].state === 'unmarked') {
+                        nums[i].state = 'eliminated';
+                        nums[i].highlight = true;
+                    }
+                }
+                
+                sieveState.step++;
+                return true;
+            }
+
+            // Mark coprime as kept
+            for (let i = 0; i < M; i++) {
+                if (nums[i].state === 'unmarked') {
+                    nums[i].state = 'coprime';
+                }
+            }
+            
+            return false;
+        }
+
+        function stepChannel() {
+            const nums = sieveState.numbers;
+            const M = sieveState.M;
+            const divisors = getDivisors(M).filter(d => d < M).sort((a,b) => b - a);
+            
+            nums.forEach(n => n.highlight = false);
+
+            if (sieveState.step < divisors.length) {
+                const channel = divisors[sieveState.step];
+                
+                for (let i = 0; i < M; i++) {
+                    const g = gcd(i, M);
+                    if (M / g === channel && nums[i].state === 'unmarked') {
+                        nums[i].state = 'channel' + sieveState.step;
+                        nums[i].highlight = true;
+                        nums[i].channelM = channel;
+                    }
+                }
+                
+                sieveState.step++;
+                return true;
+            }
+
+            return false;
+        }
+
+        function getPrimeFactors(n) {
+            const factors = [];
+            let temp = n;
+            for (let p = 2; p * p <= temp; p++) {
+                if (temp % p === 0) {
+                    factors.push(p);
+                    while (temp % p === 0) temp /= p;
+                }
+            }
+            if (temp > 1) factors.push(temp);
+            return factors;
+        }
+
+        function renderSieve() {
+            const ctx = sieveState.ctx;
+            const w = 1200, h = 800;
+            const nums = sieveState.numbers;
+            const showNums = document.getElementById('sieveShowNumbers').checked;
+            
+            // Clear
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, w, h);
+
+            // Grid layout
+            const cols = Math.ceil(Math.sqrt(nums.length * 1.5));
+            const rows = Math.ceil(nums.length / cols);
+            const cellW = (w - 40) / cols;
+            const cellH = (h - 100) / rows;
+            const size = Math.min(cellW, cellH) - 4;
+
+            nums.forEach((num, idx) => {
+                const col = idx % cols;
+                const row = Math.floor(idx / cols);
+                const x = 20 + col * cellW + cellW / 2;
+                const y = 60 + row * cellH + cellH / 2;
+
+                // Color based on state
+                let color = '#444';
+                if (num.state === 'prime' || num.state === 'coprime') color = '#00ff00';
+                else if (num.state === 'eliminated') color = '#ff0000';
+                else if (num.state.startsWith('channel')) {
+                    const hue = (parseInt(num.state.replace('channel', '')) * 60) % 360;
+                    color = `hsl(${hue}, 70%, 50%)`;
+                }
+
+                // Highlight
+                if (num.highlight) {
+                    ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+                    ctx.fillRect(x - size/2 - 5, y - size/2 - 5, size + 10, size + 10);
+                }
+
+                // Box
+                ctx.fillStyle = color;
+                ctx.fillRect(x - size/2, y - size/2, size, size);
+
+                // Number
+                if (showNums && size > 15) {
+                    ctx.fillStyle = '#000';
+                    ctx.font = `bold ${Math.min(size * 0.4, 16)}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(num.value, x, y);
+                }
+            });
+
+            // Title
+            ctx.fillStyle = '#ffd700';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            const titles = {
+                eratosthenes: 'Sieve of Eratosthenes',
+                sundaram: 'Sieve of Sundaram',
+                modular: `Modular Sieve (M=${sieveState.M})`,
+                channel: `Channel Sieve (M=${sieveState.M})`
+            };
+            ctx.fillText(titles[sieveState.algorithm], w/2, 30);
+        }
+
+        function updateSieveStats() {
+            const nums = sieveState.numbers;
+            const processed = nums.filter(n => n.state !== 'unmarked').length;
+            const kept = nums.filter(n => n.state === 'prime' || n.state === 'coprime' || n.state.startsWith('channel')).length;
+            const eliminated = nums.filter(n => n.state === 'eliminated').length;
+            const progress = Math.round((processed / nums.length) * 100);
+
+            if (document.getElementById('sieveShowStats').checked) {
+                document.getElementById('sieveCountProcessed').textContent = processed;
+                document.getElementById('sieveCountKept').textContent = kept;
+                document.getElementById('sieveCountEliminated').textContent = eliminated;
+                document.getElementById('sieveProgress').textContent = progress + '%';
+                document.getElementById('sieveStatsPanel').style.display = 'grid';
+            } else {
+                document.getElementById('sieveStatsPanel').style.display = 'none';
+            }
+        }
+
+        function updateSieveStatus() {
+            let status = '';
+            const algo = sieveState.algorithm;
+            
+            if (algo === 'eratosthenes') {
+                status = `Current prime: ${sieveState.currentPrime}<br>Marking multiples...`;
+            } else if (algo === 'modular') {
+                const pf = getPrimeFactors(sieveState.M);
+                if (sieveState.step < pf.length) {
+                    status = `Eliminating multiples of ${pf[sieveState.step]}`;
+                } else {
+                    status = 'Complete! Coprime residues found.';
+                }
+            } else if (algo === 'channel') {
+                const divs = getDivisors(sieveState.M).filter(d => d < sieveState.M);
+                if (sieveState.step < divs.length) {
+                    status = `Channel M'=${divs[sieveState.step]}`;
+                } else {
+                    status = 'Complete! All channels identified.';
+                }
+            } else {
+                status = `Step ${sieveState.step}`;
+            }
+
+            document.getElementById('sieveStatus').innerHTML = status;
+
+            // Update explanation
+            if (document.getElementById('sieveShowExplanation').checked) {
+                updateSieveExplanation();
+                document.getElementById('sieveExplanationPanel').style.display = 'block';
+            } else {
+                document.getElementById('sieveExplanationPanel').style.display = 'none';
+            }
+        }
+
+        function updateSieveExplanation() {
+            const algo = sieveState.algorithm;
+            let exp = '';
+
+            if (algo === 'eratosthenes') {
+                exp = `<strong>Step:</strong> Marking multiples of ${sieveState.currentPrime - 1}.<br>`;
+                exp += `All multiples of ${sieveState.currentPrime - 1} are composite, so we eliminate them.<br>`;
+                exp += `The remaining unmarked numbers will be prime.`;
+            } else if (algo === 'modular') {
+                const pf = getPrimeFactors(sieveState.M);
+                if (sieveState.step < pf.length) {
+                    exp = `<strong>Prime factor:</strong> ${pf[sieveState.step]}<br>`;
+                    exp += `Eliminating all residues divisible by ${pf[sieveState.step]}.<br>`;
+                    exp += `These residues share this factor with M, so gcd(r,M) > 1.`;
+                } else {
+                    exp = `<strong>Complete!</strong> All remaining residues are coprime to M.<br>`;
+                    exp += `These form the multiplicative group (ℤ/Mℤ)×.`;
+                }
+            } else if (algo === 'channel') {
+                exp = `<strong>Channel-by-channel elimination:</strong><br>`;
+                exp += `Grouping residues by their target channel M/gcd(r,M).<br>`;
+                exp += `This reveals the hierarchical Farey structure.`;
+            }
+
+            document.getElementById('sieveExplanation').innerHTML = exp;
+        }
+
+        function updateSieveDisplay() {
+            // Handle visibility toggles
+            renderSieve();
+        }
+
+        function exportSieveGIF() {
+            alert('GIF recording feature: Reset and click Start to record!\nEach step will be captured for export.');
+        }
 
         // ═══════════════════════════════════════════════════════════
         // CUSTOM SEQUENCES TAB IMPLEMENTATION
