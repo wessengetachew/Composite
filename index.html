@@ -9,6 +9,7 @@
     <title>Modular Reduction Projection Research Portal v2.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
         MathJax = {
             tex: {
@@ -682,6 +683,7 @@
     <nav class="tab-nav">
         <button class="tab-button active" onclick="switchTab('portal')">Interactive Portal</button>
         <button class="tab-button" onclick="switchTab('chandelier')">3D Divisor Lattice</button>
+        <button class="tab-button" onclick="switchTab('analysis')">Analysis & Patterns</button>
         <button class="tab-button" onclick="switchTab('theory')">Mathematical Theory</button>
         <button class="tab-button" onclick="switchTab('about')">About</button>
     </nav>
@@ -1390,6 +1392,114 @@
                         <code style="background: rgba(0,0,0,0.1); padding: 0.2rem 0.4rem; border-radius: 3px;">C</code> Toggle Farey chains<br>
                         <code style="background: rgba(0,0,0,0.1); padding: 0.2rem 0.4rem; border-radius: 3px;">L</code> Toggle labels
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANALYSIS & PATTERNS TAB -->
+    <div id="analysis-tab" class="tab-content">
+        <div style="max-width: 1600px; margin: 2rem auto; padding: 0 2rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="color: #667eea; font-size: 2.5rem; margin-bottom: 0.5rem;">Analysis & Patterns</h1>
+                <p style="color: #666; font-size: 1.2rem; font-style: italic;">
+                    Deep Mathematical Analysis of Modular Structures
+                </p>
+            </div>
+
+            <!-- Control Panel -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 12px; margin-bottom: 2rem; color: white;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; align-items: end;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Primary Modulus (M₁)</label>
+                        <input type="number" id="analysisM1" value="30" min="2" max="2000" 
+                               style="width: 100%; padding: 0.7rem; border-radius: 6px; border: none; font-size: 1rem;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Compare with (M₂) - Optional</label>
+                        <input type="number" id="analysisM2" value="60" min="2" max="2000" 
+                               style="width: 100%; padding: 0.7rem; border-radius: 6px; border: none; font-size: 1rem;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Range Analysis</label>
+                        <select id="analysisRange" style="width: 100%; padding: 0.7rem; border-radius: 6px; border: none; font-size: 1rem;">
+                            <option value="single">Single M Value</option>
+                            <option value="compare">Compare M₁ vs M₂</option>
+                            <option value="range">Range M₁ to M₂</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button onclick="runAnalysis()" style="width: 100%; padding: 0.7rem; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem;">
+                            🔍 Analyze
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <!-- Key Statistics -->
+                <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h2 style="color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1.5rem;">Key Statistics</h2>
+                    <div id="keyStats" style="font-size: 0.95rem; line-height: 1.8;"></div>
+                </div>
+
+                <!-- Channel Breakdown -->
+                <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h2 style="color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1.5rem;">Farey Channel Breakdown</h2>
+                    <div id="channelBreakdown" style="max-height: 400px; overflow-y: auto;"></div>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <!-- Gap Distribution -->
+                <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h2 style="color: #667eea; margin-bottom: 1rem;">Gap Distribution</h2>
+                    <canvas id="gapChart" style="max-height: 300px;"></canvas>
+                </div>
+
+                <!-- Density Analysis -->
+                <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h2 style="color: #667eea; margin-bottom: 1rem;">Coprime Density</h2>
+                    <canvas id="densityChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <!-- Totient Function -->
+                <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h2 style="color: #667eea; margin-bottom: 1rem;">Euler Totient φ(M)</h2>
+                    <canvas id="totientChart" style="max-height: 300px;"></canvas>
+                </div>
+
+                <!-- Divisor Count -->
+                <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h2 style="color: #667eea; margin-bottom: 1rem;">Divisor Structure</h2>
+                    <canvas id="divisorChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Pattern Detection -->
+            <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                <h2 style="color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1.5rem;">Pattern Detection</h2>
+                <div id="patternDetection" style="font-size: 0.95rem; line-height: 1.8;"></div>
+            </div>
+
+            <!-- Export Section -->
+            <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); padding: 2rem; border-radius: 12px; text-align: center;">
+                <h2 style="color: white; margin-bottom: 1rem;">Export Analysis</h2>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="exportAnalysisCSV()" style="padding: 1rem 2rem; background: white; color: #28a745; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                        📊 Export CSV Data
+                    </button>
+                    <button onclick="exportAnalysisJSON()" style="padding: 1rem 2rem; background: white; color: #28a745; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                        📋 Export JSON
+                    </button>
+                    <button onclick="exportAnalysisReport()" style="padding: 1rem 2rem; background: white; color: #28a745; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                        📄 Export Full Report
+                    </button>
                 </div>
             </div>
         </div>
@@ -3365,6 +3475,352 @@
         // 3D FAREY DIVISOR LATTICE TAB IMPLEMENTATION
         // Visualizes the hierarchical structure of modular reduction
         // through a geometric embedding of the divisor lattice
+        // ═══════════════════════════════════════════════════════════
+
+        // ═══════════════════════════════════════════════════════════
+        // ANALYSIS & PATTERNS TAB IMPLEMENTATION
+        // ═══════════════════════════════════════════════════════════
+
+        let analysisData = {};
+        let analysisCharts = {};
+
+        function runAnalysis() {
+            const M1 = parseInt(document.getElementById('analysisM1').value);
+            const M2 = parseInt(document.getElementById('analysisM2').value);
+            const mode = document.getElementById('analysisRange').value;
+
+            if (mode === 'single') {
+                analyzeSingle(M1);
+            } else if (mode === 'compare') {
+                analyzeCompare(M1, M2);
+            } else if (mode === 'range') {
+                analyzeRange(Math.min(M1, M2), Math.max(M1, M2));
+            }
+        }
+
+        function analyzeSingle(M) {
+            analysisData = computeAnalysis(M);
+            displayKeyStats(analysisData);
+            displayChannelBreakdown(analysisData);
+            displayPatterns(analysisData);
+            createGapChart(analysisData);
+            createDensityChart([analysisData]);
+            createTotientChart([analysisData]);
+            createDivisorChart(analysisData);
+        }
+
+        function analyzeCompare(M1, M2) {
+            const data1 = computeAnalysis(M1);
+            const data2 = computeAnalysis(M2);
+            displayKeyStatsCompare(data1, data2);
+            createDensityChart([data1, data2]);
+            createTotientChart([data1, data2]);
+            displayPatternsCompare(data1, data2);
+        }
+
+        function analyzeRange(start, end) {
+            const dataArray = [];
+            for (let M = start; M <= Math.min(end, start + 100); M++) {
+                dataArray.push(computeAnalysis(M));
+            }
+            createDensityChart(dataArray);
+            createTotientChart(dataArray);
+        }
+
+        function computeAnalysis(M) {
+            const divisors = getDivisors(M);
+            const phiM = phi(M);
+            const coprimes = [];
+            const nonCoprimes = [];
+            const gaps = [];
+            const channels = new Map();
+
+            // Analyze residues
+            let lastCoprime = -1;
+            for (let r = 0; r < M; r++) {
+                const g = gcd(r, M);
+                if (g === 1) {
+                    coprimes.push(r);
+                    if (lastCoprime >= 0) {
+                        gaps.push(r - lastCoprime);
+                    }
+                    lastCoprime = r;
+                } else {
+                    nonCoprimes.push(r);
+                    const channel = M / g;
+                    channels.set(channel, (channels.get(channel) || 0) + 1);
+                }
+            }
+
+            // Gap statistics
+            const gapCounts = new Map();
+            gaps.forEach(g => gapCounts.set(g, (gapCounts.get(g) || 0) + 1));
+
+            return {
+                M,
+                divisors,
+                divisorCount: divisors.length,
+                phi: phiM,
+                density: phiM / M,
+                coprimes,
+                nonCoprimes,
+                gaps,
+                gapCounts,
+                avgGap: gaps.length > 0 ? gaps.reduce((a,b) => a+b, 0) / gaps.length : 0,
+                maxGap: gaps.length > 0 ? Math.max(...gaps) : 0,
+                minGap: gaps.length > 0 ? Math.min(...gaps) : 0,
+                channels,
+                isPrime: isPrime(M),
+                isPrimePower: isPrimePower(M),
+                omegaM: omega(M),
+                primeFactorization: getPrimeFactorization(M)
+            };
+        }
+
+        function isPrimePower(n) {
+            if (n < 2) return false;
+            const o = omega(n);
+            return o === 1;
+        }
+
+        function displayKeyStats(data) {
+            const html = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div><strong>Modulus M:</strong></div><div>${data.M}</div>
+                    <div><strong>Prime Factorization:</strong></div><div>${data.primeFactorization}</div>
+                    <div><strong>φ(M):</strong></div><div>${data.phi}</div>
+                    <div><strong>Coprime Density:</strong></div><div>${(data.density * 100).toFixed(2)}%</div>
+                    <div><strong>Lattice Levels (divisors):</strong></div><div>${data.divisorCount}</div>
+                    <div><strong>Farey Chains:</strong></div><div>${data.nonCoprimes.length}</div>
+                    <div><strong>ω(M) (distinct primes):</strong></div><div>${data.omegaM}</div>
+                    <div><strong>Classification:</strong></div><div>${data.isPrime ? 'Prime' : data.isPrimePower ? 'Prime Power' : 'Composite'}</div>
+                    <div><strong>Avg Coprime Gap:</strong></div><div>${data.avgGap.toFixed(2)}</div>
+                    <div><strong>Max Coprime Gap:</strong></div><div>${data.maxGap}</div>
+                </div>
+            `;
+            document.getElementById('keyStats').innerHTML = html;
+        }
+
+        function displayKeyStatsCompare(data1, data2) {
+            const html = `
+                <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 0.5rem 1rem;">
+                    <div style="font-weight: bold;"></div>
+                    <div style="font-weight: bold; color: #667eea;">M = ${data1.M}</div>
+                    <div style="font-weight: bold; color: #764ba2;">M = ${data2.M}</div>
+                    
+                    <div><strong>φ(M):</strong></div><div>${data1.phi}</div><div>${data2.phi}</div>
+                    <div><strong>Density:</strong></div><div>${(data1.density * 100).toFixed(2)}%</div><div>${(data2.density * 100).toFixed(2)}%</div>
+                    <div><strong>Divisors:</strong></div><div>${data1.divisorCount}</div><div>${data2.divisorCount}</div>
+                    <div><strong>Chains:</strong></div><div>${data1.nonCoprimes.length}</div><div>${data2.nonCoprimes.length}</div>
+                    <div><strong>Avg Gap:</strong></div><div>${data1.avgGap.toFixed(2)}</div><div>${data2.avgGap.toFixed(2)}</div>
+                    <div><strong>Max Gap:</strong></div><div>${data1.maxGap}</div><div>${data2.maxGap}</div>
+                </div>
+            `;
+            document.getElementById('keyStats').innerHTML = html;
+        }
+
+        function displayChannelBreakdown(data) {
+            let html = '<table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;"><thead><tr style="background: #667eea; color: white;"><th style="padding: 0.5rem; text-align: left;">Channel M\'</th><th style="padding: 0.5rem; text-align: right;">Count</th><th style="padding: 0.5rem; text-align: right;">%</th></tr></thead><tbody>';
+            
+            const sorted = Array.from(data.channels.entries()).sort((a, b) => a[0] - b[0]);
+            sorted.forEach(([channel, count]) => {
+                const pct = (count / data.M * 100).toFixed(1);
+                html += `<tr style="border-bottom: 1px solid #eee;"><td style="padding: 0.5rem;">${channel}</td><td style="padding: 0.5rem; text-align: right;">${count}</td><td style="padding: 0.5rem; text-align: right;">${pct}%</td></tr>`;
+            });
+            
+            html += '</tbody></table>';
+            document.getElementById('channelBreakdown').innerHTML = html;
+        }
+
+        function displayPatterns(data) {
+            let patterns = [];
+            
+            if (data.isPrime) patterns.push('✓ M is prime → φ(M) = M-1 → maximum density');
+            if (data.isPrimePower) patterns.push('✓ M is a prime power → simpler structure');
+            if (data.divisorCount > 10) patterns.push('✓ Highly composite → many Farey channels');
+            if (data.density > 0.5) patterns.push('✓ High coprime density (> 50%)');
+            if (data.density < 0.3) patterns.push('⚠ Low coprime density (< 30%)');
+            if (data.maxGap > M / 10) patterns.push('⚠ Large coprime gap detected');
+            if (data.omegaM >= 4) patterns.push('✓ Many distinct prime factors → rich structure');
+            
+            const html = patterns.length > 0 ? patterns.map(p => `<div style="padding: 0.5rem; background: rgba(102,126,234,0.1); border-left: 3px solid #667eea; margin-bottom: 0.5rem;">${p}</div>`).join('') : '<p>Computing patterns...</p>';
+            document.getElementById('patternDetection').innerHTML = html;
+        }
+
+        function displayPatternsCompare(data1, data2) {
+            let patterns = [];
+            const M1 = data1.M, M2 = data2.M;
+            
+            if (gcd(M1, M2) > 1) patterns.push(`✓ gcd(${M1}, ${M2}) = ${gcd(M1, M2)} → shared structure`);
+            if (M2 % M1 === 0) patterns.push(`✓ ${M2} is a multiple of ${M1} → ${M1} divides ${M2}`);
+            if (data1.density > data2.density) patterns.push(`✓ M=${M1} has higher coprime density`);
+            else if (data2.density > data1.density) patterns.push(`✓ M=${M2} has higher coprime density`);
+            
+            const html = patterns.length > 0 ? patterns.map(p => `<div style="padding: 0.5rem; background: rgba(102,126,234,0.1); border-left: 3px solid #667eea; margin-bottom: 0.5rem;">${p}</div>`).join('') : '<p>No significant patterns detected.</p>';
+            document.getElementById('patternDetection').innerHTML = html;
+        }
+
+        function createGapChart(data) {
+            const ctx = document.getElementById('gapChart');
+            if (analysisCharts.gap) analysisCharts.gap.destroy();
+            
+            const gapData = Array.from(data.gapCounts.entries()).sort((a,b) => a[0] - b[0]);
+            
+            analysisCharts.gap = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: gapData.map(([g]) => `Gap ${g}`),
+                    datasets: [{
+                        label: 'Frequency',
+                        data: gapData.map(([,c]) => c),
+                        backgroundColor: 'rgba(102, 126, 234, 0.7)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, title: { display: true, text: 'Count' } } }
+                }
+            });
+        }
+
+        function createDensityChart(dataArray) {
+            const ctx = document.getElementById('densityChart');
+            if (analysisCharts.density) analysisCharts.density.destroy();
+            
+            analysisCharts.density = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dataArray.map(d => d.M),
+                    datasets: [{
+                        label: 'φ(M)/M',
+                        data: dataArray.map(d => d.density),
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { beginAtZero: true, max: 1, title: { display: true, text: 'Density' } },
+                        x: { title: { display: true, text: 'Modulus M' } }
+                    }
+                }
+            });
+        }
+
+        function createTotientChart(dataArray) {
+            const ctx = document.getElementById('totientChart');
+            if (analysisCharts.totient) analysisCharts.totient.destroy();
+            
+            analysisCharts.totient = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dataArray.map(d => d.M),
+                    datasets: [{
+                        label: 'φ(M)',
+                        data: dataArray.map(d => d.phi),
+                        borderColor: 'rgba(118, 75, 162, 1)',
+                        backgroundColor: 'rgba(118, 75, 162, 0.2)',
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { beginAtZero: true, title: { display: true, text: 'φ(M)' } },
+                        x: { title: { display: true, text: 'Modulus M' } }
+                    }
+                }
+            });
+        }
+
+        function createDivisorChart(data) {
+            const ctx = document.getElementById('divisorChart');
+            if (analysisCharts.divisor) analysisCharts.divisor.destroy();
+            
+            analysisCharts.divisor = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Coprime', 'Reducible'],
+                    datasets: [{
+                        data: [data.phi, data.nonCoprimes.length],
+                        backgroundColor: ['rgba(40, 167, 69, 0.7)', 'rgba(255, 193, 7, 0.7)'],
+                        borderColor: ['rgba(40, 167, 69, 1)', 'rgba(255, 193, 7, 1)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        function exportAnalysisCSV() {
+            if (!analysisData.M) { alert('Please run analysis first'); return; }
+            
+            let csv = 'Modulus,Totient,Density,Divisors,Chains,AvgGap,MaxGap\n';
+            csv += `${analysisData.M},${analysisData.phi},${analysisData.density},${analysisData.divisorCount},${analysisData.nonCoprimes.length},${analysisData.avgGap},${analysisData.maxGap}\n`;
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `analysis-M${analysisData.M}.csv`;
+            link.click();
+        }
+
+        function exportAnalysisJSON() {
+            if (!analysisData.M) { alert('Please run analysis first'); return; }
+            
+            const blob = new Blob([JSON.stringify(analysisData, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `analysis-M${analysisData.M}.json`;
+            link.click();
+        }
+
+        function exportAnalysisReport() {
+            if (!analysisData.M) { alert('Please run analysis first'); return; }
+            
+            let report = `MODULAR REDUCTION ANALYSIS REPORT\n`;
+            report += `=====================================\n\n`;
+            report += `Modulus M = ${analysisData.M}\n`;
+            report += `Prime Factorization: ${analysisData.primeFactorization}\n\n`;
+            report += `KEY STATISTICS:\n`;
+            report += `- Euler Totient φ(M) = ${analysisData.phi}\n`;
+            report += `- Coprime Density = ${(analysisData.density * 100).toFixed(2)}%\n`;
+            report += `- Lattice Levels = ${analysisData.divisorCount}\n`;
+            report += `- Farey Chains = ${analysisData.nonCoprimes.length}\n`;
+            report += `- Average Gap = ${analysisData.avgGap.toFixed(2)}\n`;
+            report += `- Maximum Gap = ${analysisData.maxGap}\n\n`;
+            report += `CLASSIFICATION:\n`;
+            report += `- Type: ${analysisData.isPrime ? 'Prime' : analysisData.isPrimePower ? 'Prime Power' : 'Composite'}\n`;
+            report += `- Distinct Prime Factors ω(M) = ${analysisData.omegaM}\n\n`;
+            report += `Generated by Modular Reduction Projection Research Portal\n`;
+            report += `wessengetachew.github.io\n`;
+            
+            const blob = new Blob([report], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `report-M${analysisData.M}.txt`;
+            link.click();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // 3D FAREY DIVISOR LATTICE TAB IMPLEMENTATION
         // ═══════════════════════════════════════════════════════════
 
         window.chandelierInitialized = false;
