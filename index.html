@@ -686,6 +686,7 @@
         <button class="tab-button" onclick="switchTab('analysis')">Analysis & Patterns</button>
         <button class="tab-button" onclick="switchTab('sequences')">Custom Sequences</button>
         <button class="tab-button" onclick="switchTab('sieve')">Sieve Animation</button>
+        <button class="tab-button" onclick="switchTab('compare')">Comparative Visualizer</button>
         <button class="tab-button" onclick="switchTab('theory')">Mathematical Theory</button>
         <button class="tab-button" onclick="switchTab('about')">About</button>
     </nav>
@@ -1864,6 +1865,87 @@
         </div>
     </div>
 
+    <!-- COMPARATIVE VISUALIZER TAB -->
+    <div id="compare-tab" class="tab-content">
+        <div style="max-width: 1800px; margin: 2rem auto; padding: 0 2rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="color: #667eea; font-size: 2.5rem; margin-bottom: 0.5rem;">Comparative Visualizer</h1>
+                <p style="color: #666; font-size: 1.2rem; font-style: italic;">
+                    Side-by-Side Comparison of Multiple Moduli
+                </p>
+            </div>
+
+            <!-- Control Panel -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 12px; margin-bottom: 2rem; color: white;">
+                <h3 style="margin-bottom: 1rem;">Select Moduli to Compare (up to 4)</h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">M₁</label>
+                        <input type="number" id="compareM1" value="30" min="2" max="500" 
+                               style="width: 100%; padding: 0.7rem; border-radius: 6px; border: none; font-size: 1rem;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">M₂</label>
+                        <input type="number" id="compareM2" value="60" min="2" max="500" 
+                               style="width: 100%; padding: 0.7rem; border-radius: 6px; border: none; font-size: 1rem;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">M₃ (Optional)</label>
+                        <input type="number" id="compareM3" value="" min="2" max="500" placeholder="Optional"
+                               style="width: 100%; padding: 0.7rem; border-radius: 6px; border: none; font-size: 1rem;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">M₄ (Optional)</label>
+                        <input type="number" id="compareM4" value="" min="2" max="500" placeholder="Optional"
+                               style="width: 100%; padding: 0.7rem; border-radius: 6px; border: none; font-size: 1rem;">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <button onclick="generateComparison()" style="flex: 1; padding: 1rem; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem;">
+                        🔍 Compare
+                    </button>
+                    <label style="display: flex; align-items: center; cursor: pointer; background: rgba(255,255,255,0.2); padding: 0.7rem 1rem; border-radius: 6px;">
+                        <input type="checkbox" id="compareSyncZoom" checked style="margin-right: 0.5rem;">
+                        <span>Sync Zoom/Pan</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Comparison Grid -->
+            <div id="compareGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                <!-- Visualization cards will be generated here -->
+            </div>
+
+            <!-- Unified Statistics Table -->
+            <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                <h2 style="color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1.5rem;">Comparative Statistics</h2>
+                <div id="compareStats" style="overflow-x: auto;"></div>
+            </div>
+
+            <!-- Relationship Analysis -->
+            <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                <h2 style="color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1.5rem;">Relationship Analysis</h2>
+                <div id="compareRelationships" style="font-size: 0.95rem; line-height: 1.8;"></div>
+            </div>
+
+            <!-- Export Section -->
+            <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); padding: 2rem; border-radius: 12px; text-align: center;">
+                <h2 style="color: white; margin-bottom: 1rem;">Export Comparison</h2>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="exportComparisonCSV()" style="padding: 1rem 2rem; background: white; color: #28a745; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                        📊 Export CSV
+                    </button>
+                    <button onclick="exportComparisonImages()" style="padding: 1rem 2rem; background: white; color: #28a745; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                        🖼️ Export All Images
+                    </button>
+                    <button onclick="exportComparisonReport()" style="padding: 1rem 2rem; background: white; color: #28a745; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                        📄 Full Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- THEORY TAB -->
     <div id="theory-tab" class="tab-content">
         <div class="theory-container">
@@ -2146,6 +2228,13 @@
             if (tabName === 'sieve' && !window.sieveInitialized) {
                 initSieve();
                 window.sieveInitialized = true;
+            }
+            
+            // If switching to compare, initialize if needed
+            if (tabName === 'compare' && !window.compareInitialized) {
+                initCompare();
+                window.compareInitialized = true;
+            }
             }
         }
 
@@ -3849,6 +3938,642 @@
         // ═══════════════════════════════════════════════════════════
 
         // ═══════════════════════════════════════════════════════════
+        // BATCH PROCESSING TAB IMPLEMENTATION
+        // ═══════════════════════════════════════════════════════════
+
+        let batchState = {
+            data: [],
+            isProcessing: false,
+            startTime: 0,
+            chart: null
+        };
+
+        function initBatch() {
+            setupBatchEvents();
+            updateBatchCount();
+        }
+
+        function setupBatchEvents() {
+            ['batchStart', 'batchEnd'].forEach(id => {
+                document.getElementById(id).oninput = updateBatchCount;
+            });
+
+            ['batchPrimesOnly', 'batchPrimePowersOnly', 'batchCompositeOnly', 'batchHighlyComposite'].forEach(id => {
+                document.getElementById(id).onchange = updateBatchCount;
+            });
+        }
+
+        function updateBatchCount() {
+            const start = parseInt(document.getElementById('batchStart').value);
+            const end = parseInt(document.getElementById('batchEnd').value);
+            const count = Math.max(0, end - start + 1);
+            
+            document.getElementById('batchCount').textContent = count;
+            
+            if (count > 1000) {
+                document.getElementById('batchWarning').innerHTML = '⚠️ Large range may take several minutes';
+                document.getElementById('batchWarning').style.color = '#ffc107';
+            } else if (count > 5000) {
+                document.getElementById('batchWarning').innerHTML = '⚠️ Very large range - expect long processing time';
+                document.getElementById('batchWarning').style.color = '#dc3545';
+            } else {
+                document.getElementById('batchWarning').innerHTML = '';
+            }
+        }
+
+        async function startBatchProcessing() {
+            if (batchState.isProcessing) return;
+
+            const start = parseInt(document.getElementById('batchStart').value);
+            const end = parseInt(document.getElementById('batchEnd').value);
+            const type = document.getElementById('batchType').value;
+            
+            if (start >= end) {
+                alert('Start must be less than End');
+                return;
+            }
+
+            batchState.isProcessing = true;
+            batchState.data = [];
+            batchState.startTime = Date.now();
+            
+            document.getElementById('batchStartBtn').disabled = true;
+            document.getElementById('batchProgressBar').style.display = 'block';
+            document.getElementById('batchStatus').textContent = 'Processing...';
+
+            // Process in chunks for responsiveness
+            const chunkSize = 50;
+            let processed = 0;
+            const total = end - start + 1;
+
+            for (let M = start; M <= end; M++) {
+                if (shouldIncludeInBatch(M)) {
+                    const result = await processBatchValue(M, type);
+                    if (result) batchState.data.push(result);
+                }
+
+                processed++;
+                const progress = Math.round((processed / total) * 100);
+                document.getElementById('batchProgressFill').style.width = progress + '%';
+                document.getElementById('batchProgressFill').textContent = progress + '%';
+                document.getElementById('batchProgressText').textContent = `Processing M=${M}...`;
+
+                // Update live stats
+                updateBatchStats();
+
+                // Yield to UI every chunk
+                if (processed % chunkSize === 0) {
+                    await new Promise(resolve => setTimeout(resolve, 0));
+                }
+            }
+
+            batchState.isProcessing = false;
+            document.getElementById('batchStartBtn').disabled = false;
+            document.getElementById('batchStatus').textContent = `Complete! ${batchState.data.length} values processed.`;
+            document.getElementById('batchProgressText').textContent = 'Processing complete!';
+            
+            document.getElementById('batchExportCSV').disabled = false;
+            document.getElementById('batchExportJSON').disabled = false;
+            document.getElementById('batchExportCSV').style.opacity = '1';
+            document.getElementById('batchExportJSON').style.opacity = '1';
+
+            renderBatchResults();
+            updateBatchChart();
+        }
+
+        function shouldIncludeInBatch(M) {
+            const primesOnly = document.getElementById('batchPrimesOnly').checked;
+            const primePowersOnly = document.getElementById('batchPrimePowersOnly').checked;
+            const compositeOnly = document.getElementById('batchCompositeOnly').checked;
+            const highlyComposite = document.getElementById('batchHighlyComposite').checked;
+
+            if (primesOnly && !isPrime(M)) return false;
+            if (primePowersOnly && !isPrimePower(M)) return false;
+            if (compositeOnly && (isPrime(M) || M === 1)) return false;
+            if (highlyComposite && getDivisors(M).length < 10) return false;
+
+            return true;
+        }
+
+        function processBatchValue(M, type) {
+            switch(type) {
+                case 'totient':
+                    return { M, phi: phi(M), density: phi(M)/M };
+                
+                case 'coprime_density':
+                    const phiM = phi(M);
+                    const coprimes = [];
+                    for (let i = 0; i < M; i++) {
+                        if (gcd(i, M) === 1) coprimes.push(i);
+                    }
+                    return { M, phi: phiM, density: phiM/M, coprimes: coprimes.length };
+                
+                case 'divisor_counts':
+                    const divs = getDivisors(M);
+                    return { M, tau: divs.length, divisors: divs.join(',') };
+                
+                case 'gap_statistics':
+                    const gaps = [];
+                    let last = -1;
+                    for (let i = 0; i < M; i++) {
+                        if (gcd(i, M) === 1) {
+                            if (last >= 0) gaps.push(i - last);
+                            last = i;
+                        }
+                    }
+                    return { 
+                        M, 
+                        avgGap: gaps.length > 0 ? (gaps.reduce((a,b) => a+b, 0) / gaps.length).toFixed(2) : 0,
+                        maxGap: gaps.length > 0 ? Math.max(...gaps) : 0,
+                        minGap: gaps.length > 0 ? Math.min(...gaps) : 0
+                    };
+                
+                case 'channel_structure':
+                    const channels = new Map();
+                    for (let r = 0; r < M; r++) {
+                        const g = gcd(r, M);
+                        if (g > 1) {
+                            const ch = M / g;
+                            channels.set(ch, (channels.get(ch) || 0) + 1);
+                        }
+                    }
+                    return { M, channels: channels.size, channelList: Array.from(channels.keys()).join(',') };
+                
+                case 'sequence_periods':
+                    // Fibonacci Pisano period
+                    const period = findPisanoPeriod(M);
+                    return { M, pisanoPeriod: period };
+                
+                case 'prime_factors':
+                    const pf = getPrimeFactorization(M);
+                    const omegaM = omega(M);
+                    return { M, factorization: pf, omega: omegaM, isPrime: isPrime(M) };
+                
+                case 'full_analysis':
+                    const fullData = computeAnalysis(M);
+                    return {
+                        M,
+                        phi: fullData.phi,
+                        density: fullData.density.toFixed(4),
+                        divisors: fullData.divisorCount,
+                        avgGap: fullData.avgGap.toFixed(2),
+                        maxGap: fullData.maxGap,
+                        omega: fullData.omegaM,
+                        factorization: fullData.primeFactorization
+                    };
+                
+                default:
+                    return { M };
+            }
+        }
+
+        function findPisanoPeriod(M) {
+            const maxPeriod = M * M; // Upper bound
+            let a = 0, b = 1;
+            for (let i = 0; i < maxPeriod; i++) {
+                [a, b] = [b, (a + b) % M];
+                if (a === 0 && b === 1) return i + 1;
+            }
+            return maxPeriod;
+        }
+
+        function updateBatchStats() {
+            const elapsed = ((Date.now() - batchState.startTime) / 1000).toFixed(1);
+            document.getElementById('batchTotalProcessed').textContent = batchState.data.length;
+            document.getElementById('batchTimeElapsed').textContent = elapsed + 's';
+            
+            // Estimate data points
+            const fields = Object.keys(batchState.data[0] || {}).length;
+            document.getElementById('batchDataPoints').textContent = batchState.data.length * fields;
+            
+            // Estimate file size (rough)
+            const estSize = Math.round((JSON.stringify(batchState.data).length / 1024));
+            document.getElementById('batchEstSize').textContent = estSize + ' KB';
+        }
+
+        function renderBatchResults() {
+            if (batchState.data.length === 0) {
+                document.getElementById('batchResultsTable').innerHTML = '<p style="color: #999; text-align: center; padding: 2rem;">No data generated.</p>';
+                return;
+            }
+
+            const headers = Object.keys(batchState.data[0]);
+            let html = '<table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;"><thead><tr style="background: #667eea; color: white; position: sticky; top: 0;">';
+            
+            headers.forEach(h => {
+                html += `<th style="padding: 0.5rem; text-align: left; border: 1px solid #ddd;">${h}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            const preview = batchState.data.slice(0, 100);
+            preview.forEach(row => {
+                html += '<tr style="border-bottom: 1px solid #eee;">';
+                headers.forEach(h => {
+                    html += `<td style="padding: 0.5rem; border: 1px solid #eee;">${row[h]}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            if (batchState.data.length > 100) {
+                html += `<tr><td colspan="${headers.length}" style="text-align: center; padding: 1rem; color: #999; font-style: italic;">... ${batchState.data.length - 100} more rows (use export to see all)</td></tr>`;
+            }
+
+            html += '</tbody></table>';
+            document.getElementById('batchResultsTable').innerHTML = html;
+        }
+
+        function updateBatchChart() {
+            if (batchState.data.length === 0) return;
+
+            const ctx = document.getElementById('batchPreviewChart');
+            if (batchState.chart) batchState.chart.destroy();
+
+            const type = document.getElementById('batchType').value;
+            let labels, data, label;
+
+            if (type === 'totient' || type === 'coprime_density') {
+                labels = batchState.data.map(d => d.M);
+                data = batchState.data.map(d => d.density);
+                label = 'φ(M)/M Density';
+            } else if (type === 'divisor_counts') {
+                labels = batchState.data.map(d => d.M);
+                data = batchState.data.map(d => d.tau);
+                label = 'τ(M) Divisor Count';
+            } else if (type === 'gap_statistics') {
+                labels = batchState.data.map(d => d.M);
+                data = batchState.data.map(d => parseFloat(d.avgGap));
+                label = 'Average Gap';
+            } else {
+                labels = batchState.data.map(d => d.M);
+                data = batchState.data.map((d, i) => i);
+                label = 'Index';
+            }
+
+            batchState.chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.slice(0, Math.min(100, labels.length)),
+                    datasets: [{
+                        label: label,
+                        data: data.slice(0, Math.min(100, data.length)),
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: true } },
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: label } },
+                        x: { title: { display: true, text: 'Modulus M' } }
+                    }
+                }
+            });
+        }
+
+        function exportBatchCSV() {
+            if (batchState.data.length === 0) {
+                alert('No data to export');
+                return;
+            }
+
+            const headers = Object.keys(batchState.data[0]);
+            let csv = headers.join(',') + '\n';
+            
+            batchState.data.forEach(row => {
+                csv += headers.map(h => {
+                    const val = row[h];
+                    return typeof val === 'string' && val.includes(',') ? `"${val}"` : val;
+                }).join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            const type = document.getElementById('batchType').value;
+            const start = document.getElementById('batchStart').value;
+            const end = document.getElementById('batchEnd').value;
+            link.download = `batch_${type}_${start}-${end}.csv`;
+            link.click();
+        }
+
+        function exportBatchJSON() {
+            if (batchState.data.length === 0) {
+                alert('No data to export');
+                return;
+            }
+
+            const blob = new Blob([JSON.stringify(batchState.data, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            const type = document.getElementById('batchType').value;
+            const start = document.getElementById('batchStart').value;
+            const end = document.getElementById('batchEnd').value;
+            link.download = `batch_${type}_${start}-${end}.json`;
+            link.click();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // COMPARATIVE VISUALIZER TAB IMPLEMENTATION
+        // ═══════════════════════════════════════════════════════════
+
+        let compareState = {
+            moduli: [],
+            canvases: [],
+            contexts: [],
+            data: [],
+            syncZoom: true,
+            currentZoom: 1,
+            currentOffset: { x: 0, y: 0 }
+        };
+
+        function initCompare() {
+            // Initialize on first use
+        }
+
+        function generateComparison() {
+            const M1 = parseInt(document.getElementById('compareM1').value);
+            const M2 = parseInt(document.getElementById('compareM2').value);
+            const M3 = document.getElementById('compareM3').value ? parseInt(document.getElementById('compareM3').value) : null;
+            const M4 = document.getElementById('compareM4').value ? parseInt(document.getElementById('compareM4').value) : null;
+
+            compareState.moduli = [M1, M2];
+            if (M3) compareState.moduli.push(M3);
+            if (M4) compareState.moduli.push(M4);
+
+            compareState.syncZoom = document.getElementById('compareSyncZoom').checked;
+
+            // Generate data for all moduli
+            compareState.data = compareState.moduli.map(M => computeAnalysis(M));
+
+            renderComparisonGrid();
+            renderComparisonStats();
+            renderRelationshipAnalysis();
+        }
+
+        function renderComparisonGrid() {
+            const grid = document.getElementById('compareGrid');
+            grid.innerHTML = '';
+            compareState.canvases = [];
+            compareState.contexts = [];
+
+            compareState.moduli.forEach((M, idx) => {
+                const card = document.createElement('div');
+                card.style.cssText = 'background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
+
+                const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe'];
+                const color = colors[idx % colors.length];
+
+                card.innerHTML = `
+                    <h3 style="color: ${color}; margin-bottom: 1rem; border-bottom: 3px solid ${color}; padding-bottom: 0.5rem;">
+                        M = ${M}
+                    </h3>
+                    <canvas id="compareCanvas${idx}" width="600" height="600" style="width: 100%; height: auto; display: block; background: #000; border-radius: 8px; margin-bottom: 1rem;"></canvas>
+                    <div style="font-size: 0.9rem; line-height: 1.6; color: #666;">
+                        <div><strong>φ(M):</strong> ${compareState.data[idx].phi}</div>
+                        <div><strong>Density:</strong> ${(compareState.data[idx].density * 100).toFixed(2)}%</div>
+                        <div><strong>Divisors:</strong> ${compareState.data[idx].divisorCount}</div>
+                        <div><strong>Factorization:</strong> ${compareState.data[idx].primeFactorization}</div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+
+                const canvas = document.getElementById(`compareCanvas${idx}`);
+                const ctx = canvas.getContext('2d');
+                compareState.canvases.push(canvas);
+                compareState.contexts.push(ctx);
+
+                renderCompareVisualization(ctx, compareState.data[idx], 600, 600, color);
+            });
+        }
+
+        function renderCompareVisualization(ctx, data, w, h, color) {
+            const M = data.M;
+            const cx = w / 2, cy = h / 2;
+            const radius = Math.min(w, h) * 0.4;
+
+            // Clear
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, w, h);
+
+            // Draw circle
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Draw all residues
+            for (let r = 0; r < M; r++) {
+                const angle = -Math.PI / 2 + (2 * Math.PI * r / M);
+                const x = cx + radius * Math.cos(angle);
+                const y = cy + radius * Math.sin(angle);
+
+                const g = gcd(r, M);
+                const isCoprime = g === 1;
+
+                // Point
+                ctx.fillStyle = isCoprime ? color : '#ff0000';
+                ctx.beginPath();
+                ctx.arc(x, y, isCoprime ? 5 : 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Label key points
+                if (M <= 60 && (isCoprime || r % 5 === 0)) {
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const lx = cx + (radius + 15) * Math.cos(angle);
+                    const ly = cy + (radius + 15) * Math.sin(angle);
+                    ctx.fillText(r, lx, ly);
+                }
+
+                // Draw Farey channels with different intensities
+                if (!isCoprime) {
+                    const targetM = M / g;
+                    const targetR = r / g;
+                    const targetAngle = -Math.PI / 2 + (2 * Math.PI * targetR / targetM);
+                    const targetDist = radius * targetM / M;
+                    const tx = cx + targetDist * Math.cos(targetAngle);
+                    const ty = cy + targetDist * Math.sin(targetAngle);
+
+                    ctx.strokeStyle = `rgba(255, 255, 0, ${0.2 / Math.log(g + 1)})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(tx, ty);
+                    ctx.stroke();
+                }
+            }
+
+            // Title
+            ctx.fillStyle = color;
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`ℤ/${M}ℤ`, cx, 30);
+        }
+
+        function renderComparisonStats() {
+            const data = compareState.data;
+            const moduli = compareState.moduli;
+
+            let html = '<table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;"><thead><tr style="background: #667eea; color: white;">';
+            html += '<th style="padding: 0.8rem; text-align: left;">Property</th>';
+            moduli.forEach((M, idx) => {
+                const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe'];
+                html += `<th style="padding: 0.8rem; text-align: center; background: ${colors[idx]};">M = ${M}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            const rows = [
+                ['Prime Factorization', d => d.primeFactorization],
+                ['φ(M) (Totient)', d => d.phi],
+                ['Coprime Density', d => (d.density * 100).toFixed(2) + '%'],
+                ['Divisor Count τ(M)', d => d.divisorCount],
+                ['Farey Chains', d => d.nonCoprimes.length],
+                ['ω(M) (Distinct Primes)', d => d.omegaM],
+                ['Average Gap', d => d.avgGap.toFixed(2)],
+                ['Maximum Gap', d => d.maxGap],
+                ['Classification', d => d.isPrime ? 'Prime' : d.isPrimePower ? 'Prime Power' : 'Composite']
+            ];
+
+            rows.forEach(([label, getter], rowIdx) => {
+                const bg = rowIdx % 2 === 0 ? '#f9f9f9' : 'white';
+                html += `<tr style="background: ${bg};"><td style="padding: 0.7rem; font-weight: bold; border-bottom: 1px solid #ddd;">${label}</td>`;
+                data.forEach(d => {
+                    html += `<td style="padding: 0.7rem; text-align: center; border-bottom: 1px solid #ddd;">${getter(d)}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('compareStats').innerHTML = html;
+        }
+
+        function renderRelationshipAnalysis() {
+            const moduli = compareState.moduli;
+            const data = compareState.data;
+            const relationships = [];
+
+            // Pairwise analysis
+            for (let i = 0; i < moduli.length; i++) {
+                for (let j = i + 1; j < moduli.length; j++) {
+                    const M1 = moduli[i], M2 = moduli[j];
+                    const g = gcd(M1, M2);
+                    const lcmVal = (M1 * M2) / g;
+
+                    relationships.push(`<div style="padding: 1rem; background: rgba(102, 126, 234, 0.1); border-left: 4px solid #667eea; margin-bottom: 1rem; border-radius: 4px;">
+                        <strong style="color: #667eea;">M₁=${M1} vs M₂=${M2}</strong><br>
+                        • gcd(${M1}, ${M2}) = ${g}${g > 1 ? ' → Share common factors' : ' → Coprime'}<br>
+                        • lcm(${M1}, ${M2}) = ${lcmVal}<br>
+                        ${M2 % M1 === 0 ? `• ${M2} is a multiple of ${M1}<br>` : ''}
+                        ${M1 % M2 === 0 ? `• ${M1} is a multiple of ${M2}<br>` : ''}
+                        • Density ratio: ${(data[j].density / data[i].density).toFixed(3)}<br>
+                        • Totient ratio: φ(${M2})/φ(${M1}) = ${(data[j].phi / data[i].phi).toFixed(3)}
+                    </div>`);
+                }
+            }
+
+            // Global patterns
+            const avgDensity = data.reduce((s, d) => s + d.density, 0) / data.length;
+            const maxPhi = Math.max(...data.map(d => d.phi));
+            const minPhi = Math.min(...data.map(d => d.phi));
+
+            relationships.push(`<div style="padding: 1rem; background: rgba(40, 167, 69, 0.1); border-left: 4px solid #28a745; margin-bottom: 1rem; border-radius: 4px;">
+                <strong style="color: #28a745;">Overall Patterns</strong><br>
+                • Average coprime density: ${(avgDensity * 100).toFixed(2)}%<br>
+                • Totient range: ${minPhi} to ${maxPhi}<br>
+                • Total distinct primes across all M: ${countDistinctPrimes(data)}<br>
+                • ${data.filter(d => d.isPrime).length} prime moduli, ${data.filter(d => d.isPrimePower).length} prime powers
+            </div>`);
+
+            document.getElementById('compareRelationships').innerHTML = relationships.join('');
+        }
+
+        function countDistinctPrimes(dataArray) {
+            const primes = new Set();
+            dataArray.forEach(d => {
+                d.divisors.forEach(div => {
+                    if (isPrime(div)) primes.add(div);
+                });
+            });
+            return primes.size;
+        }
+
+        function exportComparisonCSV() {
+            const moduli = compareState.moduli;
+            const data = compareState.data;
+
+            let csv = 'M,Factorization,phi(M),Density,Divisors,Chains,AvgGap,MaxGap,Classification\n';
+            data.forEach((d, idx) => {
+                csv += `${moduli[idx]},${d.primeFactorization},${d.phi},${d.density.toFixed(4)},${d.divisorCount},${d.nonCoprimes.length},${d.avgGap.toFixed(2)},${d.maxGap},${d.isPrime ? 'Prime' : d.isPrimePower ? 'PrimePower' : 'Composite'}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `comparison-${moduli.join('-')}.csv`;
+            link.click();
+        }
+
+        function exportComparisonImages() {
+            compareState.canvases.forEach((canvas, idx) => {
+                const link = document.createElement('a');
+                link.download = `comparison-M${compareState.moduli[idx]}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+
+        function exportComparisonReport() {
+            const moduli = compareState.moduli;
+            const data = compareState.data;
+
+            let report = 'COMPARATIVE ANALYSIS REPORT\n';
+            report += '============================\n\n';
+            report += `Moduli: ${moduli.join(', ')}\n\n`;
+
+            moduli.forEach((M, idx) => {
+                const d = data[idx];
+                report += `\nM = ${M}\n`;
+                report += `${'='.repeat(30)}\n`;
+                report += `Prime Factorization: ${d.primeFactorization}\n`;
+                report += `φ(${M}) = ${d.phi}\n`;
+                report += `Coprime Density: ${(d.density * 100).toFixed(2)}%\n`;
+                report += `Divisor Count: ${d.divisorCount}\n`;
+                report += `Average Gap: ${d.avgGap.toFixed(2)}\n`;
+                report += `Maximum Gap: ${d.maxGap}\n`;
+                report += `Classification: ${d.isPrime ? 'Prime' : d.isPrimePower ? 'Prime Power' : 'Composite'}\n`;
+            });
+
+            report += '\n\nRELATIONSHIPS\n';
+            report += '=============\n\n';
+
+            for (let i = 0; i < moduli.length; i++) {
+                for (let j = i + 1; j < moduli.length; j++) {
+                    const M1 = moduli[i], M2 = moduli[j];
+                    const g = gcd(M1, M2);
+                    report += `gcd(${M1}, ${M2}) = ${g}\n`;
+                    if (M2 % M1 === 0) report += `${M2} is a multiple of ${M1}\n`;
+                }
+            }
+
+            report += '\n\nGenerated by Modular Reduction Projection Research Portal\n';
+            report += 'wessengetachew.github.io\n';
+
+            const blob = new Blob([report], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `comparison-report-${moduli.join('-')}.txt`;
+            link.click();
+        }
+
+        // ═══════════════════════════════════════════════════════════
         // SIEVE ANIMATION TAB IMPLEMENTATION
         // ═══════════════════════════════════════════════════════════
 
@@ -4795,9 +5520,13 @@
         function analyzeCompare(M1, M2) {
             const data1 = computeAnalysis(M1);
             const data2 = computeAnalysis(M2);
+            analysisData = data1; // Store for exports
             displayKeyStatsCompare(data1, data2);
+            displayChannelBreakdown(data1); // Show M1's channels
+            createGapChart(data1); // Show M1's gap distribution
             createDensityChart([data1, data2]);
             createTotientChart([data1, data2]);
+            createDivisorChart(data1); // Show M1's divisor structure
             displayPatternsCompare(data1, data2);
         }
 
@@ -4806,8 +5535,14 @@
             for (let M = start; M <= Math.min(end, start + 100); M++) {
                 dataArray.push(computeAnalysis(M));
             }
+            analysisData = dataArray[0]; // Store first value for exports
+            displayKeyStats(dataArray[0]); // Show stats for first M
+            displayChannelBreakdown(dataArray[0]); // Show channels for first M
+            createGapChart(dataArray[0]); // Show gap distribution for first M
             createDensityChart(dataArray);
             createTotientChart(dataArray);
+            createDivisorChart(dataArray[0]); // Show divisor structure for first M
+            displayPatterns(dataArray[0]); // Show patterns for first M
         }
 
         function computeAnalysis(M) {
