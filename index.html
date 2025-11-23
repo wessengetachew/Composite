@@ -2,923 +2,1178 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modular Reduction Projection Explorer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Modular Reduction Projection Research Portal</title>
     <style>
-        :root {
-            --bg-color: #1a1a2e;
-            --main-color: #0f4c75;
-            --accent-color: #3282b8;
-            --text-color: #bbe1fa;
-            --border-color: #2c394b;
-            --highlight-color: #ffd700;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            min-height: 100vh;
-            flex-direction: column;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
+            line-height: 1.6;
         }
 
-        header {
-            background-color: var(--main-color);
-            padding: 15px 30px;
-            text-align: center;
-            border-bottom: 3px solid var(--accent-color);
+        .site-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        h1 {
-            margin: 0;
-            font-size: 1.8em;
-            color: var(--highlight-color);
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
         }
 
-        h2 {
-            margin: 5px 0 0 0;
-            font-size: 1.1em;
-            color: var(--text-color);
+        .site-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
-        .container {
-            display: flex;
-            flex-grow: 1;
+        .site-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-style: italic;
         }
 
-        .sidebar {
-            width: 320px;
-            padding: 20px;
-            background-color: var(--border-color);
-            overflow-y: auto;
-            border-right: 2px solid var(--accent-color);
+        .main-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
         }
 
-        .content {
-            flex-grow: 1;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
+        .visualization-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .viz-header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .viz-title {
+            font-size: 1.8rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .viz-meta {
+            font-size: 1rem;
+            color: #7f8c8d;
+        }
+
+        #vizContainer {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #000;
+            border-radius: 8px;
             overflow: hidden;
+            position: relative;
+            touch-action: none;
+            cursor: grab;
         }
 
-        .canvas-container {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
+        #vizContainer:active {
+            cursor: grabbing;
+        }
+
+        #vizSVG {
             width: 100%;
             height: 100%;
-        }
-
-        canvas {
-            border: 5px solid var(--highlight-color);
-            background-color: #000;
-            border-radius: 10px;
             display: block;
-            touch-action: none;
         }
 
-        .control-group {
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid var(--accent-color);
-            border-radius: 5px;
+        .controls-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-height: calc(100vh - 4rem);
+            overflow-y: auto;
         }
 
-        .control-group h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: var(--highlight-color);
-            font-size: 1.1em;
+        .controls-panel h2 {
+            font-size: 1.5rem;
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
         }
 
-        label {
+        .control-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .control-section:last-child {
+            border-bottom: none;
+        }
+
+        .control-section h3 {
+            font-size: 1.1rem;
+            color: #34495e;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .control-row {
+            margin-bottom: 1rem;
+        }
+
+        .control-label {
             display: block;
-            margin-bottom: 5px;
-            font-size: 0.9em;
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
         }
 
         input[type="range"] {
-            width: calc(100% - 60px);
-        }
-
-        input[type="number"], select {
             width: 100%;
-            padding: 5px;
-            margin-top: 5px;
-            background-color: var(--bg-color);
-            border: 1px solid var(--accent-color);
-            color: var(--text-color);
+            height: 6px;
             border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
         }
 
-        .slider-value {
-            font-family: monospace;
-            color: var(--highlight-color);
-            width: 40px;
-            text-align: right;
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input[type="number"],
+        select,
+        input[type="text"] {
+            width: 100%;
+            padding: 0.6rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus,
+        select:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .value-display {
             display: inline-block;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #667eea;
+            min-width: 60px;
+            text-align: right;
         }
 
         button {
-            padding: 10px 15px;
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
             width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 0.5rem;
         }
 
-        button:hover { background-color: var(--main-color); }
-        button:disabled { background-color: #555; cursor: not-allowed; }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            cursor: not-allowed;
+            transform: none;
+        }
 
         .button-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 0.5rem;
+        }
+
+        .button-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.4rem;
+            margin-top: 0.8rem;
+        }
+
+        .preset-btn {
+            padding: 0.5rem;
+            font-size: 0.85rem;
+            margin: 0;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 0.8rem;
+            margin-top: 1rem;
         }
 
-        .stat-box {
-            background-color: var(--main-color);
-            padding: 8px;
-            border-radius: 5px;
-            font-size: 0.85em;
+        .stat-card {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 0.8rem;
+            border-radius: 8px;
             text-align: center;
+            border: 1px solid #667eea30;
         }
 
-        .stat-box strong {
-            display: block;
-            font-size: 1.2em;
-            color: var(--highlight-color);
-            font-family: monospace;
+        .stat-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-bottom: 0.3rem;
         }
 
-        #tooltip {
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+
+        .badge-prime {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .badge-composite {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.6rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .info-text {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        .tooltip {
             position: absolute;
-            background-color: rgba(0, 0, 0, 0.95);
-            color: var(--text-color);
-            padding: 10px;
-            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
             pointer-events: none;
-            z-index: 100;
-            font-family: monospace;
-            font-size: 0.8em;
-            border: 1px solid var(--highlight-color);
+            z-index: 1000;
             display: none;
+            border: 1px solid #667eea;
+            font-family: 'Courier New', monospace;
+            max-width: 250px;
+        }
+
+        .recording-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+            display: none;
+            animation: pulse 1.5s infinite;
+            z-index: 2000;
+        }
+
+        .recording-badge.active {
+            display: block;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-panel {
+                max-height: none;
+            }
+
+            .site-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .site-title {
+                font-size: 1.5rem;
+            }
+
+            .site-subtitle {
+                font-size: 1rem;
+            }
+
+            .main-container {
+                padding: 0 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Smooth scrollbar */
+        .controls-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .controls-panel::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .controls-panel::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .controls-panel::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1 id="disp-title">Modular Reduction Projection: M = 42</h1>
-        <h2 id="disp-subtitle">2 × 3 × 7</h2>
+    <div class="recording-badge" id="recordingBadge">● RECORDING</div>
+
+    <header class="site-header">
+        <div class="header-content">
+            <h1 class="site-title">Modular Reduction Projection Research Portal</h1>
+            <p class="site-subtitle">Interactive Visualization of Number-Theoretic Structures in ℤ/Mℤ</p>
+        </div>
     </header>
 
-    <div class="container">
-        <div class="sidebar">
-            <div class="control-group">
-                <h3>Animation</h3>
+    <div class="main-container">
+        <section class="visualization-section">
+            <div class="viz-header">
+                <h2 class="viz-title" id="vizTitle">Modular Space: M = 42</h2>
+                <p class="viz-meta" id="vizMeta">Prime Factorization: 2 × 3 × 7</p>
+            </div>
+
+            <div id="vizContainer">
+                <svg id="vizSVG" viewBox="-500 -500 1000 1000" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <g id="vizGroup"></g>
+                </svg>
+            </div>
+
+            <div class="tooltip" id="tooltip"></div>
+        </section>
+
+        <aside class="controls-panel">
+            <h2>Research Controls</h2>
+
+            <div class="control-section">
+                <h3>Animation Controls</h3>
                 <div class="button-grid">
-                    <button id="playButton" onclick="startSequence()">▶️ Play</button>
-                    <button id="stopButton" onclick="stopSequence()" disabled>⏸️ Stop</button>
+                    <button id="playBtn" onclick="startAnimation()">▶ Play</button>
+                    <button id="stopBtn" onclick="stopAnimation()" disabled>⏸ Stop</button>
                 </div>
-                <label>Speed: <span class="slider-value" id="speedValue">500</span>ms</label>
-                <input type="range" id="speedSlider" min="50" max="2000" step="50" value="500">
+                <div class="control-row">
+                    <label class="control-label">Speed: <span class="value-display" id="speedVal">500</span> ms</label>
+                    <input type="range" id="speedSlider" min="50" max="2000" step="50" value="500">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="loopCheck" checked>
+                    <label for="loopCheck">Loop Animation</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="recordCheck">
+                    <label for="recordCheck">Record Frames</label>
+                </div>
             </div>
 
-            <div class="control-group">
-                <h3>Modulus M = <span id="modulusValue">42</span></h3>
-                <input type="range" id="modulusSlider" min="2" max="5000" value="42">
-                <input type="number" id="modulusInput" value="42" min="2" max="10000">
+            <div class="control-section">
+                <h3>Modulus Configuration</h3>
+                <div class="control-row">
+                    <label class="control-label">M = <span class="value-display" id="modVal">42</span></label>
+                    <input type="range" id="modSlider" min="2" max="5000" value="42">
+                </div>
+                <div class="control-row">
+                    <input type="number" id="modInput" min="2" max="10000" value="42" placeholder="Enter M">
+                </div>
+                <div class="preset-grid">
+                    <button class="preset-btn" onclick="setM(12)">12</button>
+                    <button class="preset-btn" onclick="setM(30)">30</button>
+                    <button class="preset-btn" onclick="setM(60)">60</button>
+                    <button class="preset-btn" onclick="setM(210)">210</button>
+                    <button class="preset-btn" onclick="setM(420)">420</button>
+                    <button class="preset-btn" onclick="setM(2310)">2310</button>
+                    <button class="preset-btn" onclick="setM(17)">17★</button>
+                    <button class="preset-btn" onclick="setM(101)">101★</button>
+                    <button class="preset-btn" onclick="setM(1024)">2¹⁰</button>
+                </div>
             </div>
 
-            <div class="control-group">
-                <h3>View</h3>
-                <label>Zoom: <span class="slider-value" id="zoomValue">1.00</span>x</label>
-                <input type="range" id="zoomSlider" min="10" max="1000" step="10" value="100">
-                <button onclick="resetView()">Reset View</button>
+            <div class="control-section">
+                <h3>View Controls</h3>
+                <div class="control-row">
+                    <label class="control-label">Zoom: <span class="value-display" id="zoomVal">1.00</span>×</label>
+                    <input type="range" id="zoomSlider" min="10" max="500" step="10" value="100">
+                </div>
+                <button onclick="resetView()">↻ Reset View</button>
             </div>
 
-            <div class="control-group">
-                <h3>Statistics</h3>
+            <div class="control-section">
+                <h3>Statistical Summary</h3>
                 <div class="stats-grid">
-                    <div class="stat-box">M: <strong><span id="modulusStat">42</span></strong></div>
-                    <div class="stat-box">φ(M): <strong><span id="phiValue">12</span></strong></div>
-                    <div class="stat-box">Coprime: <strong><span id="irreducibleCount">12</span></strong></div>
-                    <div class="stat-box">Non-coprime: <strong><span id="reducibleCount">30</span></strong></div>
-                    <div class="stat-box">Channels: <strong><span id="channelCount">8</span></strong></div>
-                    <div class="stat-box">Density: <strong><span id="densityValue">28.6%</span></strong></div>
+                    <div class="stat-card">
+                        <div class="stat-label">Modulus</div>
+                        <div class="stat-value" id="statM">42</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">φ(M)</div>
+                        <div class="stat-value" id="statPhi">12</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Coprime</div>
+                        <div class="stat-value" id="statCoprime">12</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Non-coprime</div>
+                        <div class="stat-value" id="statNonCoprime">30</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Channels</div>
+                        <div class="stat-value" id="statChannels">8</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Density</div>
+                        <div class="stat-value" id="statDensity">28.6%</div>
+                    </div>
+                    <div class="stat-card" style="grid-column: 1 / -1;">
+                        <div class="stat-label">Classification</div>
+                        <div class="stat-value">
+                            <span id="statClass">Composite</span>
+                            <span id="statBadge" class="badge badge-composite">ω(M)=3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.8rem; font-size: 1rem; color: #555;">Prime Constellations</h4>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Twin (2)</div>
+                        <div class="stat-value" id="statTwin">3</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Cousin (4)</div>
+                        <div class="stat-value" id="statCousin">2</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Sexy (6)</div>
+                        <div class="stat-value" id="statSexy">3</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Gap 8</div>
+                        <div class="stat-value" id="statGap8">1</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="control-group">
-                <h3>Appearance</h3>
-                <label>Color Scheme</label>
-                <select id="colorScheme">
-                    <option value="channel-type" selected>Coprime/Non-coprime</option>
-                    <option value="rainbow">Rainbow</option>
-                </select>
-                
-                <label>Point Size: <span class="slider-value" id="pointSizeValue">3.00</span></label>
-                <input type="range" id="pointSizeSlider" min="1" max="10" step="0.5" value="3">
-                
-                <label>Opacity: <span class="slider-value" id="opacityValue">1.00</span></label>
-                <input type="range" id="opacitySlider" min="0" max="100" step="1" value="100">
+            <div class="control-section">
+                <h3>Visual Appearance</h3>
+                <div class="control-row">
+                    <label class="control-label">Color Scheme</label>
+                    <select id="colorScheme">
+                        <option value="type" selected>Coprime vs Non-coprime</option>
+                        <option value="spf">Smallest Prime Factor</option>
+                        <option value="lpf">Largest Prime Factor</option>
+                        <option value="gcd">GCD Value</option>
+                        <option value="depth">Channel Depth</option>
+                        <option value="rainbow">Rainbow Spectrum</option>
+                    </select>
+                </div>
+                <div class="control-row">
+                    <label class="control-label">Point Size: <span class="value-display" id="pointSizeVal">3.0</span></label>
+                    <input type="range" id="pointSizeSlider" min="1" max="10" step="0.5" value="3">
+                </div>
+                <div class="control-row">
+                    <label class="control-label">Line Opacity: <span class="value-display" id="opacityVal">100</span>%</label>
+                    <input type="range" id="opacitySlider" min="0" max="100" step="5" value="100">
+                </div>
             </div>
 
-            <div class="control-group">
-                <h3>Visualization</h3>
-                <label><input type="checkbox" id="showProjections" checked> Projection Lines</label>
-                <label><input type="checkbox" id="showRings" checked> Channel Rings</label>
-                <label><input type="checkbox" id="showAllRings" checked> Inner Rings</label>
-                
-                <label>Ring Spacing: <span class="slider-value" id="spacingValue">1.00</span></label>
-                <input type="range" id="spacingSlider" min="0" max="200" step="1" value="100">
+            <div class="control-section">
+                <h3>Geometric Parameters</h3>
+                <div class="control-row">
+                    <label class="control-label">Ring Spacing: <span class="value-display" id="spacingVal">1.00</span></label>
+                    <input type="range" id="spacingSlider" min="0" max="200" step="5" value="100">
+                </div>
+                <div class="control-row">
+                    <label class="control-label">Minimum Ring (M'): <span class="value-display" id="minRingVal">1</span></label>
+                    <input type="range" id="minRingSlider" min="1" max="100" step="1" value="1">
+                </div>
             </div>
 
-            <div class="control-group">
-                <h3>Export</h3>
-                <label>Resolution (px)</label>
-                <input type="number" id="exportResolution" value="3000" min="1000" max="8000">
-                <button onclick="exportImage()">🖼️ Export PNG</button>
+            <div class="control-section">
+                <h3>Display Options</h3>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showProjections" checked>
+                    <label for="showProjections">Projection Lines</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showRings" checked>
+                    <label for="showRings">Channel Rings</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showInnerRings" checked>
+                    <label for="showInnerRings">Inner Ring Points</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="colorInner">
+                    <label for="colorInner">Color Inner Points</label>
+                </div>
+                <div class="control-row">
+                    <label class="control-label">Constellation Highlight</label>
+                    <select id="gapSelect">
+                        <option value="none" selected>None</option>
+                        <option value="2">Twin (Gap 2)</option>
+                        <option value="4">Cousin (Gap 4)</option>
+                        <option value="6">Sexy (Gap 6)</option>
+                        <option value="8">Gap 8</option>
+                        <option value="10">Gap 10</option>
+                        <option value="12">Gap 12</option>
+                    </select>
+                </div>
             </div>
-        </div>
 
-        <div class="content">
-            <div class="canvas-container">
-                <canvas id="canvas"></canvas>
-                <div id="tooltip"></div>
+            <div class="control-section">
+                <h3>Data Export</h3>
+                <div class="control-row">
+                    <label class="control-label">Export Resolution (px)</label>
+                    <input type="number" id="exportRes" value="3000" min="1000" max="8000" step="500">
+                </div>
+                <div class="button-grid-3">
+                    <button onclick="exportPNG()">PNG</button>
+                    <button onclick="exportCSV()">CSV</button>
+                    <button onclick="exportJSON()">JSON</button>
+                </div>
+                <button onclick="exportFrames()">Export Frame Sequence</button>
             </div>
-        </div>
+        </aside>
     </div>
 
     <script>
         // Math utilities
-        function gcd(a, b) { while (b !== 0) { const temp = b; b = a % b; a = temp; } return a; }
-        function phi(n) { let result = n; let p = 2; while (p * p <= n) { if (n % p === 0) { while (n % p === 0) n /= p; result -= result / p; } p++; } if (n > 1) result -= result / n; return Math.round(result); }
-        function isPrime(n) { if (n < 2) return false; if (n === 2) return true; if (n % 2 === 0) return false; for (let i = 3; i * i <= n; i += 2) { if (n % i === 0) return false; } return true; }
+        function gcd(a, b) { while (b) { [a, b] = [b, a % b]; } return a; }
+        function phi(n) { let r = n, p = 2; while (p * p <= n) { if (n % p === 0) { while (n % p === 0) n /= p; r -= r / p; } p++; } if (n > 1) r -= r / n; return Math.round(r); }
+        function isPrime(n) { if (n < 2) return false; if (n === 2) return true; if (n % 2 === 0) return false; for (let i = 3; i * i <= n; i += 2) if (n % i === 0) return false; return true; }
+        function omega(n) { let c = 0, p = 2; while (p * p <= n) { if (n % p === 0) { c++; while (n % p === 0) n /= p; } p++; } if (n > 1) c++; return c; }
+        function smallestPrimeFactor(n) { if (n <= 1) return 1; if (n % 2 === 0) return 2; for (let i = 3; i * i <= n; i += 2) if (n % i === 0) return i; return n; }
+        function largestPrimeFactor(n) { let l = -1, t = n; while (t % 2 === 0) { l = 2; t /= 2; } for (let i = 3; i * i <= t; i += 2) { while (t % i === 0) { l = i; t /= i; } } if (t > 2) l = t; return l; }
         
         function primeFactorization(n) {
-            const factors = [];
-            let d = 2;
+            const f = []; let d = 2;
             while (n > 1) {
-                let count = 0;
-                while (n % d === 0) { count++; n /= d; }
-                if (count > 0) factors.push({ prime: d, power: count });
-                d++;
-                if (d * d > n && n > 1) { factors.push({ prime: n, power: 1 }); break; }
+                let c = 0;
+                while (n % d === 0) { c++; n /= d; }
+                if (c > 0) f.push({ p: d, e: c });
+                d++; if (d * d > n && n > 1) { f.push({ p: n, e: 1 }); break; }
             }
-            return factors;
+            return f;
         }
         
-        function formatFactorization(factors) {
-            return factors.map(f => {
-                if (f.power === 1) return f.prime.toString();
-                const superscripts = '⁰¹²³⁴⁵⁶⁷⁸⁹';
-                const powerStr = f.power.toString().split('').map(d => superscripts[parseInt(d)]).join('');
-                return `${f.prime}${powerStr}`;
-            }).join(' × ');
+        function formatFactorization(f) {
+            const sup = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+            return f.map(x => x.e === 1 ? x.p : `${x.p}${x.e.toString().split('').map(d => sup[d]).join('')}`).join(' × ');
         }
         
         function getDivisors(n) {
-            const divisors = new Set();
-            for (let i = 1; i * i <= n; i++) {
-                if (n % i === 0) {
-                    divisors.add(i);
-                    divisors.add(n / i);
-                }
-            }
-            return Array.from(divisors).sort((a, b) => a - b);
+            const d = new Set();
+            for (let i = 1; i * i <= n; i++) if (n % i === 0) { d.add(i); d.add(n / i); }
+            return Array.from(d).sort((a, b) => a - b);
         }
-
-        // Configuration
-        let config = {
-            modulus: 42,
-            colorScheme: 'channel-type',
-            opacity: 1.0,
-            pointSize: 3,
-            showProjections: true,
-            showAllRings: true,
-            showRings: true,
-            spacingFactor: 1.0,
-            zoom: 1.0,
-            panX: 0,
-            panY: 0,
-            animationSpeed: 500
-        };
 
         // State
-        let canvas, ctx;
-        let points = [];
-        let channels = new Map();
-        let allRingPoints = new Map();
-        let hoveredPoint = null;
-        let isDragging = false;
-        let lastMouse = { x: 0, y: 0 };
-        let sequenceInterval = null;
+        let config = {
+            M: 42, zoom: 1, panX: 0, panY: 0, colorScheme: 'type', pointSize: 3,
+            opacity: 1, spacingFactor: 1, minRing: 1, showProjections: true,
+            showRings: true, showInnerRings: true, colorInner: false, gapHighlight: 'none',
+            animSpeed: 500, loop: true, recording: false
+        };
 
-        // Color functions
-        function getPointColor(p) {
-            if (config.colorScheme === 'rainbow') {
-                return `hsl(${(p.r / p.M) * 360}, 70%, 60%)`;
-            }
-            return p.isOpen ? '#00ffff' : '#ff1493';
+        let points = [], channels = new Map(), innerRings = new Map();
+        let gapPairs = { 2: [], 4: [], 6: [], 8: [], 10: [], 12: [] };
+        let animInterval = null, recordedFrames = [];
+        let isDragging = false, lastPos = { x: 0, y: 0 };
+        let svgGroup, tooltip, vizContainer;
+
+        // Color schemes
+        const colors = {
+            type: p => p.coprime ? '#00ffff' : '#ff1493',
+            spf: p => p.coprime ? '#00ffff' : ['#f00', '#0f0', '#00f', '#ff0', '#f0f', '#0ff'][p.spf % 6],
+            lpf: p => p.coprime ? '#00ffff' : ['#f00', '#0f0', '#00f', '#ff0', '#f0f'][p.lpf % 5],
+            gcd: p => {
+                const pct = p.gcd / config.M;
+                const r = Math.round(130 + (255 - 130) * pct);
+                const g = Math.round(80 + (20 - 80) * pct);
+                const b = Math.round(223 + (147 - 223) * pct);
+                return `rgb(${r},${g},${b})`;
+            },
+            depth: p => `hsl(${(p.channel / config.M) * 360}, 70%, 60%)`,
+            rainbow: p => `hsl(${(p.r / p.M) * 360}, 70%, 60%)`
+        };
+
+        function getColor(p) {
+            return colors[config.colorScheme](p);
         }
 
-        // Data calculation
-        function calculatePoints() {
-            const M = config.modulus;
+        // Calculate
+        function calculate() {
+            const M = config.M;
             points = [];
-            channels = new Map();
-            allRingPoints.clear();
+            channels.clear();
+            innerRings.clear();
+            Object.keys(gapPairs).forEach(k => gapPairs[k] = []);
 
+            const coprimes = new Set();
             for (let r = 0; r < M; r++) {
                 const g = gcd(r, M);
-                const isOpen = g === 1;
-                const reducedR = r / g;
-                const reducedM = M / g;
+                const coprime = g === 1;
+                const rr = r / g, rm = M / g;
                 const angle = (2 * Math.PI * r) / M;
+                
+                if (coprime) coprimes.add(r);
 
                 points.push({
-                    r, M, gcd: g, isOpen, reducedR, reducedM, angle,
-                    screenX: 0, screenY: 0
+                    r, M, gcd: g, coprime, rr, channel: rm, angle,
+                    spf: smallestPrimeFactor(g === 1 ? M : g),
+                    lpf: largestPrimeFactor(g === 1 ? M : g)
                 });
 
-                if (!channels.has(reducedM)) {
-                    channels.set(reducedM, {
-                        M_prime: reducedM,
-                        multiplicity: M / reducedM,
-                        residues: [],
-                        count: 0
-                    });
-                }
-                channels.get(reducedM).residues.push(r);
-                channels.get(reducedM).count++;
+                if (!channels.has(rm)) channels.set(rm, { M: rm, mult: M / rm, pts: [], count: 0 });
+                channels.get(rm).pts.push(r);
+                channels.get(rm).count++;
             }
 
             getDivisors(M).forEach(d => {
-                const ringPoints = [];
+                if (d < config.minRing) return;
+                const rpts = [];
                 for (let r = 0; r < d; r++) {
                     const g = gcd(r, d);
-                    ringPoints.push({
-                        r, M: d, gcd: g, isOpen: g === 1,
-                        reducedR: r / g, reducedM: d / g,
-                        angle: (2 * Math.PI * r) / d
+                    rpts.push({
+                        r, M: d, gcd: g, coprime: g === 1, channel: d / g,
+                        angle: (2 * Math.PI * r) / d,
+                        spf: smallestPrimeFactor(g === 1 ? d : g),
+                        lpf: largestPrimeFactor(g === 1 ? d : g)
                     });
                 }
-                allRingPoints.set(d, ringPoints);
+                innerRings.set(d, rpts);
             });
 
-            updateStatistics();
+            for (let gap = 2; gap <= 12; gap += 2) {
+                const seen = new Set();
+                for (let r = 0; r < M; r++) {
+                    const r2 = (r + gap) % M;
+                    if (coprimes.has(r) && coprimes.has(r2)) {
+                        const key = [r, r2].sort((a, b) => a - b).join('-');
+                        if (!seen.has(key)) { seen.add(key); gapPairs[gap].push([r, r2]); }
+                    }
+                }
+            }
+
+            updateStats();
         }
 
-        function updateStatistics() {
-            const M = config.modulus;
-            const factors = primeFactorization(M);
-            const phiM = phi(M);
-            const coprime = points.filter(p => p.isOpen).length;
-            const nonCoprime = points.filter(p => !p.isOpen).length;
-            const density = (phiM / M * 100).toFixed(1);
+        function updateStats() {
+            const M = config.M;
+            const f = primeFactorization(M);
+            const p = phi(M);
+            const coprime = points.filter(x => x.coprime).length;
+            const prime = isPrime(M);
+            const w = omega(M);
 
-            document.getElementById('modulusValue').textContent = M;
-            document.getElementById('modulusInput').value = M;
-            document.getElementById('modulusStat').textContent = M;
+            document.getElementById('vizTitle').textContent = `Modular Space: M = ${M}`;
+            document.getElementById('vizMeta').textContent = `Prime Factorization: ${formatFactorization(f)}`;
+            document.getElementById('modVal').textContent = M;
+            document.getElementById('modInput').value = M;
+            document.getElementById('statM').textContent = M;
+            document.getElementById('statPhi').textContent = p;
+            document.getElementById('statCoprime').textContent = coprime;
+            document.getElementById('statNonCoprime').textContent = M - coprime;
+            document.getElementById('statChannels').textContent = channels.size;
+            document.getElementById('statDensity').textContent = (p / M * 100).toFixed(1) + '%';
+            document.getElementById('statClass').textContent = prime ? 'Prime' : 'Composite';
             
-            document.getElementById('disp-title').textContent = `Modular Reduction Projection: M = ${M}`;
-            document.getElementById('disp-subtitle').textContent = formatFactorization(factors);
+            const badge = document.getElementById('statBadge');
+            badge.textContent = prime ? 'Prime' : `ω(M)=${w}`;
+            badge.className = prime ? 'badge badge-prime' : 'badge badge-composite';
             
-            document.getElementById('phiValue').textContent = phiM;
-            document.getElementById('irreducibleCount').textContent = coprime;
-            document.getElementById('reducibleCount').textContent = nonCoprime;
-            document.getElementById('channelCount').textContent = channels.size;
-            document.getElementById('densityValue').textContent = density + '%';
+            document.getElementById('statTwin').textContent = gapPairs[2].length;
+            document.getElementById('statCousin').textContent = gapPairs[4].length;
+            document.getElementById('statSexy').textContent = gapPairs[6].length;
+            document.getElementById('statGap8').textContent = gapPairs[8].length;
         }
 
-        // Drawing
-        function draw() {
-            const dpr = window.devicePixelRatio || 1;
-            const size = canvas.width / dpr;
-            const centerX = size / 2;
-            const centerY = size / 2;
-            const baseRadius = size * 0.45;
+        // Render
+        function render() {
+            if (!svgGroup) return;
+            
+            svgGroup.innerHTML = '';
+            const baseR = 400;
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.save();
-            ctx.translate(centerX, centerY);
-            ctx.scale(config.zoom, config.zoom);
-            ctx.translate(config.panX, config.panY);
-            
-            const s = 1 / config.zoom;
+            // Gap highlights
+            if (config.gapHighlight !== 'none') {
+                const gap = parseInt(config.gapHighlight);
+                const pairs = gapPairs[gap] || [];
+                pairs.forEach(([r1, r2]) => {
+                    const p1 = points[r1], p2 = points[r2];
+                    const x1 = baseR * Math.cos(p1.angle - Math.PI / 2);
+                    const y1 = baseR * Math.sin(p1.angle - Math.PI / 2);
+                    const x2 = baseR * Math.cos(p2.angle - Math.PI / 2);
+                    const y2 = baseR * Math.sin(p2.angle - Math.PI / 2);
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', x1);
+                    line.setAttribute('y1', y1);
+                    line.setAttribute('x2', x2);
+                    line.setAttribute('y2', y2);
+                    line.setAttribute('stroke', '#ffcc00');
+                    line.setAttribute('stroke-width', '2');
+                    line.setAttribute('opacity', '0.6');
+                    svgGroup.appendChild(line);
+                });
+            }
 
             // Projection lines
             if (config.showProjections) {
-                ctx.globalAlpha = config.opacity;
                 points.forEach(p => {
-                    if (!p.isOpen) {
-                        const outerX = baseRadius * Math.cos(p.angle - Math.PI / 2);
-                        const outerY = baseRadius * Math.sin(p.angle - Math.PI / 2);
-                        const channelRadius = baseRadius * Math.pow(p.reducedM / config.modulus, config.spacingFactor);
-                        const targetAngle = (2 * Math.PI * p.reducedR) / p.reducedM;
-                        const innerX = channelRadius * Math.cos(targetAngle - Math.PI / 2);
-                        const innerY = channelRadius * Math.sin(targetAngle - Math.PI / 2);
-
-                        ctx.beginPath();
-                        ctx.moveTo(outerX, outerY);
-                        ctx.lineTo(innerX, innerY);
-                        ctx.strokeStyle = '#ff1493';
-                        ctx.lineWidth = 0.5 * s;
-                        ctx.stroke();
+                    if (!p.coprime) {
+                        const ox = baseR * Math.cos(p.angle - Math.PI / 2);
+                        const oy = baseR * Math.sin(p.angle - Math.PI / 2);
+                        const cr = baseR * Math.pow(p.channel / config.M, config.spacingFactor);
+                        const ta = (2 * Math.PI * p.rr) / p.channel;
+                        const ix = cr * Math.cos(ta - Math.PI / 2);
+                        const iy = cr * Math.sin(ta - Math.PI / 2);
+                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        line.setAttribute('x1', ox);
+                        line.setAttribute('y1', oy);
+                        line.setAttribute('x2', ix);
+                        line.setAttribute('y2', iy);
+                        line.setAttribute('stroke', '#ff1493');
+                        line.setAttribute('stroke-width', '0.5');
+                        line.setAttribute('opacity', config.opacity);
+                        svgGroup.appendChild(line);
                     }
                 });
-                ctx.globalAlpha = 1.0;
             }
 
-            // Channel rings
+            // Rings
             if (config.showRings) {
-                const divisors = getDivisors(config.modulus).filter(d => channels.has(d));
-                divisors.forEach(d => {
-                    const radius = baseRadius * Math.pow(d / config.modulus, config.spacingFactor);
-                    ctx.beginPath();
-                    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-                    ctx.strokeStyle = '#ffd700';
-                    ctx.lineWidth = 1 * s;
-                    ctx.stroke();
+                getDivisors(config.M).filter(d => channels.has(d) && d >= config.minRing).forEach(d => {
+                    const r = baseR * Math.pow(d / config.M, config.spacingFactor);
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', 0);
+                    circle.setAttribute('cy', 0);
+                    circle.setAttribute('r', r);
+                    circle.setAttribute('fill', 'none');
+                    circle.setAttribute('stroke', '#ffd700');
+                    circle.setAttribute('stroke-width', '1');
+                    svgGroup.appendChild(circle);
                 });
             }
 
-            // Inner ring points
-            if (config.showAllRings) {
-                const divisors = getDivisors(config.modulus);
-                divisors.forEach(d => {
-                    if (d === config.modulus) return;
-                    const ringPoints = allRingPoints.get(d);
-                    if (!ringPoints) return;
-                    const radius = baseRadius * Math.pow(d / config.modulus, config.spacingFactor);
-                    
-                    ringPoints.forEach(p => {
-                        if (!p.isOpen) return;
-                        const x = radius * Math.cos(p.angle - Math.PI / 2);
-                        const y = radius * Math.sin(p.angle - Math.PI / 2);
-                        ctx.beginPath();
-                        ctx.arc(x, y, config.pointSize * 0.7 * s, 0, 2 * Math.PI);
-                        ctx.fillStyle = '#ffd700';
-                        ctx.fill();
+            // Inner points
+            if (config.showInnerRings) {
+                getDivisors(config.M).forEach(d => {
+                    if (d === config.M || d < config.minRing) return;
+                    const rpts = innerRings.get(d);
+                    if (!rpts) return;
+                    const r = baseR * Math.pow(d / config.M, config.spacingFactor);
+                    rpts.forEach(p => {
+                        if (!p.coprime && !config.colorInner) return;
+                        const x = r * Math.cos(p.angle - Math.PI / 2);
+                        const y = r * Math.sin(p.angle - Math.PI / 2);
+                        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        c.setAttribute('cx', x);
+                        c.setAttribute('cy', y);
+                        c.setAttribute('r', config.pointSize * 0.7);
+                        c.setAttribute('fill', config.colorInner ? getColor(p) : '#ffd700');
+                        svgGroup.appendChild(c);
                     });
                 });
             }
 
-            // Outer ring points
+            // Outer points
             points.forEach(p => {
-                const x = baseRadius * Math.cos(p.angle - Math.PI / 2);
-                const y = baseRadius * Math.sin(p.angle - Math.PI / 2);
-                const color = getPointColor(p);
-
-                ctx.beginPath();
-                ctx.arc(x, y, config.pointSize * s, 0, 2 * Math.PI);
-                ctx.fillStyle = color;
-                ctx.fill();
-
-                if (hoveredPoint && hoveredPoint.r === p.r) {
-                    ctx.strokeStyle = '#fff';
-                    ctx.lineWidth = 2 * s;
-                    ctx.stroke();
-                }
-
-                p.screenX = x;
-                p.screenY = y;
+                const x = baseR * Math.cos(p.angle - Math.PI / 2);
+                const y = baseR * Math.sin(p.angle - Math.PI / 2);
+                const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                c.setAttribute('cx', x);
+                c.setAttribute('cy', y);
+                c.setAttribute('r', config.pointSize);
+                c.setAttribute('fill', getColor(p));
+                c.setAttribute('data-r', p.r);
+                c.style.cursor = 'pointer';
+                svgGroup.appendChild(c);
             });
-
-            ctx.restore();
         }
 
         // Animation
-        function handleSequence() {
-            let nextModulus = config.modulus + 1;
-            if (nextModulus > 5000) nextModulus = 2;
-            setModulus(nextModulus);
+        function startAnimation() {
+            if (animInterval) return;
+            animInterval = setInterval(() => {
+                let next = config.M + 1;
+                if (next > 5000) next = config.loop ? 2 : (stopAnimation(), config.M);
+                setM(next);
+                if (config.recording) recordedFrames.push({ M: config.M, svg: svgGroup.innerHTML });
+            }, config.animSpeed);
+            document.getElementById('playBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            if (config.recording) document.getElementById('recordingBadge').classList.add('active');
         }
 
-        function startSequence() {
-            if (sequenceInterval === null) {
-                sequenceInterval = setInterval(handleSequence, config.animationSpeed);
-                document.getElementById('playButton').disabled = true;
-                document.getElementById('stopButton').disabled = false;
-            }
-        }
-
-        function stopSequence() {
-            if (sequenceInterval !== null) {
-                clearInterval(sequenceInterval);
-                sequenceInterval = null;
-                document.getElementById('playButton').disabled = false;
-                document.getElementById('stopButton').disabled = true;
-            }
+        function stopAnimation() {
+            if (!animInterval) return;
+            clearInterval(animInterval);
+            animInterval = null;
+            document.getElementById('playBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('recordingBadge').classList.remove('active');
         }
 
         function resetView() {
-            config.zoom = 1.0;
+            config.zoom = 1;
             config.panX = 0;
             config.panY = 0;
             document.getElementById('zoomSlider').value = 100;
-            document.getElementById('zoomValue').textContent = '1.00';
-            draw();
+            document.getElementById('zoomVal').textContent = '1.00';
+            updateViewBox();
         }
 
-        function setModulus(m) {
-            config.modulus = m;
-            document.getElementById('modulusSlider').value = Math.min(m, 5000);
-            calculatePoints();
-            draw();
+        function updateViewBox() {
+            const svg = document.getElementById('vizSVG');
+            const s = 500 / config.zoom;
+            svg.setAttribute('viewBox', `${-s + config.panX} ${-s + config.panY} ${s * 2} ${s * 2}`);
         }
 
-        // Event handlers
-        function handlePointerMove(x, y) {
-            const dpr = window.devicePixelRatio || 1;
-            const rect = canvas.getBoundingClientRect();
+        function setM(m) {
+            config.M = m;
+            document.getElementById('modSlider').value = Math.min(m, 5000);
+            calculate();
+            render();
+        }
+
+        // Exports
+        function exportPNG() {
+            const res = parseInt(document.getElementById('exportRes').value);
+            const canvas = document.createElement('canvas');
+            canvas.width = res;
+            canvas.height = res;
+            const ctx = canvas.getContext('2d');
             
-            if (isDragging) {
-                config.panX += (x - lastMouse.x) * dpr / config.zoom;
-                config.panY += (y - lastMouse.y) * dpr / config.zoom;
-                lastMouse = { x, y };
-                draw();
-                return;
-            }
+            const svgData = new XMLSerializer().serializeToString(document.getElementById('vizSVG'));
+            const img = new Image();
+            const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
             
-            const canvasX = (x - rect.left) * dpr;
-            const canvasY = (y - rect.top) * dpr;
-            const size = canvas.width / dpr;
-            const worldX = (canvasX / dpr - size / 2) / config.zoom - config.panX;
-            const worldY = (canvasY / dpr - size / 2) / config.zoom - config.panY;
-
-            let closest = null;
-            let minDist = config.pointSize * 3 / config.zoom;
-
-            points.forEach(p => {
-                const dist = Math.sqrt((worldX - p.screenX) ** 2 + (worldY - p.screenY) ** 2);
-                if (dist < minDist) {
-                    minDist = dist;
-                    closest = p;
-                }
-            });
-
-            if (closest !== hoveredPoint) {
-                hoveredPoint = closest;
-                draw();
-                updateTooltip(x, y);
-            } else if (hoveredPoint) {
-                updateTooltip(x, y);
-            } else {
-                document.getElementById('tooltip').style.display = 'none';
-            }
-        }
-
-        function updateTooltip(x, y) {
-            const tooltip = document.getElementById('tooltip');
-            if (hoveredPoint) {
-                tooltip.style.display = 'block';
-                tooltip.style.left = (x + 15) + 'px';
-                tooltip.style.top = (y + 15) + 'px';
+            img.onload = () => {
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, res, res);
+                ctx.drawImage(img, 0, 0, res, res);
+                URL.revokeObjectURL(url);
                 
-                const p = hoveredPoint;
-                const reduction = p.isOpen ? 'Coprime' : `${p.r}/${p.M} → ${p.reducedR}/${p.reducedM}`;
-                
-                tooltip.innerHTML = `
-                    <div><strong>r = ${p.r}</strong></div>
-                    <div>M = ${p.M}</div>
-                    <div>GCD = ${p.gcd}</div>
-                    <div>${reduction}</div>
-                    ${!p.isOpen ? `<div>Channel M' = ${p.reducedM}</div>` : ''}
-                    <div>Angle: ${((p.angle * 180 / Math.PI) % 360).toFixed(1)}°</div>
-                `;
-            } else {
-                tooltip.style.display = 'none';
-            }
+                canvas.toBlob(blob => {
+                    const a = document.createElement('a');
+                    a.download = `modular-M${config.M}-${res}px.png`;
+                    a.href = URL.createObjectURL(blob);
+                    a.click();
+                });
+            };
+            img.src = url;
         }
 
-        function handleWheel(e) {
-            e.preventDefault();
-            const delta = e.deltaY < 0 ? 1.1 : 0.9;
-            config.zoom = Math.min(Math.max(config.zoom * delta, 0.1), 10);
-            document.getElementById('zoomSlider').value = Math.round(config.zoom * 100);
-            document.getElementById('zoomValue').textContent = config.zoom.toFixed(2);
-            draw();
-        }
-
-        // Export with legend
-        function exportImage() {
-            const resolution = parseInt(document.getElementById('exportResolution').value);
-            const titleH = resolution * 0.1;
-            const canvasW = resolution * 0.65;
-            const legendW = resolution * 0.35;
-            const canvasH = resolution - titleH;
-            
-            const exportCanvas = document.createElement('canvas');
-            const ctx2 = exportCanvas.getContext('2d');
-            exportCanvas.width = resolution;
-            exportCanvas.height = resolution;
-            
-            // Background
-            ctx2.fillStyle = '#000';
-            ctx2.fillRect(0, 0, resolution, resolution);
-            
-            // Title section
-            ctx2.fillStyle = '#0f4c75';
-            ctx2.fillRect(0, 0, resolution, titleH);
-            ctx2.strokeStyle = '#3282b8';
-            ctx2.lineWidth = 4;
-            ctx2.strokeRect(0, titleH - 2, resolution, 2);
-            
-            ctx2.font = `bold ${titleH * 0.3}px Arial`;
-            ctx2.fillStyle = '#ffd700';
-            ctx2.textAlign = 'center';
-            ctx2.fillText('Modular Reduction Projection Explorer', resolution / 2, titleH * 0.15);
-            
-            ctx2.font = `bold ${titleH * 0.28}px monospace`;
-            ctx2.fillStyle = '#fff';
-            ctx2.fillText(`M = ${config.modulus}`, resolution / 2, titleH * 0.5);
-            
-            const factors = primeFactorization(config.modulus);
-            ctx2.font = `${titleH * 0.18}px Arial`;
-            ctx2.fillStyle = '#bbe1fa';
-            ctx2.fillText(formatFactorization(factors), resolution / 2, titleH * 0.8);
-            
-            // Visualization
-            ctx2.save();
-            ctx2.translate(canvasW / 2, titleH + canvasH / 2);
-            const vizSize = Math.min(canvasW, canvasH);
-            const baseRadius = vizSize * 0.42;
-            
-            // Projection lines
-            if (config.showProjections) {
-                ctx2.globalAlpha = config.opacity;
-                points.forEach(p => {
-                    if (!p.isOpen) {
-                        const outerX = baseRadius * Math.cos(p.angle - Math.PI / 2);
-                        const outerY = baseRadius * Math.sin(p.angle - Math.PI / 2);
-                        const channelRadius = baseRadius * Math.pow(p.reducedM / config.modulus, config.spacingFactor);
-                        const targetAngle = (2 * Math.PI * p.reducedR) / p.reducedM;
-                        const innerX = channelRadius * Math.cos(targetAngle - Math.PI / 2);
-                        const innerY = channelRadius * Math.sin(targetAngle - Math.PI / 2);
-                        ctx2.beginPath();
-                        ctx2.moveTo(outerX, outerY);
-                        ctx2.lineTo(innerX, innerY);
-                        ctx2.strokeStyle = '#ff1493';
-                        ctx2.lineWidth = resolution / 2000;
-                        ctx2.stroke();
-                    }
-                });
-                ctx2.globalAlpha = 1.0;
-            }
-            
-            // Rings
-            if (config.showRings) {
-                getDivisors(config.modulus).filter(d => channels.has(d)).forEach(d => {
-                    const radius = baseRadius * Math.pow(d / config.modulus, config.spacingFactor);
-                    ctx2.beginPath();
-                    ctx2.arc(0, 0, radius, 0, 2 * Math.PI);
-                    ctx2.strokeStyle = '#ffd700';
-                    ctx2.lineWidth = resolution / 1000;
-                    ctx2.stroke();
-                });
-            }
-            
-            // Inner rings
-            if (config.showAllRings) {
-                getDivisors(config.modulus).forEach(d => {
-                    if (d === config.modulus) return;
-                    const ringPoints = allRingPoints.get(d);
-                    if (!ringPoints) return;
-                    const radius = baseRadius * Math.pow(d / config.modulus, config.spacingFactor);
-                    ringPoints.forEach(p => {
-                        if (!p.isOpen) return;
-                        const x = radius * Math.cos(p.angle - Math.PI / 2);
-                        const y = radius * Math.sin(p.angle - Math.PI / 2);
-                        ctx2.beginPath();
-                        ctx2.arc(x, y, config.pointSize * resolution / 2000 * 0.7, 0, 2 * Math.PI);
-                        ctx2.fillStyle = '#ffd700';
-                        ctx2.fill();
-                    });
-                });
-            }
-            
-            // Outer points
+        function exportCSV() {
+            let csv = `# Modular Reduction Data - M=${config.M}\n`;
+            csv += `Residue,Modulus,GCD,Status,Channel,Angle\n`;
             points.forEach(p => {
-                const x = baseRadius * Math.cos(p.angle - Math.PI / 2);
-                const y = baseRadius * Math.sin(p.angle - Math.PI / 2);
-                ctx2.beginPath();
-                ctx2.arc(x, y, config.pointSize * resolution / 2000, 0, 2 * Math.PI);
-                ctx2.fillStyle = getPointColor(p);
-                ctx2.fill();
+                csv += `${p.r},${p.M},${p.gcd},${p.coprime ? 'Coprime' : 'Non-coprime'},${p.channel},${p.angle.toFixed(6)}\n`;
             });
-            ctx2.restore();
-            
-            // Legend panel
-            const lx = canvasW;
-            const ly = titleH;
-            ctx2.fillStyle = '#1a1a2e';
-            ctx2.fillRect(lx, ly, legendW, canvasH);
-            ctx2.strokeStyle = '#3282b8';
-            ctx2.lineWidth = 3;
-            ctx2.strokeRect(lx, ly, legendW, canvasH);
-            
-            let yPos = ly + resolution * 0.03;
-            const lm = lx + resolution * 0.02;
-            const fs = resolution * 0.014;
-            const lh = resolution * 0.025;
-            
-            ctx2.textAlign = 'left';
-            ctx2.font = `bold ${fs * 1.3}px Arial`;
-            ctx2.fillStyle = '#ffd700';
-            ctx2.fillText('Legend & Statistics', lm, yPos);
-            yPos += lh * 2;
-            
-            ctx2.font = `bold ${fs}px Arial`;
-            ctx2.fillStyle = '#3282b8';
-            ctx2.fillText('Color Scheme:', lm, yPos);
-            yPos += lh * 1.2;
-            
-            ctx2.font = `${fs * 0.9}px Arial`;
-            ctx2.fillStyle = '#00ffff';
-            ctx2.fillRect(lm, yPos, lh * 0.8, lh * 0.8);
-            ctx2.fillStyle = '#bbe1fa';
-            ctx2.fillText('Coprime (φ)', lm + lh, yPos + lh * 0.2);
-            yPos += lh;
-            
-            ctx2.fillStyle = '#ff1493';
-            ctx2.fillRect(lm, yPos, lh * 0.8, lh * 0.8);
-            ctx2.fillStyle = '#bbe1fa';
-            ctx2.fillText('Non-coprime', lm + lh, yPos + lh * 0.2);
-            yPos += lh * 2;
-            
-            ctx2.font = `bold ${fs}px Arial`;
-            ctx2.fillStyle = '#3282b8';
-            ctx2.fillText('Statistics:', lm, yPos);
-            yPos += lh * 1.2;
-            
-            ctx2.font = `${fs * 0.85}px monospace`;
-            ctx2.fillStyle = '#bbe1fa';
-            const stats = [
-                `Total Residues: ${config.modulus}`,
-                `φ(M): ${phi(config.modulus)}`,
-                `Coprime: ${points.filter(p => p.isOpen).length}`,
-                `Non-coprime: ${points.filter(p => !p.isOpen).length}`,
-                `Density: ${(phi(config.modulus) / config.modulus * 100).toFixed(1)}%`,
-                `Channels: ${channels.size}`,
-                `Divisors: ${getDivisors(config.modulus).length}`,
-                `Prime: ${isPrime(config.modulus) ? 'Yes' : 'No'}`
-            ];
-            stats.forEach(s => {
-                ctx2.fillText(s, lm, yPos);
-                yPos += lh * 0.95;
-            });
-            yPos += lh;
-            
-            ctx2.font = `bold ${fs}px Arial`;
-            ctx2.fillStyle = '#3282b8';
-            ctx2.fillText('Top Channels:', lm, yPos);
-            yPos += lh * 1.2;
-            
-            ctx2.font = `${fs * 0.8}px monospace`;
-            ctx2.fillStyle = '#bbe1fa';
-            Array.from(channels.entries())
-                .sort((a, b) => b[1].count - a[1].count)
-                .slice(0, 6)
-                .forEach(([m, ch]) => {
-                    ctx2.fillText(`M'=${m}: ${ch.count} pts (×${ch.multiplicity})`, lm + fs * 0.5, yPos);
-                    yPos += lh * 0.9;
-                });
-            
-            ctx2.font = `${fs * 0.7}px Arial`;
-            ctx2.fillStyle = '#666';
-            ctx2.textAlign = 'center';
-            ctx2.fillText(`Generated: ${new Date().toLocaleDateString()}`, lx + legendW / 2, resolution - resolution * 0.02);
-            
-            const link = document.createElement('a');
-            link.download = `modular-reduction-M${config.modulus}-${resolution}px.png`;
-            link.href = exportCanvas.toDataURL('image/png');
-            link.click();
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.download = `modular-M${config.M}.csv`;
+            a.href = URL.createObjectURL(blob);
+            a.click();
         }
 
-        // Canvas initialization
-        function initCanvas() {
-            canvas = document.getElementById('canvas');
-            ctx = canvas.getContext('2d');
-            
-            const container = canvas.parentElement;
-            new ResizeObserver(() => {
-                const size = Math.min(container.clientWidth, container.clientHeight);
-                const dpr = window.devicePixelRatio || 1;
-                canvas.width = size * dpr;
-                canvas.height = size * dpr;
-                canvas.style.width = `${size}px`;
-                canvas.style.height = `${size}px`;
-                draw();
-            }).observe(container);
-            
-            canvas.addEventListener('mousedown', e => {
+        function exportJSON() {
+            const data = {
+                metadata: { M: config.M, phi: phi(config.M), channels: channels.size, timestamp: new Date().toISOString() },
+                points: points.map(p => ({ r: p.r, gcd: p.gcd, coprime: p.coprime, channel: p.channel }))
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.download = `modular-M${config.M}.json`;
+            a.href = URL.createObjectURL(blob);
+            a.click();
+        }
+
+        function exportFrames() {
+            if (recordedFrames.length === 0) return alert('No frames recorded');
+            alert(`${recordedFrames.length} frames ready for export`);
+        }
+
+        // Events
+        function setupEvents() {
+            svgGroup = document.getElementById('vizGroup');
+            tooltip = document.getElementById('tooltip');
+            vizContainer = document.getElementById('vizContainer');
+
+            // Touch/mouse
+            let startDist = 0;
+            vizContainer.addEventListener('mousedown', e => {
                 isDragging = true;
-                lastMouse = { x: e.offsetX, y: e.offsetY };
-                canvas.style.cursor = 'grabbing';
+                lastPos = { x: e.clientX, y: e.clientY };
             });
-            canvas.addEventListener('mousemove', e => handlePointerMove(e.offsetX, e.offsetY));
-            canvas.addEventListener('mouseup', () => {
-                isDragging = false;
-                canvas.style.cursor = 'grab';
-            });
-            canvas.addEventListener('mouseleave', () => {
-                isDragging = false;
-                canvas.style.cursor = 'grab';
-                document.getElementById('tooltip').style.display = 'none';
-            });
-            canvas.addEventListener('wheel', handleWheel);
-            canvas.style.cursor = 'grab';
-        }
-
-        // Setup listeners
-        function setupListeners() {
-            document.getElementById('modulusSlider').addEventListener('input', e => setModulus(parseInt(e.target.value)));
-            document.getElementById('modulusInput').addEventListener('input', e => {
-                const v = parseInt(e.target.value);
-                if (v >= 2 && v <= 10000) setModulus(v);
-            });
-            
-            document.getElementById('zoomSlider').addEventListener('input', e => {
-                config.zoom = parseInt(e.target.value) / 100;
-                document.getElementById('zoomValue').textContent = config.zoom.toFixed(2);
-                draw();
-            });
-            
-            document.getElementById('speedSlider').addEventListener('input', e => {
-                config.animationSpeed = parseInt(e.target.value);
-                document.getElementById('speedValue').textContent = e.target.value;
-                if (sequenceInterval) {
-                    stopSequence();
-                    startSequence();
+            vizContainer.addEventListener('mousemove', e => {
+                if (isDragging) {
+                    const dx = e.clientX - lastPos.x;
+                    const dy = e.clientY - lastPos.y;
+                    config.panX -= dx / config.zoom;
+                    config.panY -= dy / config.zoom;
+                    lastPos = { x: e.clientX, y: e.clientY };
+                    updateViewBox();
+                }
+                
+                // Tooltip
+                const target = e.target;
+                if (target.hasAttribute('data-r')) {
+                    const r = parseInt(target.getAttribute('data-r'));
+                    const p = points[r];
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = (e.pageX + 15) + 'px';
+                    tooltip.style.top = (e.pageY + 15) + 'px';
+                    tooltip.innerHTML = `
+                        <strong>r = ${p.r}</strong><br>
+                        M = ${p.M}<br>
+                        GCD = ${p.gcd}<br>
+                        ${p.coprime ? 'Coprime' : `Channel M' = ${p.channel}`}<br>
+                        Angle: ${((p.angle * 180 / Math.PI) % 360).toFixed(1)}°
+                    `;
+                } else {
+                    tooltip.style.display = 'none';
                 }
             });
-            
-            document.getElementById('colorScheme').addEventListener('change', e => {
-                config.colorScheme = e.target.value;
-                draw();
+            vizContainer.addEventListener('mouseup', () => isDragging = false);
+            vizContainer.addEventListener('mouseleave', () => {
+                isDragging = false;
+                tooltip.style.display = 'none';
             });
-            
-            document.getElementById('pointSizeSlider').addEventListener('input', e => {
+
+            // Zoom
+            vizContainer.addEventListener('wheel', e => {
+                e.preventDefault();
+                const delta = e.deltaY < 0 ? 1.1 : 0.9;
+                config.zoom = Math.min(Math.max(config.zoom * delta, 0.1), 5);
+                document.getElementById('zoomSlider').value = Math.round(config.zoom * 100);
+                document.getElementById('zoomVal').textContent = config.zoom.toFixed(2);
+                updateViewBox();
+            }, { passive: false });
+
+            // Touch zoom
+            vizContainer.addEventListener('touchstart', e => {
+                if (e.touches.length === 2) {
+                    const t1 = e.touches[0], t2 = e.touches[1];
+                    startDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+                } else if (e.touches.length === 1) {
+                    isDragging = true;
+                    lastPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                }
+            });
+
+            vizContainer.addEventListener('touchmove', e => {
+                e.preventDefault();
+                if (e.touches.length === 2) {
+                    const t1 = e.touches[0], t2 = e.touches[1];
+                    const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+                    const delta = dist / startDist;
+                    config.zoom = Math.min(Math.max(config.zoom * delta, 0.1), 5);
+                    startDist = dist;
+                    document.getElementById('zoomSlider').value = Math.round(config.zoom * 100);
+                    document.getElementById('zoomVal').textContent = config.zoom.toFixed(2);
+                    updateViewBox();
+                } else if (e.touches.length === 1 && isDragging) {
+                    const dx = e.touches[0].clientX - lastPos.x;
+                    const dy = e.touches[0].clientY - lastPos.y;
+                    config.panX -= dx / config.zoom;
+                    config.panY -= dy / config.zoom;
+                    lastPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                    updateViewBox();
+                }
+            }, { passive: false });
+
+            vizContainer.addEventListener('touchend', () => {
+                isDragging = false;
+                startDist = 0;
+            });
+
+            // Controls
+            document.getElementById('modSlider').oninput = e => setM(parseInt(e.target.value));
+            document.getElementById('modInput').oninput = e => {
+                const v = parseInt(e.target.value);
+                if (v >= 2 && v <= 10000) setM(v);
+            };
+            document.getElementById('zoomSlider').oninput = e => {
+                config.zoom = parseInt(e.target.value) / 100;
+                document.getElementById('zoomVal').textContent = config.zoom.toFixed(2);
+                updateViewBox();
+            };
+            document.getElementById('speedSlider').oninput = e => {
+                config.animSpeed = parseInt(e.target.value);
+                document.getElementById('speedVal').textContent = e.target.value;
+            };
+            document.getElementById('pointSizeSlider').oninput = e => {
                 config.pointSize = parseFloat(e.target.value);
-                document.getElementById('pointSizeValue').textContent = config.pointSize.toFixed(2);
-                draw();
-            });
-            
-            document.getElementById('opacitySlider').addEventListener('input', e => {
+                document.getElementById('pointSizeVal').textContent = config.pointSize.toFixed(1);
+                render();
+            };
+            document.getElementById('opacitySlider').oninput = e => {
                 config.opacity = parseInt(e.target.value) / 100;
-                document.getElementById('opacityValue').textContent = config.opacity.toFixed(2);
-                draw();
-            });
-            
-            document.getElementById('spacingSlider').addEventListener('input', e => {
+                document.getElementById('opacityVal').textContent = e.target.value;
+                render();
+            };
+            document.getElementById('spacingSlider').oninput = e => {
                 config.spacingFactor = parseInt(e.target.value) / 100;
-                document.getElementById('spacingValue').textContent = config.spacingFactor.toFixed(2);
-                calculatePoints();
-                draw();
-            });
-            
-            document.getElementById('showProjections').addEventListener('change', e => {
+                document.getElementById('spacingVal').textContent = config.spacingFactor.toFixed(2);
+                calculate();
+                render();
+            };
+            document.getElementById('minRingSlider').oninput = e => {
+                config.minRing = parseInt(e.target.value);
+                document.getElementById('minRingVal').textContent = e.target.value;
+                calculate();
+                render();
+            };
+            document.getElementById('colorScheme').onchange = e => {
+                config.colorScheme = e.target.value;
+                render();
+            };
+            document.getElementById('gapSelect').onchange = e => {
+                config.gapHighlight = e.target.value;
+                render();
+            };
+            document.getElementById('showProjections').onchange = e => {
                 config.showProjections = e.target.checked;
-                draw();
-            });
-            
-            document.getElementById('showRings').addEventListener('change', e => {
+                render();
+            };
+            document.getElementById('showRings').onchange = e => {
                 config.showRings = e.target.checked;
-                draw();
-            });
-            
-            document.getElementById('showAllRings').addEventListener('change', e => {
-                config.showAllRings = e.target.checked;
-                draw();
-            });
+                render();
+            };
+            document.getElementById('showInnerRings').onchange = e => {
+                config.showInnerRings = e.target.checked;
+                render();
+            };
+            document.getElementById('colorInner').onchange = e => {
+                config.colorInner = e.target.checked;
+                render();
+            };
+            document.getElementById('loopCheck').onchange = e => {
+                config.loop = e.target.checked;
+            };
+            document.getElementById('recordCheck').onchange = e => {
+                config.recording = e.target.checked;
+                if (config.recording) recordedFrames = [];
+            };
         }
 
-        // Initialize
-        initCanvas();
-        setupListeners();
-        calculatePoints();
-        draw();
+        // Init
+        setupEvents();
+        calculate();
+        render();
     </script>
 </body>
-</html>
+                        </html>
