@@ -421,6 +421,43 @@
             display: block;
         }
 
+        .gif-progress {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 3000;
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .gif-progress.active {
+            display: block;
+        }
+
+        .gif-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .gif-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.8; transform: scale(1.05); }
@@ -597,6 +634,13 @@
 </head>
 <body>
     <div class="recording-badge" id="recordingBadge">RECORDING</div>
+    <div class="gif-progress" id="gifProgress">
+        <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Creating GIF...</div>
+        <div id="gifProgressText" style="font-size: 0.9rem; color: #aaa;">Processing frames</div>
+        <div class="gif-progress-bar">
+            <div class="gif-progress-fill" id="gifProgressFill"></div>
+        </div>
+    </div>
 
     <header class="site-header">
         <div class="header-content">
@@ -935,9 +979,27 @@
 
                 <div class="control-section">
                     <h3>Number Generators</h3>
-                    <button onclick="generatePrimorial()">Generate Primorial</button>
-                    <button onclick="generateFactorial()">Generate Factorial</button>
-                    <button onclick="generateHighlyComposite()">Highly Composite</button>
+                    <p style="font-size: 0.85rem; color: #7f8c8d; margin-bottom: 1rem; line-height: 1.5;">
+                        Generate special numbers with rich mathematical structure
+                    </p>
+                    <div style="margin-bottom: 0.8rem;">
+                        <button onclick="generatePrimorial()">Generate Primorial</button>
+                        <p style="font-size: 0.8rem; color: #7f8c8d; margin-top: 0.3rem; margin-left: 0.5rem;">
+                            Product of first n primes (e.g., 2×3×5 = 30)
+                        </p>
+                    </div>
+                    <div style="margin-bottom: 0.8rem;">
+                        <button onclick="generateFactorial()">Generate Factorial</button>
+                        <p style="font-size: 0.8rem; color: #7f8c8d; margin-top: 0.3rem; margin-left: 0.5rem;">
+                            n! - divisible by all numbers up to n
+                        </p>
+                    </div>
+                    <div style="margin-bottom: 0.8rem;">
+                        <button onclick="generateHighlyComposite()">Highly Composite</button>
+                        <p style="font-size: 0.8rem; color: #7f8c8d; margin-top: 0.3rem; margin-left: 0.5rem;">
+                            Numbers with maximum divisors for their size
+                        </p>
+                    </div>
                 </div>
 
                 <div class="control-section">
@@ -1693,11 +1755,64 @@
         }
 
         function findInteresting() {
-            const interesting = [{m:30,r:"Primorial(3)"},{m:210,r:"Primorial(4)"},{m:1024,r:"2¹⁰"}];
-            let report = `<h4 style="color:#667eea;">Interesting Moduli</h4>`;
-            interesting.forEach(({m,r}) => {
-                report += `<div style="padding:0.4rem;margin:0.3rem 0;background:#f8f9fa;border-left:3px solid #667eea;cursor:pointer;" onclick="setM(${m})"><strong>M=${m}</strong><br><span style="font-size:0.85em;color:#666;">${r}</span></div>`;
+            const interestingNumbers = [
+                { m: 30, type: "Primorial", desc: "2×3×5 - First 3 primes" },
+                { m: 210, type: "Primorial", desc: "2×3×5×7 - First 4 primes" },
+                { m: 2310, type: "Primorial", desc: "2×3×5×7×11 - First 5 primes" },
+                { m: 1024, type: "Power of 2", desc: "2¹⁰" },
+                { m: 4096, type: "Power of 2", desc: "2¹²" },
+                { m: 60, type: "Highly Composite", desc: "12 divisors" },
+                { m: 120, type: "Highly Composite", desc: "16 divisors" },
+                { m: 360, type: "Highly Composite", desc: "24 divisors" },
+                { m: 840, type: "Highly Composite", desc: "32 divisors" },
+                { m: 2520, type: "Highly Composite", desc: "48 divisors - LCM(1..10)" },
+                { m: 5040, type: "Highly Composite", desc: "60 divisors - 7!" },
+                { m: 128, type: "Power of 2", desc: "2⁷" },
+                { m: 256, type: "Power of 2", desc: "2⁸" },
+                { m: 512, type: "Power of 2", desc: "2⁹" },
+                { m: 64, type: "Power of 2", desc: "2⁶" },
+                { m: 12, type: "Small Composite", desc: "2²×3 - Rich structure" },
+                { m: 24, type: "Small Composite", desc: "2³×3" },
+                { m: 36, type: "Small Composite", desc: "2²×3²" },
+                { m: 48, type: "Small Composite", desc: "2⁴×3" },
+                { m: 72, type: "Small Composite", desc: "2³×3²" },
+                { m: 144, type: "Small Composite", desc: "2⁴×3² - 12²" },
+                { m: 180, type: "Highly Composite", desc: "2²×3²×5" },
+                { m: 420, type: "Abundant", desc: "2²×3×5×7" },
+                { m: 1680, type: "Highly Composite", desc: "2⁴×3×5×7" }
+            ];
+            
+            // Shuffle and pick 6 random numbers
+            const shuffled = interestingNumbers.sort(() => Math.random() - 0.5).slice(0, 6);
+            
+            let report = `<h4 style="color:#667eea; margin-bottom: 1rem;">Interesting Moduli</h4>`;
+            report += `<p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Click any number to visualize it:</p>`;
+            
+            shuffled.forEach(({m, type, desc}) => {
+                report += `<div style="padding: 0.8rem; margin: 0.6rem 0; background: #f8f9fa; border-left: 4px solid #667eea; border-radius: 4px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex: 1;">
+                            <div style="font-size: 1.1rem; font-weight: bold; color: #667eea; margin-bottom: 0.3rem;">M = ${m}</div>
+                            <div style="font-size: 0.85rem; color: #888; margin-bottom: 0.2rem;">${type}</div>
+                            <div style="font-size: 0.8rem; color: #666;">${desc}</div>
+                        </div>
+                        <button onclick="setM(${m}); document.getElementById('analysisResults').style.display='none';" 
+                                style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                       color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; 
+                                       font-weight: 600; white-space: nowrap; margin-left: 1rem;">
+                            Visualize
+                        </button>
+                    </div>
+                </div>`;
             });
+            
+            report += `<button onclick="findInteresting()" 
+                              style="width: 100%; margin-top: 1rem; padding: 0.8rem; background: #28a745; 
+                                     color: white; border: none; border-radius: 6px; cursor: pointer; 
+                                     font-size: 0.95rem; font-weight: 600;">
+                        Show Different Numbers
+                    </button>`;
+            
             document.getElementById('analysisResults').innerHTML = report;
             document.getElementById('analysisResults').style.display = 'block';
         }
@@ -1711,18 +1826,35 @@
         }
 
         function generatePrimorial() {
-            const n = parseInt(prompt("Generate primorial(n) - enter n (1-8):", "4"));
-            if (n && n >= 1 && n <= 8) setM(getPrimorial(n));
+            const n = parseInt(prompt("Generate Primorial(n) - Product of first n primes\n\nExamples:\n• n=3 → 2×3×5 = 30\n• n=4 → 2×3×5×7 = 210\n• n=5 → 2×3×5×7×11 = 2310\n\nThese have rich Farey channel structure.\n\nEnter n (1-8):", "4"));
+            if (n && n >= 1 && n <= 8) {
+                const result = getPrimorial(n);
+                setM(result);
+                alert(`Primorial(${n}) = ${result}\n\nThis is the product of the first ${n} prime numbers.`);
+            }
         }
 
         function generateFactorial() {
-            const n = parseInt(prompt("Generate n! - enter n (2-7):", "5"));
-            if (n && n >= 2 && n <= 7) setM(factorial(n));
+            const n = parseInt(prompt("Generate n! - Factorial\n\nExamples:\n• 4! = 24\n• 5! = 120\n• 6! = 720\n• 7! = 5040\n\nFactorials contain all divisors up to n.\n\nEnter n (2-7):", "5"));
+            if (n && n >= 2 && n <= 7) {
+                const result = factorial(n);
+                setM(result);
+                alert(`${n}! = ${result}\n\nThis number is divisible by all integers from 1 to ${n}.`);
+            }
         }
 
         function generateHighlyComposite() {
-            const idx = parseInt(prompt(`Choose index (0-${highlyCompositeNumbers.length-1}):`, "10"));
-            if (idx >= 0 && idx < highlyCompositeNumbers.length) setM(highlyCompositeNumbers[idx]);
+            const available = highlyCompositeNumbers.filter(x => x <= 10000);
+            const list = available.join(', ');
+            const message = `Highly Composite Numbers\n\nThese have more divisors than any smaller number.\n\nAvailable values (≤10000):\n${list}\n\nEnter a number from the list:`;
+            const input = parseInt(prompt(message, "2520"));
+            if (input && available.includes(input)) {
+                setM(input);
+                const divCount = getDivisors(input).length;
+                alert(`M = ${input}\n\nThis highly composite number has ${divCount} divisors.`);
+            } else if (input) {
+                alert("Please choose a number from the list of highly composite numbers.");
+            }
         }
 
         function exportPNG() {
@@ -2054,8 +2186,21 @@
         }
 
         function exportGIF() {
-            if (recordedFrames.length === 0) return alert('No frames recorded');
-            alert(`Creating GIF from ${recordedFrames.length} frames...`);
+            if (recordedFrames.length === 0) {
+                alert('No frames recorded. Please:\n1. Enable "Record Frames" checkbox\n2. Click Play to record animation\n3. Click Stop when done\n4. Then export GIF');
+                return;
+            }
+            
+            const frameCount = recordedFrames.length;
+            
+            // Show progress indicator
+            const progressDiv = document.getElementById('gifProgress');
+            const progressText = document.getElementById('gifProgressText');
+            const progressFill = document.getElementById('gifProgressFill');
+            progressDiv.classList.add('active');
+            progressText.textContent = 'Processing frames...';
+            progressFill.style.width = '0%';
+            
             const gif = new GIF({
                 workers: 2,
                 quality: 10,
@@ -2063,42 +2208,104 @@
                 height: 800,
                 workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
             });
-            let processed = 0;
-            recordedFrames.forEach((frame, i) => {
+            
+            let processedCount = 0;
+            const totalFrames = recordedFrames.length;
+            
+            // Process frames sequentially to ensure proper ordering
+            const processFrame = (index) => {
+                if (index >= totalFrames) {
+                    // All frames added, now render
+                    progressText.textContent = 'Encoding GIF...';
+                    progressFill.style.width = '50%';
+                    console.log('All frames added, rendering GIF...');
+                    gif.render();
+                    return;
+                }
+                
+                const frame = recordedFrames[index];
                 const tempCanvas = document.createElement('canvas');
                 tempCanvas.width = 800;
                 tempCanvas.height = 800;
                 const ctx = tempCanvas.getContext('2d');
+                
+                // Black background
                 ctx.fillStyle = '#000';
                 ctx.fillRect(0, 0, 800, 800);
-                const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -500 1000 1000" width="800" height="800"><rect x="-500" y="-500" width="1000" height="1000" fill="#000"/>${frame.svg}</svg>`;
+                
+                // Create SVG image
+                const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -500 1000 1000" width="800" height="800">
+                    <rect x="-500" y="-500" width="1000" height="1000" fill="#000"/>
+                    ${frame.svg}
+                </svg>`;
+                
                 const img = new Image();
                 const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
                 const url = URL.createObjectURL(blob);
+                
                 img.onload = () => {
                     ctx.drawImage(img, 0, 0, 800, 800);
                     URL.revokeObjectURL(url);
-                    ctx.font = 'bold 20px Arial';
+                    
+                    // Add M value overlay
+                    ctx.font = 'bold 24px Arial';
                     ctx.fillStyle = '#fff';
                     ctx.strokeStyle = '#000';
-                    ctx.lineWidth = 3;
-                    ctx.strokeText(`M = ${frame.M}`, 15, 30);
-                    ctx.fillText(`M = ${frame.M}`, 15, 30);
+                    ctx.lineWidth = 4;
+                    const text = `M = ${frame.M}`;
+                    ctx.strokeText(text, 15, 35);
+                    ctx.fillText(text, 15, 35);
+                    
+                    // Add frame to GIF
                     gif.addFrame(tempCanvas, { delay: config.animSpeed, copy: true });
-                    processed++;
-                    if (processed === recordedFrames.length) {
-                        gif.on('finished', b => {
-                            const a = document.createElement('a');
-                            a.download = `modular-animation-${recordedFrames.length}frames.gif`;
-                            a.href = URL.createObjectURL(b);
-                            a.click();
-                            alert('GIF created!');
-                        });
-                        gif.render();
-                    }
+                    
+                    processedCount++;
+                    const progress = (processedCount / totalFrames) * 50; // 0-50% for frame processing
+                    progressFill.style.width = progress + '%';
+                    progressText.textContent = `Processing frame ${processedCount}/${totalFrames}`;
+                    console.log(`Processed frame ${processedCount}/${totalFrames}`);
+                    
+                    // Process next frame
+                    setTimeout(() => processFrame(index + 1), 10);
                 };
+                
+                img.onerror = () => {
+                    console.error(`Error loading frame ${index}`);
+                    URL.revokeObjectURL(url);
+                    // Skip this frame and continue
+                    processFrame(index + 1);
+                };
+                
                 img.src = url;
+            };
+            
+            // Set up finish handler before starting
+            gif.on('finished', (gifBlob) => {
+                console.log('GIF rendering complete');
+                progressFill.style.width = '100%';
+                progressText.textContent = 'Download starting...';
+                
+                const a = document.createElement('a');
+                a.download = `modular-animation-M${recordedFrames[0].M}-to-M${recordedFrames[recordedFrames.length-1].M}.gif`;
+                a.href = URL.createObjectURL(gifBlob);
+                a.click();
+                
+                // Hide progress after short delay
+                setTimeout(() => {
+                    progressDiv.classList.remove('active');
+                    alert(`GIF created successfully!\n\n${frameCount} frames\nFile: ${a.download}`);
+                }, 1000);
             });
+            
+            gif.on('progress', (progress) => {
+                const encodingProgress = 50 + (progress * 50); // 50-100% for encoding
+                progressFill.style.width = encodingProgress + '%';
+                progressText.textContent = `Encoding GIF... ${(progress * 100).toFixed(0)}%`;
+                console.log(`GIF encoding progress: ${(progress * 100).toFixed(1)}%`);
+            });
+            
+            // Start processing frames
+            processFrame(0);
         }
 
         function exportLaTeX() {
