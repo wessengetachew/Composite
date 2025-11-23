@@ -684,6 +684,8 @@
         <button class="tab-button active" onclick="switchTab('portal')">Interactive Portal</button>
         <button class="tab-button" onclick="switchTab('chandelier')">3D Divisor Lattice</button>
         <button class="tab-button" onclick="switchTab('analysis')">Analysis & Patterns</button>
+        <button class="tab-button" onclick="switchTab('sequences')">Custom Sequences</button>
+        <button class="tab-button" onclick="switchTab('sieve')">Sieve Animation</button>
         <button class="tab-button" onclick="switchTab('theory')">Mathematical Theory</button>
         <button class="tab-button" onclick="switchTab('about')">About</button>
     </nav>
@@ -1505,6 +1507,141 @@
         </div>
     </div>
 
+    <!-- CUSTOM SEQUENCES TAB -->
+    <div id="sequences-tab" class="tab-content">
+        <div style="max-width: 1600px; margin: 2rem auto; padding: 0 2rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="color: #667eea; font-size: 2.5rem; margin-bottom: 0.5rem;">Custom Sequences Explorer</h1>
+                <p style="color: #666; font-size: 1.2rem; font-style: italic;">
+                    Visualize Any Sequence Modulo M
+                </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 350px 1fr; gap: 2rem;">
+                <!-- Left Control Panel -->
+                <div style="background: rgba(26, 26, 46, 0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(102, 126, 234, 0.3);">
+                    <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1rem;">Sequence Selection</h3>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold; color: #666;">Preset Sequences:</label>
+                        <select id="seqPreset" style="width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #ddd; font-size: 0.95rem;">
+                            <option value="fibonacci">Fibonacci Numbers</option>
+                            <option value="primes">Prime Numbers</option>
+                            <option value="squares">Perfect Squares (n²)</option>
+                            <option value="cubes">Perfect Cubes (n³)</option>
+                            <option value="triangular">Triangular Numbers</option>
+                            <option value="pentagonal">Pentagonal Numbers</option>
+                            <option value="catalan">Catalan Numbers</option>
+                            <option value="factorial">Factorials (n!)</option>
+                            <option value="powers2">Powers of 2 (2ⁿ)</option>
+                            <option value="powers3">Powers of 3 (3ⁿ)</option>
+                            <option value="lucas">Lucas Numbers</option>
+                            <option value="tribonacci">Tribonacci Numbers</option>
+                            <option value="collatz">Collatz Sequence (start=n)</option>
+                            <option value="custom">Custom Formula...</option>
+                        </select>
+                    </div>
+
+                    <div id="seqCustomFormula" style="margin-bottom: 1.5rem; display: none;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold; color: #666;">Custom Formula (use 'n'):</label>
+                        <input type="text" id="seqFormula" placeholder="e.g., n*n + n + 1" 
+                               style="width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #ddd; font-family: 'Courier New', monospace;">
+                        <p style="font-size: 0.8rem; color: #999; margin-top: 0.3rem;">Supports: +, -, *, /, ^, %, sqrt(), abs()</p>
+                    </div>
+
+                    <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin: 1.5rem 0 1rem;">Parameters</h3>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: #666;">Modulus M = <span id="seqM" style="color: #667eea; font-weight: bold;">30</span></label>
+                        <input type="range" id="seqMSlider" min="2" max="500" value="30" style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <input type="number" id="seqMInput" min="2" max="2000" value="30" 
+                               style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: #666;">Terms to Show: <span id="seqTerms" style="color: #667eea; font-weight: bold;">100</span></label>
+                        <input type="range" id="seqTermsSlider" min="10" max="500" value="100" style="width: 100%;">
+                    </div>
+
+                    <button onclick="generateSequence()" style="width: 100%; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; margin-bottom: 1.5rem;">
+                        🎲 Generate Sequence
+                    </button>
+
+                    <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin-bottom: 1rem;">Display Options</h3>
+                    
+                    <div style="margin-bottom: 0.8rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="seqShowConnections" checked style="margin-right: 0.5rem;">
+                            <span style="color: #666;">Show Connections</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom: 0.8rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="seqShowLabels" style="margin-right: 0.5rem;">
+                            <span style="color: #666;">Show Value Labels</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom: 0.8rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="seqHighlightPeriod" checked style="margin-right: 0.5rem;">
+                            <span style="color: #666;">Highlight Period</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="seqAnimate" style="margin-right: 0.5rem;">
+                            <span style="color: #666;">Animate Sequence</span>
+                        </label>
+                    </div>
+
+                    <button onclick="exportSequenceData()" style="width: 100%; padding: 0.7rem; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 0.5rem;">
+                        📊 Export Data (CSV)
+                    </button>
+                    <button onclick="exportSequenceImage()" style="width: 100%; padding: 0.7rem; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                        🖼️ Export Image (PNG)
+                    </button>
+
+                    <div style="background: rgba(102, 126, 234, 0.1); padding: 1rem; border-radius: 8px; margin-top: 1.5rem; font-size: 0.85rem; line-height: 1.6; color: #666;">
+                        <strong style="color: #667eea;">💡 Examples:</strong><br>
+                        • Fibonacci mod 10 (Pisano period)<br>
+                        • Primes mod 6 (always 1 or 5)<br>
+                        • Squares mod 8 (only 0,1,4)<br>
+                        • Custom: n²+n+41 (prime-rich)
+                    </div>
+                </div>
+
+                <!-- Right Visualization Panel -->
+                <div>
+                    <!-- Canvas -->
+                    <div style="background: #000; border-radius: 12px; margin-bottom: 1.5rem; position: relative;">
+                        <canvas id="sequenceCanvas" width="1000" height="1000" style="width: 100%; height: auto; display: block; border-radius: 12px;"></canvas>
+                    </div>
+
+                    <!-- Analysis Results -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <h3 style="color: #667eea; margin-bottom: 1rem; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem;">Period Analysis</h3>
+                            <div id="seqPeriodInfo" style="font-size: 0.95rem; line-height: 1.8;"></div>
+                        </div>
+
+                        <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <h3 style="color: #667eea; margin-bottom: 1rem; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem;">Distribution</h3>
+                            <div id="seqDistInfo" style="font-size: 0.95rem; line-height: 1.8;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sequence Values Table -->
+                    <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <h3 style="color: #667eea; margin-bottom: 1rem; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem;">Sequence Values</h3>
+                        <div id="seqValuesTable" style="max-height: 300px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.9rem;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- THEORY TAB -->
     <div id="theory-tab" class="tab-content">
         <div class="theory-container">
@@ -1775,6 +1912,12 @@
             if (tabName === 'chandelier' && !window.chandelierInitialized) {
                 initChandelier();
                 window.chandelierInitialized = true;
+            }
+            
+            // If switching to sequences, initialize if needed
+            if (tabName === 'sequences' && !window.sequencesInitialized) {
+                initSequences();
+                window.sequencesInitialized = true;
             }
         }
 
@@ -3476,6 +3619,443 @@
         // Visualizes the hierarchical structure of modular reduction
         // through a geometric embedding of the divisor lattice
         // ═══════════════════════════════════════════════════════════
+
+        // ═══════════════════════════════════════════════════════════
+        // CUSTOM SEQUENCES TAB IMPLEMENTATION
+        // ═══════════════════════════════════════════════════════════
+
+        let seqData = { sequence: [], modSequence: [], M: 30, type: 'fibonacci' };
+        let seqCanvas, seqCtx;
+        let seqAnimFrame = null;
+
+        function initSequences() {
+            seqCanvas = document.getElementById('sequenceCanvas');
+            seqCtx = seqCanvas.getContext('2d');
+            setupSequenceEvents();
+            generateSequence();
+        }
+
+        function setupSequenceEvents() {
+            document.getElementById('seqPreset').onchange = e => {
+                const isCustom = e.target.value === 'custom';
+                document.getElementById('seqCustomFormula').style.display = isCustom ? 'block' : 'none';
+                if (!isCustom) generateSequence();
+            };
+
+            document.getElementById('seqMSlider').oninput = e => {
+                document.getElementById('seqM').textContent = e.target.value;
+                document.getElementById('seqMInput').value = e.target.value;
+            };
+
+            document.getElementById('seqMInput').oninput = e => {
+                const v = parseInt(e.target.value);
+                if (v >= 2 && v <= 2000) {
+                    document.getElementById('seqMSlider').value = Math.min(500, v);
+                    document.getElementById('seqM').textContent = v;
+                }
+            };
+
+            document.getElementById('seqTermsSlider').oninput = e => {
+                document.getElementById('seqTerms').textContent = e.target.value;
+            };
+
+            ['seqShowConnections', 'seqShowLabels', 'seqHighlightPeriod'].forEach(id => {
+                document.getElementById(id).onchange = () => renderSequence();
+            });
+
+            document.getElementById('seqAnimate').onchange = e => {
+                if (e.target.checked) startSeqAnimation();
+                else stopSeqAnimation();
+            };
+        }
+
+        function generateSequence() {
+            const M = parseInt(document.getElementById('seqMInput').value) || 30;
+            const terms = parseInt(document.getElementById('seqTermsSlider').value);
+            const type = document.getElementById('seqPreset').value;
+            
+            seqData.M = M;
+            seqData.type = type;
+            seqData.sequence = [];
+            seqData.modSequence = [];
+
+            // Generate raw sequence
+            if (type === 'custom') {
+                const formula = document.getElementById('seqFormula').value;
+                for (let n = 0; n < terms; n++) {
+                    try {
+                        const val = evaluateFormula(formula, n);
+                        seqData.sequence.push(val);
+                        seqData.modSequence.push(mod(val, M));
+                    } catch(e) {
+                        alert('Invalid formula: ' + e.message);
+                        return;
+                    }
+                }
+            } else {
+                for (let n = 0; n < terms; n++) {
+                    const val = getSequenceValue(type, n);
+                    seqData.sequence.push(val);
+                    seqData.modSequence.push(mod(val, M));
+                }
+            }
+
+            analyzeSequencePeriod();
+            analyzeDistribution();
+            renderSequence();
+            displaySequenceTable();
+        }
+
+        function getSequenceValue(type, n) {
+            switch(type) {
+                case 'fibonacci': return fibonacci(n);
+                case 'primes': return nthPrime(n);
+                case 'squares': return n * n;
+                case 'cubes': return n * n * n;
+                case 'triangular': return n * (n + 1) / 2;
+                case 'pentagonal': return n * (3 * n - 1) / 2;
+                case 'catalan': return catalan(n);
+                case 'factorial': return factorial(n);
+                case 'powers2': return Math.pow(2, n);
+                case 'powers3': return Math.pow(3, n);
+                case 'lucas': return lucas(n);
+                case 'tribonacci': return tribonacci(n);
+                case 'collatz': return collatz(n);
+                default: return n;
+            }
+        }
+
+        function fibonacci(n) {
+            if (n <= 1) return n;
+            let a = 0, b = 1;
+            for (let i = 2; i <= n; i++) {
+                [a, b] = [b, a + b];
+            }
+            return b;
+        }
+
+        function lucas(n) {
+            if (n === 0) return 2;
+            if (n === 1) return 1;
+            let a = 2, b = 1;
+            for (let i = 2; i <= n; i++) {
+                [a, b] = [b, a + b];
+            }
+            return b;
+        }
+
+        function tribonacci(n) {
+            if (n === 0) return 0;
+            if (n === 1 || n === 2) return 1;
+            let a = 0, b = 1, c = 1;
+            for (let i = 3; i <= n; i++) {
+                [a, b, c] = [b, c, a + b + c];
+            }
+            return c;
+        }
+
+        function catalan(n) {
+            if (n <= 1) return 1;
+            let cat = [1, 1];
+            for (let i = 2; i <= n; i++) {
+                cat[i] = 0;
+                for (let j = 0; j < i; j++) {
+                    cat[i] += cat[j] * cat[i - 1 - j];
+                }
+            }
+            return cat[n];
+        }
+
+        function factorial(n) {
+            if (n > 20) return Infinity; // Prevent overflow
+            let result = 1;
+            for (let i = 2; i <= n; i++) result *= i;
+            return result;
+        }
+
+        function nthPrime(n) {
+            if (n === 0) return 2;
+            let count = 0, num = 2;
+            while (count <= n) {
+                if (isPrime(num)) {
+                    if (count === n) return num;
+                    count++;
+                }
+                num++;
+            }
+            return num;
+        }
+
+        function collatz(n) {
+            if (n === 0) return 0;
+            let val = n, steps = 0;
+            while (val > 1 && steps < 1000) {
+                val = val % 2 === 0 ? val / 2 : 3 * val + 1;
+                steps++;
+            }
+            return steps;
+        }
+
+        function evaluateFormula(formula, n) {
+            // Safe formula evaluation
+            const sanitized = formula.replace(/\^/g, '**')
+                                     .replace(/sqrt\(/g, 'Math.sqrt(')
+                                     .replace(/abs\(/g, 'Math.abs(')
+                                     .replace(/[^0-9+\-*/(). nMath.sqrt]/g, '');
+            return eval(sanitized.replace(/n/g, n));
+        }
+
+        function mod(a, m) {
+            return ((a % m) + m) % m;
+        }
+
+        function analyzeSequencePeriod() {
+            const seq = seqData.modSequence;
+            let period = 0;
+            
+            // Find period (Pisano-style)
+            for (let p = 1; p < seq.length / 2; p++) {
+                let isPeriod = true;
+                for (let i = 0; i < Math.min(p, seq.length - p); i++) {
+                    if (seq[i] !== seq[i + p]) {
+                        isPeriod = false;
+                        break;
+                    }
+                }
+                if (isPeriod) {
+                    period = p;
+                    break;
+                }
+            }
+
+            seqData.period = period;
+            
+            let html = `<div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1rem;">`;
+            html += `<div><strong>Period:</strong></div><div>${period > 0 ? period : 'Not detected (> ' + (seq.length/2) + ')'}</div>`;
+            if (period > 0) {
+                html += `<div><strong>Repeating:</strong></div><div>${seq.slice(0, period).join(', ')}</div>`;
+            }
+            html += `<div><strong>First term:</strong></div><div>${seq[0]}</div>`;
+            html += `<div><strong>Last term:</strong></div><div>${seq[seq.length-1]}</div>`;
+            html += `</div>`;
+            
+            document.getElementById('seqPeriodInfo').innerHTML = html;
+        }
+
+        function analyzeDistribution() {
+            const dist = new Map();
+            seqData.modSequence.forEach(v => dist.set(v, (dist.get(v) || 0) + 1));
+            
+            const sorted = Array.from(dist.entries()).sort((a,b) => b[1] - a[1]);
+            const unique = dist.size;
+            const mostCommon = sorted[0];
+            
+            let html = `<div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1rem;">`;
+            html += `<div><strong>Unique values:</strong></div><div>${unique} of ${seqData.M}</div>`;
+            html += `<div><strong>Coverage:</strong></div><div>${(unique/seqData.M*100).toFixed(1)}%</div>`;
+            html += `<div><strong>Most common:</strong></div><div>${mostCommon[0]} (${mostCommon[1]}×)</div>`;
+            
+            const zeros = dist.get(0) || 0;
+            html += `<div><strong>Zeros:</strong></div><div>${zeros}</div>`;
+            html += `</div>`;
+            
+            document.getElementById('seqDistInfo').innerHTML = html;
+        }
+
+        function renderSequence() {
+            const M = seqData.M;
+            const seq = seqData.modSequence;
+            const ctx = seqCtx;
+            const w = 1000, h = 1000;
+            const cx = w / 2, cy = h / 2;
+            const radius = 400;
+            
+            // Clear
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, w, h);
+            
+            // Draw circle
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Draw modulus points
+            const points = [];
+            for (let r = 0; r < M; r++) {
+                const angle = -Math.PI / 2 + (2 * Math.PI * r / M);
+                const x = cx + radius * Math.cos(angle);
+                const y = cy + radius * Math.sin(angle);
+                points.push({ x, y, r });
+                
+                ctx.fillStyle = '#444';
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Draw sequence path
+            if (document.getElementById('seqShowConnections').checked) {
+                ctx.strokeStyle = 'rgba(102, 126, 234, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                seq.forEach((v, i) => {
+                    const p = points[v];
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.stroke();
+            }
+            
+            // Highlight period
+            if (document.getElementById('seqHighlightPeriod').checked && seqData.period > 0) {
+                const period = Math.min(seqData.period, seq.length);
+                for (let i = 0; i < period; i++) {
+                    const p = points[seq[i]];
+                    ctx.fillStyle = 'rgba(255, 215, 0, 0.5)';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            // Draw sequence points
+            seq.forEach((v, i) => {
+                const p = points[v];
+                const hue = (i / seq.length) * 360;
+                ctx.fillStyle = `hsl(${hue}, 80%, 60%)`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Labels
+            if (document.getElementById('seqShowLabels').checked) {
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                for (let r = 0; r < Math.min(M, 50); r++) {
+                    const angle = -Math.PI / 2 + (2 * Math.PI * r / M);
+                    const x = cx + (radius + 25) * Math.cos(angle);
+                    const y = cy + (radius + 25) * Math.sin(angle);
+                    ctx.fillText(r, x, y);
+                }
+            }
+            
+            // Title
+            ctx.fillStyle = '#ffd700';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${seqData.type} mod ${M}`, cx, 40);
+        }
+
+        function displaySequenceTable() {
+            const terms = Math.min(100, seqData.sequence.length);
+            let html = '<div style="display: grid; grid-template-columns: auto auto auto; gap: 0.5rem; font-size: 0.85rem;">';
+            html += '<div style="font-weight: bold;">n</div><div style="font-weight: bold;">a(n)</div><div style="font-weight: bold;">a(n) mod M</div>';
+            
+            for (let i = 0; i < terms; i++) {
+                html += `<div>${i}</div><div>${seqData.sequence[i]}</div><div style="color: #667eea; font-weight: bold;">${seqData.modSequence[i]}</div>`;
+            }
+            
+            if (seqData.sequence.length > terms) {
+                html += `<div colspan="3" style="grid-column: 1 / -1; text-align: center; color: #999; padding: 0.5rem;">... ${seqData.sequence.length - terms} more terms</div>`;
+            }
+            
+            html += '</div>';
+            document.getElementById('seqValuesTable').innerHTML = html;
+        }
+
+        function startSeqAnimation() {
+            // Animate drawing sequence
+            let currentTerm = 0;
+            const animate = () => {
+                if (currentTerm < seqData.modSequence.length) {
+                    renderSequenceAnimated(currentTerm);
+                    currentTerm++;
+                    seqAnimFrame = setTimeout(animate, 50);
+                }
+            };
+            animate();
+        }
+
+        function stopSeqAnimation() {
+            if (seqAnimFrame) clearTimeout(seqAnimFrame);
+            renderSequence();
+        }
+
+        function renderSequenceAnimated(upTo) {
+            // Similar to renderSequence but only up to 'upTo' term
+            const M = seqData.M;
+            const seq = seqData.modSequence.slice(0, upTo + 1);
+            const ctx = seqCtx;
+            const w = 1000, h = 1000, cx = w / 2, cy = h / 2, radius = 400;
+            
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, w, h);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            const points = [];
+            for (let r = 0; r < M; r++) {
+                const angle = -Math.PI / 2 + (2 * Math.PI * r / M);
+                points.push({ x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) });
+                ctx.fillStyle = '#444';
+                ctx.beginPath();
+                ctx.arc(points[r].x, points[r].y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Path
+            ctx.strokeStyle = 'rgba(102, 126, 234, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            seq.forEach((v, i) => {
+                const p = points[v];
+                if (i === 0) ctx.moveTo(p.x, p.y);
+                else ctx.lineTo(p.x, p.y);
+            });
+            ctx.stroke();
+            
+            // Points
+            seq.forEach((v, i) => {
+                const p = points[v];
+                const hue = (i / seqData.modSequence.length) * 360;
+                ctx.fillStyle = `hsl(${hue}, 80%, 60%)`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            ctx.fillStyle = '#ffd700';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${seqData.type} mod ${M} (n=0..${upTo})`, cx, 40);
+        }
+
+        function exportSequenceData() {
+            let csv = 'n,value,mod_M\n';
+            for (let i = 0; i < seqData.sequence.length; i++) {
+                csv += `${i},${seqData.sequence[i]},${seqData.modSequence[i]}\n`;
+            }
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${seqData.type}-mod${seqData.M}.csv`;
+            link.click();
+        }
+
+        function exportSequenceImage() {
+            const link = document.createElement('a');
+            link.download = `${seqData.type}-mod${seqData.M}.png`;
+            link.href = seqCanvas.toDataURL();
+            link.click();
+        }
 
         // ═══════════════════════════════════════════════════════════
         // ANALYSIS & PATTERNS TAB IMPLEMENTATION
