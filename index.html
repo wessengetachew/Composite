@@ -651,6 +651,7 @@
 
     <nav class="tab-nav">
         <button class="tab-button active" onclick="switchTab('portal')">Interactive Portal</button>
+        <button class="tab-button" onclick="switchTab('chandelier')">3D Chandelier</button>
         <button class="tab-button" onclick="switchTab('theory')">Mathematical Theory</button>
         <button class="tab-button" onclick="switchTab('about')">About</button>
     </nav>
@@ -813,12 +814,154 @@
                 </div>
 
                 <div class="control-section">
+                    <h3>Multi-Modulus View</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="multiModMode">
+                        <label for="multiModMode">Enable Multi-Modulus Mode</label>
+                    </div>
+                    
+                    <div id="multiModControls" style="display: none;">
+                        <div class="control-row">
+                            <label class="control-label">Display Mode</label>
+                            <select id="multiModDisplayMode">
+                                <option value="consecutive">Consecutive (1 to M)</option>
+                                <option value="range">Range (M₁ to M₂)</option>
+                                <option value="custom">Custom List</option>
+                            </select>
+                        </div>
+
+                        <div id="consecutiveControls">
+                            <div class="control-row">
+                                <label class="control-label">From: <span class="value-display" id="multiFromVal">1</span></label>
+                                <input type="range" id="multiFromSlider" min="1" max="100" value="1">
+                            </div>
+                            <div class="control-row">
+                                <label class="control-label">To: <span class="value-display" id="multiToVal">10</span></label>
+                                <input type="range" id="multiToSlider" min="2" max="100" value="10">
+                            </div>
+                        </div>
+
+                        <div id="rangeControls" style="display: none;">
+                            <div class="control-row">
+                                <label class="control-label">Start M: <span class="value-display" id="rangeStartVal">30</span></label>
+                                <input type="range" id="rangeStartSlider" min="6" max="200" value="30">
+                            </div>
+                            <div class="control-row">
+                                <label class="control-label">End M: <span class="value-display" id="rangeEndVal">40</span></label>
+                                <input type="range" id="rangeEndSlider" min="6" max="200" value="40">
+                            </div>
+                        </div>
+
+                        <div id="customControls" style="display: none;">
+                            <div class="control-row">
+                                <label class="control-label">Custom Moduli (comma-separated)</label>
+                                <input type="text" id="customModList" value="1,3,4,6" 
+                                       style="width: 100%; padding: 0.5rem; background: rgba(0,0,0,0.5); 
+                                              border: 1px solid rgba(255,215,0,0.5); color: #fff; 
+                                              border-radius: 6px; font-family: monospace;">
+                                <p style="font-size: 0.75rem; color: #7f8c8d; margin-top: 0.3rem;">
+                                    Example: 1,3,4,6,12 or 30,60,120,210
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="control-row">
+                            <label class="control-label">Color Scheme</label>
+                            <select id="multiModColorScheme">
+                                <option value="rainbow">Rainbow (by position)</option>
+                                <option value="hue">Hue Gradient</option>
+                                <option value="distinct">Distinct Colors</option>
+                                <option value="size">By Modulus Size</option>
+                            </select>
+                        </div>
+
+                        <div class="control-row">
+                            <label class="control-label">Layer Opacity: <span class="value-display" id="multiOpacityVal">0.7</span></label>
+                            <input type="range" id="multiOpacitySlider" min="10" max="100" step="5" value="70">
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="multiStackMode">
+                            <label for="multiStackMode">Stack Layers (Offset)</label>
+                        </div>
+
+                        <div class="control-row" id="stackSpacingControl" style="display: none;">
+                            <label class="control-label">Offset: <span class="value-display" id="stackSpacingVal">20</span>px</label>
+                            <input type="range" id="stackSpacingSlider" min="5" max="50" step="5" value="20">
+                        </div>
+
+                        <button onclick="applyMultiMod()">Apply Multi-Modulus</button>
+                        <p style="font-size: 0.75rem; color: #aaa; margin-top: 0.5rem; font-style: italic;">
+                            Visualize multiple moduli simultaneously
+                        </p>
+                    </div>
+                </div>
+
+                <div class="control-section">
                     <h3>View Controls</h3>
                     <div class="control-row">
                         <label class="control-label">Zoom: <span class="value-display" id="zoomVal">1.00</span>×</label>
                         <input type="range" id="zoomSlider" min="10" max="500" step="10" value="100">
                     </div>
                     <button onclick="resetView()">↻ Reset View</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>3D Rotation (Chandelier View)</h3>
+                    <div class="control-row">
+                        <label class="control-label">X-Tilt: <span class="value-display" id="xTiltVal">0</span>°</label>
+                        <input type="range" id="xTiltSlider" min="-180" max="180" step="1" value="0">
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Y-Rotation: <span class="value-display" id="yRotVal">0</span>°</label>
+                        <input type="range" id="yRotSlider" min="0" max="360" step="1" value="0">
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Z-Spin: <span class="value-display" id="zSpinVal">0</span>°</label>
+                        <input type="range" id="zSpinSlider" min="0" max="360" step="1" value="0">
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Vertical Spacing: <span class="value-display" id="vSpacingVal">0.50</span></label>
+                        <input type="range" id="vSpacingSlider" min="0" max="200" step="5" value="50">
+                        <p style="font-size: 0.75rem; color: #7f8c8d; margin-top: 0.3rem; font-style: italic;">
+                            Controls height separation between rings (chandelier effect)
+                        </p>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="enable3D">
+                        <label for="enable3D">Enable 3D Chandelier View</label>
+                    </div>
+                    <button onclick="resetRotation()">Reset 3D Rotation</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>Ring Dynamics (Animation)</h3>
+                    <div class="control-row">
+                        <label class="control-label">Inner → Outer Speed: <span class="value-display" id="innerSpeedVal">0.0</span>°/s</label>
+                        <input type="range" id="innerSpeedSlider" min="-100" max="100" step="5" value="0">
+                        <p style="font-size: 0.75rem; color: #7f8c8d; margin-top: 0.3rem; font-style: italic;">
+                            Inner rings rotate toward outer (+ clockwise, - counter)
+                        </p>
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Outer → Inner Speed: <span class="value-display" id="outerSpeedVal">0.0</span>°/s</label>
+                        <input type="range" id="outerSpeedSlider" min="-100" max="100" step="5" value="0">
+                        <p style="font-size: 0.75rem; color: #7f8c8d; margin-top: 0.3rem; font-style: italic;">
+                            Outer rings rotate toward inner (+ clockwise, - counter)
+                        </p>
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Individual Ring Speed: <span class="value-display" id="indivSpeedVal">0.0</span>°/s</label>
+                        <input type="range" id="indivSpeedSlider" min="-100" max="100" step="5" value="0">
+                        <p style="font-size: 0.75rem; color: #7f8c8d; margin-top: 0.3rem; font-style: italic;">
+                            Each ring rotates at its own rate (cumulative)
+                        </p>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="animateRings">
+                        <label for="animateRings">Animate Ring Dynamics</label>
+                    </div>
+                    <button onclick="resetRingRotations()">Reset Ring Rotations</button>
                 </div>
 
                 <div class="control-section">
@@ -881,6 +1024,20 @@
                 <div class="control-section">
                     <h3>Visual Appearance</h3>
                     <div class="control-row">
+                        <label class="control-label">Global Thickness Scale: <span class="value-display" id="thicknessVal">1.00</span>×</label>
+                        <input type="range" id="thicknessSlider" min="10" max="300" step="10" value="100">
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.3rem; margin-top: 0.5rem;">
+                            <button onclick="document.getElementById('thicknessSlider').value=30; document.getElementById('thicknessSlider').oninput({target:{value:30}});" style="padding: 0.3rem; font-size: 0.75rem; margin: 0;">0.3×</button>
+                            <button onclick="document.getElementById('thicknessSlider').value=50; document.getElementById('thicknessSlider').oninput({target:{value:50}});" style="padding: 0.3rem; font-size: 0.75rem; margin: 0;">0.5×</button>
+                            <button onclick="document.getElementById('thicknessSlider').value=100; document.getElementById('thicknessSlider').oninput({target:{value:100}});" style="padding: 0.3rem; font-size: 0.75rem; margin: 0;">1.0×</button>
+                            <button onclick="document.getElementById('thicknessSlider').value=150; document.getElementById('thicknessSlider').oninput({target:{value:150}});" style="padding: 0.3rem; font-size: 0.75rem; margin: 0;">1.5×</button>
+                            <button onclick="document.getElementById('thicknessSlider').value=200; document.getElementById('thicknessSlider').oninput({target:{value:200}});" style="padding: 0.3rem; font-size: 0.75rem; margin: 0;">2.0×</button>
+                        </div>
+                        <p style="font-size: 0.75rem; color: #7f8c8d; margin-top: 0.3rem; font-style: italic;">
+                            Scales all points and lines uniformly. Increase for small M, decrease for large M.
+                        </p>
+                    </div>
+                    <div class="control-row">
                         <label class="control-label">Color Scheme</label>
                         <select id="colorScheme">
                             <option value="type" selected>Coprime vs Non-coprime</option>
@@ -914,6 +1071,64 @@
                     <div class="control-row">
                         <label class="control-label">Rotation Angle: <span class="value-display" id="rotationVal">0</span>°</label>
                         <input type="range" id="rotationSlider" min="0" max="360" step="1" value="0">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Point Labels</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showLabels">
+                        <label for="showLabels">Show Point Labels</label>
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Label Mode</label>
+                        <select id="labelMode">
+                            <option value="r" selected>Residue (r)</option>
+                            <option value="r/M">Fraction (r/M)</option>
+                            <option value="reduced">Reduced Fraction (r'/M')</option>
+                            <option value="gcd">GCD(r,M)</option>
+                            <option value="angle">Angle (degrees)</option>
+                            <option value="angle-rad">Angle (radians)</option>
+                            <option value="coprime">Coprime Status</option>
+                            <option value="channel">Channel (M')</option>
+                            <option value="all">All Info</option>
+                        </select>
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Inner Ring Labels</label>
+                        <select id="innerLabelMode">
+                            <option value="none" selected>No Labels</option>
+                            <option value="r">Residue (r)</option>
+                            <option value="r/M">Fraction (r/M')</option>
+                            <option value="gcd">GCD(r,M')</option>
+                            <option value="same">Same as Outer</option>
+                        </select>
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Label Size: <span class="value-display" id="labelSizeVal">12</span>px</label>
+                        <input type="range" id="labelSizeSlider" min="6" max="48" step="2" value="12">
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Label Distance: <span class="value-display" id="labelDistVal">1.15</span>×</label>
+                        <input type="range" id="labelDistSlider" min="100" max="200" step="5" value="115">
+                        <p style="font-size: 0.75rem; color: #7f8c8d; margin-top: 0.3rem; font-style: italic;">
+                            Distance from point center (1.0 = at point, >1.0 = outside)
+                        </p>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="labelBackground">
+                        <label for="labelBackground">Label Background</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="labelCoprimesOnly">
+                        <label for="labelCoprimesOnly">Label Coprimes Only</label>
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Label Every Nth Point: <span class="value-display" id="labelEveryVal">1</span></label>
+                        <input type="range" id="labelEverySlider" min="1" max="20" step="1" value="1">
+                        <p style="font-size: 0.75rem; color: #7f8c8d; margin-top: 0.3rem; font-style: italic;">
+                            For large M, label every 5th or 10th point to reduce clutter
+                        </p>
                     </div>
                 </div>
 
@@ -1359,6 +1574,253 @@
 
         const highlyCompositeNumbers = [1, 2, 4, 6, 12, 24, 36, 48, 60, 120, 180, 240, 360, 720, 840, 1260, 1680, 2520, 5040];
 
+        // 3D projection helpers
+        function project3D(x, y, z, xTilt, yRot, zSpin) {
+            // Convert degrees to radians
+            const xRad = xTilt * Math.PI / 180;
+            const yRad = yRot * Math.PI / 180;
+            const zRad = zSpin * Math.PI / 180;
+            
+            // Apply Z rotation (spin)
+            let x1 = x * Math.cos(zRad) - y * Math.sin(zRad);
+            let y1 = x * Math.sin(zRad) + y * Math.cos(zRad);
+            let z1 = z;
+            
+            // Apply X rotation (tilt)
+            let x2 = x1;
+            let y2 = y1 * Math.cos(xRad) - z1 * Math.sin(xRad);
+            let z2 = y1 * Math.sin(xRad) + z1 * Math.cos(xRad);
+            
+            // Apply Y rotation
+            let x3 = x2 * Math.cos(yRad) + z2 * Math.sin(yRad);
+            let y3 = y2;
+            let z3 = -x2 * Math.sin(yRad) + z2 * Math.cos(yRad);
+            
+            // Perspective projection
+            const perspective = 1000;
+            const scale = perspective / (perspective + z3);
+            
+            return {
+                x: x3 * scale,
+                y: y3 * scale,
+                z: z3,
+                scale: scale
+            };
+        }
+
+        function getRingHeight(channelM, totalM, vSpacing) {
+            // Outer ring (M) at top (z=0), inner rings below
+            const ratio = channelM / totalM;
+            return -vSpacing * 500 * (1 - ratio);
+        }
+
+        function getRingRotation(channelM) {
+            return ringRotations.get(channelM) || 0;
+        }
+
+        function getLabelText(point, mode) {
+            switch(mode) {
+                case 'r':
+                    return point.r.toString();
+                case 'r/M':
+                    return `${point.r}/${point.M}`;
+                case 'reduced':
+                    return point.gcd === 1 ? `${point.r}/${point.M}` : `${point.rr}/${point.channel}`;
+                case 'gcd':
+                    return `gcd=${point.gcd}`;
+                case 'angle':
+                    return Math.round((point.angle * 180 / Math.PI) % 360) + '°';
+                case 'angle-rad':
+                    return (point.angle / Math.PI).toFixed(3) + 'π';
+                case 'coprime':
+                    return point.coprime ? '✓' : '✗';
+                case 'channel':
+                    return `M'=${point.channel}`;
+                case 'all':
+                    const angleD = Math.round((point.angle * 180 / Math.PI) % 360);
+                    return `${point.r}\n${point.r}/${point.M}\ngcd=${point.gcd}\n${angleD}°`;
+                default:
+                    return point.r.toString();
+            }
+        }
+
+        function shouldShowLabel(point, index) {
+            if (!config.showLabels) return false;
+            if (config.labelCoprimesOnly && !point.coprime) return false;
+            if (config.labelEvery > 1 && index % config.labelEvery !== 0) return false;
+            return shouldShowPoint(point);
+        }
+
+        function createLabel(text, x, y, fontSize, background = false) {
+            const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            textEl.setAttribute('x', x);
+            textEl.setAttribute('y', y);
+            textEl.setAttribute('text-anchor', 'middle');
+            textEl.setAttribute('dominant-baseline', 'middle');
+            textEl.setAttribute('font-size', fontSize);
+            textEl.setAttribute('font-family', 'Arial, sans-serif');
+            textEl.setAttribute('font-weight', 'bold');
+            textEl.setAttribute('pointer-events', 'none');
+            
+            if (background) {
+                textEl.setAttribute('fill', '#000');
+                textEl.setAttribute('stroke', '#fff');
+                textEl.setAttribute('stroke-width', '3');
+                textEl.setAttribute('paint-order', 'stroke');
+            } else {
+                textEl.setAttribute('fill', '#fff');
+                textEl.setAttribute('stroke', '#000');
+                textEl.setAttribute('stroke-width', '0.5');
+                textEl.setAttribute('paint-order', 'stroke');
+            }
+            
+            // Handle multi-line labels
+            if (text.includes('\n')) {
+                const lines = text.split('\n');
+                const lineHeight = fontSize * 1.1;
+                const startY = y - (lines.length - 1) * lineHeight / 2;
+                
+                lines.forEach((line, i) => {
+                    const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                    tspan.setAttribute('x', x);
+                    tspan.setAttribute('y', startY + i * lineHeight);
+                    tspan.textContent = line;
+                    textEl.appendChild(tspan);
+                });
+            } else {
+                textEl.textContent = text;
+            }
+            
+            return textEl;
+        }
+
+        // Multi-modulus functions
+        function getMultiModColor(M, index, total) {
+            switch(config.multiModColorScheme) {
+                case 'rainbow':
+                    const hue = (index / total) * 360;
+                    return `hsl(${hue}, 80%, 60%)`;
+                case 'hue':
+                    const h = (index / total) * 300; // 0-300 to avoid red duplication
+                    return `hsl(${h}, 70%, 55%)`;
+                case 'distinct':
+                    const distinctColors = [
+                        '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff',
+                        '#ff8000', '#8000ff', '#00ff80', '#ff0080', '#80ff00', '#0080ff'
+                    ];
+                    return distinctColors[index % distinctColors.length];
+                case 'size':
+                    const maxM = Math.max(...config.multiModList);
+                    const ratio = M / maxM;
+                    return `hsl(${240 - ratio * 240}, 80%, 60%)`;
+                default:
+                    return `hsl(${(index / total) * 360}, 80%, 60%)`;
+            }
+        }
+
+        function computeModulusData(M) {
+            const pts = [];
+            for (let r = 0; r < M; r++) {
+                const g = gcd(r, M);
+                pts.push({
+                    r: r,
+                    M: M,
+                    angle: (2 * Math.PI * r) / M,
+                    gcd: g,
+                    coprime: g === 1,
+                    channel: M / g,
+                    rr: r / g
+                });
+            }
+            return pts;
+        }
+
+        function applyMultiMod() {
+            const mode = document.getElementById('multiModDisplayMode').value;
+            let modList = [];
+
+            switch(mode) {
+                case 'consecutive':
+                    const from = config.multiModFrom;
+                    const to = config.multiModTo;
+                    for (let m = from; m <= to; m++) {
+                        modList.push(m);
+                    }
+                    break;
+                case 'range':
+                    const start = parseInt(document.getElementById('rangeStartSlider').value);
+                    const end = parseInt(document.getElementById('rangeEndSlider').value);
+                    for (let m = start; m <= end; m++) {
+                        modList.push(m);
+                    }
+                    break;
+                case 'custom':
+                    const customInput = document.getElementById('customModList').value;
+                    modList = customInput.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n) && n > 0);
+                    break;
+            }
+
+            config.multiModList = modList;
+            
+            // Pre-compute data for all moduli
+            multiModData.clear();
+            modList.forEach(M => {
+                multiModData.set(M, computeModulusData(M));
+            });
+
+            renderMultiMod();
+        }
+
+        function renderMultiMod() {
+            if (!svgGroup) return;
+            svgGroup.innerHTML = '';
+            
+            const baseR = 400;
+            const thickness = config.thicknessScale;
+            const opacity = config.multiModOpacity;
+
+            config.multiModList.forEach((M, index) => {
+                const points = multiModData.get(M) || computeModulusData(M);
+                const color = getMultiModColor(M, index, config.multiModList.length);
+                const offset = config.multiStackMode ? index * config.stackSpacing : 0;
+
+                // Draw ring
+                const ringRadius = baseR * (M / Math.max(...config.multiModList));
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', offset);
+                circle.setAttribute('cy', offset);
+                circle.setAttribute('r', ringRadius);
+                circle.setAttribute('fill', 'none');
+                circle.setAttribute('stroke', color);
+                circle.setAttribute('stroke-width', 2 * thickness);
+                circle.setAttribute('opacity', opacity);
+                svgGroup.appendChild(circle);
+
+                // Draw points
+                points.forEach(p => {
+                    const x = offset + ringRadius * Math.cos(p.angle);
+                    const y = offset + ringRadius * Math.sin(p.angle);
+                    const pt = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    pt.setAttribute('cx', x);
+                    pt.setAttribute('cy', y);
+                    pt.setAttribute('r', config.pointSize * thickness);
+                    pt.setAttribute('fill', p.coprime ? color : `${color}80`);
+                    pt.setAttribute('opacity', p.coprime ? 1 : 0.5);
+                    svgGroup.appendChild(pt);
+                });
+
+                // Add label for M
+                const labelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                labelText.setAttribute('x', offset + ringRadius + 20);
+                labelText.setAttribute('y', offset);
+                labelText.setAttribute('fill', color);
+                labelText.setAttribute('font-size', '14');
+                labelText.setAttribute('font-weight', 'bold');
+                labelText.textContent = `M=${M}`;
+                svgGroup.appendChild(labelText);
+            });
+        }
+
         function shouldShowPoint(p) {
             if (config.filterType === 'none') return true;
             if (config.filterType === 'prime') return isPrime(p.r);
@@ -1375,8 +1837,20 @@
             opacity: 1, spacingFactor: 1, minRing: 1, showProjections: true,
             showRings: true, showInnerRings: true, colorInner: false, gapHighlight: 'none',
             animSpeed: 500, loop: true, recording: false, rotation: 0, showSymmetry: false,
-            highlightPrimes: false, filterType: 'none'
+            highlightPrimes: false, filterType: 'none', thicknessScale: 1.0,
+            enable3D: false, xTilt: 0, yRot: 0, zSpin: 0, vSpacing: 0.5,
+            animateRings: false, innerToOuterSpeed: 0, outerToInnerSpeed: 0, indivSpeed: 0,
+            showLabels: false, labelMode: 'r', innerLabelMode: 'none', labelSize: 12,
+            labelDist: 1.15, labelBackground: false, labelCoprimesOnly: false, labelEvery: 1,
+            multiModMode: false, multiModList: [32], multiModDisplayMode: 'consecutive',
+            multiModFrom: 1, multiModTo: 10, multiModColorScheme: 'rainbow',
+            multiModOpacity: 0.7, multiStackMode: false, stackSpacing: 20
         };
+
+        let multiModData = new Map(); // Stores computed data for each modulus
+
+        let ringRotations = new Map(); // Store individual ring rotations
+        let ringAnimationFrame = null;
 
         let points = [], channels = new Map(), innerRings = new Map();
         let gapPairs = { 2: [], 4: [], 6: [], 8: [], 10: [], 12: [] };
@@ -1547,8 +2021,15 @@
         function render() {
             if (!svgGroup) return;
             
+            // Check if multi-modulus mode is enabled
+            if (config.multiModMode) {
+                renderMultiMod();
+                return;
+            }
+            
             svgGroup.innerHTML = '';
             const baseR = 400;
+            const thickness = config.thicknessScale;
 
             // Apply rotation
             if (config.rotation !== 0) {
@@ -1570,7 +2051,7 @@
                     line.setAttribute('x2', x);
                     line.setAttribute('y2', y);
                     line.setAttribute('stroke', '#444444');
-                    line.setAttribute('stroke-width', '0.5');
+                    line.setAttribute('stroke-width', 0.5 * thickness);
                     line.setAttribute('opacity', '0.3');
                     line.setAttribute('stroke-dasharray', '5,5');
                     svgGroup.appendChild(line);
@@ -1594,7 +2075,7 @@
                     line.setAttribute('x2', x2);
                     line.setAttribute('y2', y2);
                     line.setAttribute('stroke', '#ffcc00');
-                    line.setAttribute('stroke-width', '2');
+                    line.setAttribute('stroke-width', 2 * thickness);
                     line.setAttribute('opacity', '0.6');
                     svgGroup.appendChild(line);
                 });
@@ -1616,7 +2097,7 @@
                         line.setAttribute('x2', ix);
                         line.setAttribute('y2', iy);
                         line.setAttribute('stroke', '#ff1493');
-                        line.setAttribute('stroke-width', '0.5');
+                        line.setAttribute('stroke-width', 0.5 * thickness);
                         line.setAttribute('opacity', config.opacity);
                         svgGroup.appendChild(line);
                     }
@@ -1633,7 +2114,7 @@
                     circle.setAttribute('r', r);
                     circle.setAttribute('fill', 'none');
                     circle.setAttribute('stroke', '#ffd700');
-                    circle.setAttribute('stroke-width', '1');
+                    circle.setAttribute('stroke-width', 1 * thickness);
                     svgGroup.appendChild(circle);
                 });
             }
@@ -1645,7 +2126,7 @@
                     const rpts = innerRings.get(d);
                     if (!rpts) return;
                     const r = baseR * Math.pow(d / config.M, config.spacingFactor);
-                    rpts.forEach(p => {
+                    rpts.forEach((p, index) => {
                         if (!p.coprime && !config.colorInner) return;
                         if (!shouldShowPoint(p)) return;
                         const x = r * Math.cos(p.angle);
@@ -1653,34 +2134,55 @@
                         const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                         c.setAttribute('cx', x);
                         c.setAttribute('cy', y);
-                        c.setAttribute('r', config.pointSize * 0.7);
+                        c.setAttribute('r', config.pointSize * 0.7 * thickness);
                         c.setAttribute('fill', config.colorInner ? getColor(p) : '#ffd700');
                         svgGroup.appendChild(c);
+                        
+                        // Add label for inner ring points
+                        if (config.innerLabelMode !== 'none' && (index % config.labelEvery === 0)) {
+                            const labelMode = config.innerLabelMode === 'same' ? config.labelMode : config.innerLabelMode;
+                            const labelText = getLabelText(p, labelMode);
+                            const labelDist = config.labelDist * 0.9; // Slightly closer for inner rings
+                            const labelX = x * labelDist;
+                            const labelY = y * labelDist;
+                            const labelSize = config.labelSize * 0.8; // Smaller for inner rings
+                            const label = createLabel(labelText, labelX, labelY, labelSize, config.labelBackground);
+                            svgGroup.appendChild(label);
+                        }
                     });
                 });
             }
 
             // Outer points
-            points.forEach(p => {
+            points.forEach((p, index) => {
                 if (!shouldShowPoint(p)) return;
                 const x = baseR * Math.cos(p.angle);
                 const y = baseR * Math.sin(p.angle);
                 const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 c.setAttribute('cx', x);
                 c.setAttribute('cy', y);
-                c.setAttribute('r', config.pointSize);
+                c.setAttribute('r', config.pointSize * thickness);
                 
                 // Highlight primes
                 let color = getColor(p);
                 if (config.highlightPrimes && isPrime(p.r) && p.coprime) {
                     color = '#ffff00';
-                    c.setAttribute('r', config.pointSize * 1.3);
+                    c.setAttribute('r', config.pointSize * 1.3 * thickness);
                 }
                 
                 c.setAttribute('fill', color);
                 c.setAttribute('data-r', p.r);
                 c.style.cursor = 'pointer';
                 svgGroup.appendChild(c);
+                
+                // Add label
+                if (shouldShowLabel(p, index)) {
+                    const labelText = getLabelText(p, config.labelMode);
+                    const labelX = x * config.labelDist;
+                    const labelY = y * config.labelDist;
+                    const label = createLabel(labelText, labelX, labelY, config.labelSize, config.labelBackground);
+                    svgGroup.appendChild(label);
+                }
             });
         }
 
@@ -2418,6 +2920,11 @@
                 config.animSpeed = parseInt(e.target.value);
                 document.getElementById('speedVal').textContent = e.target.value;
             };
+            document.getElementById('thicknessSlider').oninput = e => {
+                config.thicknessScale = parseInt(e.target.value) / 100;
+                document.getElementById('thicknessVal').textContent = config.thicknessScale.toFixed(2);
+                render();
+            };
             document.getElementById('pointSizeSlider').oninput = e => {
                 config.pointSize = parseFloat(e.target.value);
                 document.getElementById('pointSizeVal').textContent = config.pointSize.toFixed(1);
@@ -2457,6 +2964,101 @@
                 config.filterType = e.target.value;
                 render();
             };
+            document.getElementById('showLabels').onchange = e => {
+                config.showLabels = e.target.checked;
+                render();
+            };
+            document.getElementById('labelMode').onchange = e => {
+                config.labelMode = e.target.value;
+                render();
+            };
+            document.getElementById('innerLabelMode').onchange = e => {
+                config.innerLabelMode = e.target.value;
+                render();
+            };
+            document.getElementById('labelSizeSlider').oninput = e => {
+                config.labelSize = parseInt(e.target.value);
+                document.getElementById('labelSizeVal').textContent = e.target.value;
+                render();
+            };
+            document.getElementById('labelDistSlider').oninput = e => {
+                config.labelDist = parseInt(e.target.value) / 100;
+                document.getElementById('labelDistVal').textContent = config.labelDist.toFixed(2);
+                render();
+            };
+            document.getElementById('labelBackground').onchange = e => {
+                config.labelBackground = e.target.checked;
+                render();
+            };
+            document.getElementById('labelCoprimesOnly').onchange = e => {
+                config.labelCoprimesOnly = e.target.checked;
+                render();
+            };
+            document.getElementById('labelEverySlider').oninput = e => {
+                config.labelEvery = parseInt(e.target.value);
+                document.getElementById('labelEveryVal').textContent = e.target.value;
+                render();
+            };
+            
+            // Multi-modulus controls
+            document.getElementById('multiModMode').onchange = e => {
+                config.multiModMode = e.target.checked;
+                document.getElementById('multiModControls').style.display = e.target.checked ? 'block' : 'none';
+                if (e.target.checked) {
+                    applyMultiMod();
+                } else {
+                    render();
+                }
+            };
+            
+            document.getElementById('multiModDisplayMode').onchange = e => {
+                const mode = e.target.value;
+                document.getElementById('consecutiveControls').style.display = mode === 'consecutive' ? 'block' : 'none';
+                document.getElementById('rangeControls').style.display = mode === 'range' ? 'block' : 'none';
+                document.getElementById('customControls').style.display = mode === 'custom' ? 'block' : 'none';
+            };
+            
+            document.getElementById('multiFromSlider').oninput = e => {
+                config.multiModFrom = parseInt(e.target.value);
+                document.getElementById('multiFromVal').textContent = e.target.value;
+            };
+            
+            document.getElementById('multiToSlider').oninput = e => {
+                config.multiModTo = parseInt(e.target.value);
+                document.getElementById('multiToVal').textContent = e.target.value;
+            };
+            
+            document.getElementById('rangeStartSlider').oninput = e => {
+                document.getElementById('rangeStartVal').textContent = e.target.value;
+            };
+            
+            document.getElementById('rangeEndSlider').oninput = e => {
+                document.getElementById('rangeEndVal').textContent = e.target.value;
+            };
+            
+            document.getElementById('multiModColorScheme').onchange = e => {
+                config.multiModColorScheme = e.target.value;
+                if (config.multiModMode) renderMultiMod();
+            };
+            
+            document.getElementById('multiOpacitySlider').oninput = e => {
+                config.multiModOpacity = parseInt(e.target.value) / 100;
+                document.getElementById('multiOpacityVal').textContent = config.multiModOpacity.toFixed(2);
+                if (config.multiModMode) renderMultiMod();
+            };
+            
+            document.getElementById('multiStackMode').onchange = e => {
+                config.multiStackMode = e.target.checked;
+                document.getElementById('stackSpacingControl').style.display = e.target.checked ? 'block' : 'none';
+                if (config.multiModMode) renderMultiMod();
+            };
+            
+            document.getElementById('stackSpacingSlider').oninput = e => {
+                config.stackSpacing = parseInt(e.target.value);
+                document.getElementById('stackSpacingVal').textContent = e.target.value;
+                if (config.multiModMode) renderMultiMod();
+            };
+            
             document.getElementById('showProjections').onchange = e => {
                 config.showProjections = e.target.checked;
                 render();
