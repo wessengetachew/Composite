@@ -681,14 +681,14 @@
     </header>
 
     <nav class="tab-nav">
-        <button class="tab-button active" onclick="switchTab('portal')">Interactive Portal</button>
-        <button class="tab-button" onclick="switchTab('chandelier')">3D Divisor Lattice</button>
-        <button class="tab-button" onclick="switchTab('analysis')">Analysis & Patterns</button>
-        <button class="tab-button" onclick="switchTab('sequences')">Custom Sequences</button>
-        <button class="tab-button" onclick="switchTab('sieve')">Sieve Animation</button>
-        <button class="tab-button" onclick="switchTab('compare')">Comparative Visualizer</button>
-        <button class="tab-button" onclick="switchTab('theory')">Mathematical Theory</button>
-        <button class="tab-button" onclick="switchTab('about')">About</button>
+        <button class="tab-button active" onclick="switchTab('portal', event)">Interactive Portal</button>
+        <button class="tab-button" onclick="switchTab('chandelier', event)">3D Divisor Lattice</button>
+        <button class="tab-button" onclick="switchTab('analysis', event)">Analysis & Patterns</button>
+        <button class="tab-button" onclick="switchTab('sequences', event)">Custom Sequences</button>
+        <button class="tab-button" onclick="switchTab('sieve', event)">Sieve Animation</button>
+        <button class="tab-button" onclick="switchTab('compare', event)">Comparative Visualizer</button>
+        <button class="tab-button" onclick="switchTab('theory', event)">Mathematical Theory</button>
+        <button class="tab-button" onclick="switchTab('about', event)">About</button>
     </nav>
 
     <!-- PORTAL TAB -->
@@ -2187,7 +2187,7 @@
 
     <script>
         // Tab Switching
-        function switchTab(tabName) {
+        function switchTab(tabName, event) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -2201,9 +2201,17 @@
             // Show selected tab
             document.getElementById(tabName + '-tab').classList.add('active');
             
-            // Activate button
-            event.target.classList.add('active');
-            
+            // Activate button - find the button that was clicked
+            if (event && event.target) {
+                event.target.classList.add('active');
+            } else {
+                // Fallback: find button by onclick attribute
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    if (btn.onclick && btn.onclick.toString().includes(tabName)) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
             // If switching to portal and not initialized, initialize
             if (tabName === 'portal' && !window.portalInitialized) {
                 setupEvents();
@@ -2216,6 +2224,12 @@
             if (tabName === 'chandelier' && !window.chandelierInitialized) {
                 initChandelier();
                 window.chandelierInitialized = true;
+            }
+            
+            // If switching to analysis, run default analysis
+            if (tabName === 'analysis' && !window.analysisInitialized) {
+                runAnalysis();
+                window.analysisInitialized = true;
             }
             
             // If switching to sequences, initialize if needed
@@ -2234,7 +2248,6 @@
             if (tabName === 'compare' && !window.compareInitialized) {
                 initCompare();
                 window.compareInitialized = true;
-            }
             }
         }
 
@@ -6266,6 +6279,19 @@
                 else if (k === 'l') { chandelier.showLabels = !chandelier.showLabels; document.getElementById('chandShowLabels').checked = chandelier.showLabels; renderChandelier(); }
             });
         }
+
+        // ═══════════════════════════════════════════════════════════
+        // PAGE INITIALIZATION
+        // ═══════════════════════════════════════════════════════════
+        
+        // Initialize portal tab on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            // Portal tab is active by default, so initialize it
+            setupEvents();
+            calculate();
+            render();
+            window.portalInitialized = true;
+        });
     </script>
 </body>
 </html>
