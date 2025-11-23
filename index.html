@@ -3364,7 +3364,251 @@
         function setChandM(m) { chandelier.M = m; document.getElementById('chandMSlider').value = m; document.getElementById('chandMInput').value = m; document.getElementById('chandM').textContent = m; chandelier.ringRotations.clear(); renderChandelier(); }
         function resetChandRotation() { chandelier.xTilt = 45; chandelier.yRot = 0; chandelier.zSpin = 0; chandelier.autoRotateAngle = 0; ['chandXTiltSlider', 'chandYRotSlider', 'chandZSpinSlider'].forEach((id, i) => document.getElementById(id).value = [45, 0, 0][i]); ['chandXTiltVal', 'chandYRotVal', 'chandZSpinVal'].forEach((id, i) => document.getElementById(id).textContent = [45, 0, 0][i]); renderChandelier(); }
         function resetChandRings() { chandelier.ringRotations.clear(); renderChandelier(); }
-        function exportChandelier() { const a = document.createElement('a'); a.download = `farey-divisor-lattice-M${chandelier.M}.png`; a.href = chandelier.canvas.toDataURL(); a.click(); }
+        function exportChandelier() {
+            // Create temporary high-res canvas
+            const exportCanvas = document.createElement('canvas');
+            exportCanvas.width = 1600;
+            exportCanvas.height = 1800;
+            const ctx = exportCanvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, 1600, 1800);
+            
+            // Title section
+            ctx.fillStyle = '#ffd700';
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('3D Farey Divisor Lattice', 800, 50);
+            
+            ctx.fillStyle = '#aaa';
+            ctx.font = '18px Arial';
+            ctx.fillText('Hierarchical Structure of Modular Reduction in ℤ/Mℤ', 800, 80);
+            
+            // Stats box (left side)
+            ctx.fillStyle = 'rgba(102, 126, 234, 0.2)';
+            ctx.fillRect(20, 110, 360, 180);
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(20, 110, 360, 180);
+            
+            ctx.fillStyle = '#ffd700';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('Configuration', 35, 140);
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = '16px Arial';
+            const M = chandelier.M;
+            const divisors = getDivisors(M);
+            ctx.fillText(`Modulus M = ${M}`, 35, 170);
+            ctx.fillText(`Prime Factorization: ${getPrimeFactorization(M)}`, 35, 195);
+            ctx.fillText(`Lattice Levels: ${divisors.length}`, 35, 220);
+            ctx.fillText(`Coprime Residues: φ(${M}) = ${phi(M)}`, 35, 245);
+            ctx.fillText(`Farey Chains: ${M - phi(M)}`, 35, 270);
+            
+            // Angles box (right side)
+            ctx.fillStyle = 'rgba(102, 126, 234, 0.2)';
+            ctx.fillRect(1220, 110, 360, 180);
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(1220, 110, 360, 180);
+            
+            ctx.fillStyle = '#ffd700';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('3D Rotation Angles', 1235, 140);
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = '16px Arial';
+            ctx.fillText(`X-Tilt: ${chandelier.xTilt}°`, 1235, 170);
+            ctx.fillText(`Y-Rotation: ${Math.round(chandelier.yRot + chandelier.autoRotateAngle)}°`, 1235, 195);
+            ctx.fillText(`Z-Spin: ${chandelier.zSpin}°`, 1235, 220);
+            ctx.fillText(`Vertical Spacing: ${chandelier.vSpace.toFixed(2)}`, 1235, 245);
+            ctx.fillText(`Radial Scale: ${chandelier.radScale.toFixed(2)}`, 1235, 270);
+            
+            // Save current chandelier canvas state
+            const oldCanvas = chandelier.canvas;
+            const oldCtx = chandelier.ctx;
+            
+            // Temporarily use export canvas
+            chandelier.canvas = exportCanvas;
+            chandelier.ctx = ctx;
+            
+            // Render the 3D visualization in the middle area
+            ctx.save();
+            ctx.translate(0, 300);
+            
+            // Render main visualization
+            const w = 1600, h = 1200;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, w, h);
+            
+            // Use same rendering logic but with adjusted coordinates
+            const projected = [];
+            calculateChandelierRings().forEach(el => {
+                if (el.type === 'point') {
+                    const proj = project3DChand(el.x, el.y, el.z);
+                    // Adjust coordinates for centered rendering
+                    proj.x = (proj.x - 600) * 1.33 + 800;
+                    proj.y = (proj.y - 600) * 1.33 + 600;
+                    projected.push({ ...el, ...proj });
+                } else if (el.type === 'chain') {
+                    const p1 = project3DChand(el.x1, el.y1, el.z1);
+                    const p2 = project3DChand(el.x2, el.y2, el.z2);
+                    p1.x = (p1.x - 600) * 1.33 + 800;
+                    p1.y = (p1.y - 600) * 1.33 + 600;
+                    p2.x = (p2.x - 600) * 1.33 + 800;
+                    p2.y = (p2.y - 600) * 1.33 + 600;
+                    projected.push({ type: 'chain', x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, depth: (p1.depth + p2.depth) / 2 });
+                } else if (el.type === 'ring-circle') {
+                    const projectedPoints = el.points.map(p => {
+                        const proj = project3DChand(p.x, p.y, p.z);
+                        proj.x = (proj.x - 600) * 1.33 + 800;
+                        proj.y = (proj.y - 600) * 1.33 + 600;
+                        return proj;
+                    });
+                    projected.push({ type: 'ring-circle', points: projectedPoints, depth: el.depth });
+                }
+            });
+            
+            projected.sort((a, b) => a.depth - b.depth);
+            
+            // Ring circles
+            ctx.globalAlpha = 0.2;
+            ctx.strokeStyle = '#ffd700';
+            ctx.lineWidth = 1;
+            projected.forEach(el => {
+                if (el.type === 'ring-circle') {
+                    ctx.beginPath();
+                    el.points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+                    ctx.stroke();
+                }
+            });
+            ctx.globalAlpha = 1.0;
+            
+            // Chains
+            if (chandelier.showChains) {
+                ctx.globalAlpha = 0.4;
+                projected.forEach(el => {
+                    if (el.type === 'chain') {
+                        const gradient = ctx.createLinearGradient(el.x1, el.y1, el.x2, el.y2);
+                        gradient.addColorStop(0, '#ffd700');
+                        gradient.addColorStop(1, '#ffaa00');
+                        ctx.strokeStyle = gradient;
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(el.x1, el.y1);
+                        ctx.lineTo(el.x2, el.y2);
+                        ctx.stroke();
+                    }
+                });
+                ctx.globalAlpha = 1.0;
+            }
+            
+            // Points
+            projected.forEach(el => {
+                if (el.type === 'point') {
+                    const size = Math.max(3, 6 * el.scale);
+                    const [color, glow] = el.r === 0 ? ['#ff0000', 'rgba(255,0,0,0.5)'] : 
+                                         el.coprime ? ['#00ffff', 'rgba(0,255,255,0.5)'] : 
+                                         ['#ffff00', 'rgba(255,255,0,0.5)'];
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = glow;
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(el.x, el.y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            });
+            
+            ctx.restore();
+            
+            // Legend at bottom
+            ctx.fillStyle = 'rgba(102, 126, 234, 0.2)';
+            ctx.fillRect(500, 1520, 600, 240);
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(500, 1520, 600, 240);
+            
+            ctx.fillStyle = '#ffd700';
+            ctx.font = 'bold 22px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Color Legend', 800, 1555);
+            
+            ctx.textAlign = 'left';
+            ctx.font = '18px Arial';
+            
+            // Coprime
+            ctx.fillStyle = '#00ffff';
+            ctx.beginPath();
+            ctx.arc(530, 1595, 12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.fillText('Coprime residues: gcd(r, M) = 1', 560, 1602);
+            ctx.fillStyle = '#aaa';
+            ctx.font = '14px Arial';
+            ctx.fillText('Generate the unit group (ℤ/Mℤ)×', 560, 1622);
+            
+            // Reducible
+            ctx.fillStyle = '#ffff00';
+            ctx.beginPath();
+            ctx.arc(530, 1660, 12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = '18px Arial';
+            ctx.fillText('Reducible residues: gcd(r, M) > 1', 560, 1667);
+            ctx.fillStyle = '#aaa';
+            ctx.font = '14px Arial';
+            ctx.fillText('Project to smaller quotient rings via Farey chains', 560, 1687);
+            
+            // Identity
+            ctx.fillStyle = '#ff0000';
+            ctx.beginPath();
+            ctx.arc(530, 1725, 12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = '18px Arial';
+            ctx.fillText('Identity element: r ≡ 0 (mod M)', 560, 1732);
+            ctx.fillStyle = '#aaa';
+            ctx.font = '14px Arial';
+            ctx.fillText('Additive identity in each quotient ring', 560, 1752);
+            
+            // Footer
+            ctx.fillStyle = '#667eea';
+            ctx.font = 'italic 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Generated by Modular Reduction Projection Research Portal', 800, 1785);
+            ctx.fillText('wessengetachew.github.io', 800, 1805);
+            
+            // Restore original canvas
+            chandelier.canvas = oldCanvas;
+            chandelier.ctx = oldCtx;
+            
+            // Download
+            const link = document.createElement('a');
+            link.download = `farey-divisor-lattice-M${M}-x${chandelier.xTilt}-y${Math.round(chandelier.yRot)}-z${chandelier.zSpin}.png`;
+            link.href = exportCanvas.toDataURL();
+            link.click();
+        }
+        
+        function getPrimeFactorization(n) {
+            if (n === 1) return '1';
+            const factors = [];
+            let temp = n;
+            for (let p = 2; p * p <= temp; p++) {
+                let count = 0;
+                while (temp % p === 0) {
+                    temp /= p;
+                    count++;
+                }
+                if (count > 0) {
+                    factors.push(count > 1 ? `${p}^${count}` : `${p}`);
+                }
+            }
+            if (temp > 1) factors.push(`${temp}`);
+            return factors.join(' × ');
+        }
 
         function setupChandelierEvents() {
             ['chandMSlider', 'chandMInput'].forEach(id => document.getElementById(id).oninput = e => { const v = parseInt(e.target.value); if (v >= 6 && v <= 2000) setChandM(v); });
