@@ -77,10 +77,11 @@
 
         .content {
             flex-grow: 1;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             position: relative;
+            overflow: hidden;
         }
 
         .canvas-container {
@@ -88,17 +89,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 400px;
-            max-width: 100%;
             position: relative;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
         }
 
         canvas {
             border: 5px solid var(--highlight-color);
             background-color: #000;
             border-radius: 10px;
-            max-width: 100%;
-            height: auto;
+            display: block;
             touch-action: none;
         }
 
@@ -952,7 +954,7 @@
             const size = canvasWidth / (isInteractive ? dpr : 1);
             const centerX = size / 2;
             const centerY = size / 2;
-            const baseRadius = size * 0.42;
+            const baseRadius = size * 0.45;
 
             drawCtx.clearRect(0, 0, canvasWidth, canvasHeight);
             if (isInteractive) {
@@ -1536,7 +1538,11 @@ A - Toggle analysis panel
 
         function resizeCanvas() {
             const container = canvas.parentElement;
-            const size = Math.min(container.clientWidth, container.clientHeight) - 40;
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            
+            // Use the full container size (corner to corner)
+            const size = Math.min(containerWidth, containerHeight);
             
             const dpr = window.devicePixelRatio || 1;
             canvas.width = size * dpr;
@@ -1549,7 +1555,10 @@ A - Toggle analysis panel
 
         // Event listeners setup
         function setupListeners() {
-            document.getElementById('modulusSlider').addEventListener('input', (e) => setModulus(parseInt(e.target.value)));
+            document.getElementById('modulusSlider').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                setModulus(value);
+            });
             document.getElementById('modulusInput').addEventListener('input', (e) => {
                 const value = parseInt(e.target.value);
                 if (value >= 2 && value <= 10000) setModulus(value);
