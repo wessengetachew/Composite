@@ -8,6 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Modular Reduction Projection Research Portal v2.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         MathJax = {
             tex: {
@@ -633,6 +634,32 @@
                 font-size: 1rem;
             }
         }
+
+        /* 3D Tab Mobile Responsive */
+        @media (max-width: 1200px) {
+            #chandelier-tab > div {
+                padding: 0 1rem !important;
+            }
+            
+            #chandelier-tab > div > div:nth-child(2) {
+                display: block !important;
+                grid-template-columns: 1fr !important;
+            }
+            
+            #chandelier-tab canvas {
+                width: 100% !important;
+                height: auto !important;
+                aspect-ratio: 1 !important;
+            }
+            
+            #chandelier-tab h1 {
+                font-size: 1.8rem !important;
+            }
+            
+            #chandelier-tab > div > div:nth-child(2) > div {
+                margin-bottom: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1174,7 +1201,7 @@
                         <button onclick="exportJSON()">JSON</button>
                     </div>
                     <button onclick="exportFrames()">Export Frames (PNG)</button>
-                    <button onclick="exportGIF()">Export Animation (GIF)</button>
+                    <button onclick="exportAnimationZIP()">📦 Export Animation (ZIP of PNGs)</button>
                     <button onclick="exportLaTeX()">Export LaTeX Code</button>
                 </div>
             </aside>
@@ -1198,7 +1225,7 @@
                     
                     <div style="margin-bottom: 1rem;">
                         <label style="display: block; margin-bottom: 0.5rem; color: #666;">M = <span id="chandM" style="color: #667eea; font-weight: bold;">30</span></label>
-                        <input type="range" id="chandMSlider" min="6" max="500" value="30" style="width: 100%;">
+                        <input type="range" id="chandMSlider" min="6" max="2000" value="30" style="width: 100%;">
                     </div>
                     <div style="margin-bottom: 1rem;">
                         <input type="number" id="chandMInput" min="6" max="2000" value="30" 
@@ -1292,6 +1319,15 @@
                             Individual: <span id="chandIndivSpeedVal" style="color: #667eea; font-weight: bold;">0</span>°/s
                         </label>
                         <input type="range" id="chandIndivSpeedSlider" min="-50" max="50" value="0" style="width: 100%;">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
+                        <button id="chandPlayBtn" onclick="playChandAnimation()" style="padding: 0.7rem; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                            ▶ Play
+                        </button>
+                        <button id="chandStopBtn" onclick="stopChandAnimation()" style="padding: 0.7rem; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; display: none;">
+                            ⬛ Stop
+                        </button>
                     </div>
 
                     <div style="margin-bottom: 1rem;">
@@ -2816,6 +2852,99 @@
             });
         }
 
+        async function exportAnimationZIP() {
+            if (recordedFrames.length === 0) {
+                alert('No frames recorded. Please:\n1. Enable "Record Frames" checkbox\n2. Click Play to record animation\n3. Click Stop when done\n4. Then export ZIP');
+                return;
+            }
+            
+            const frameCount = recordedFrames.length;
+            
+            // Show progress
+            const progressDiv = document.getElementById('gifProgress');
+            const progressText = document.getElementById('gifProgressText');
+            const progressFill = document.getElementById('gifProgressFill');
+            progressDiv.classList.add('active');
+            progressText.textContent = 'Creating PNG frames...';
+            progressFill.style.width = '0%';
+            
+            const zip = new JSZip();
+            const folder = zip.folder('animation-frames');
+            
+            // Process each frame
+            for (let i = 0; i < frameCount; i++) {
+                const frame = recordedFrames[i];
+                
+                // Create canvas for this frame
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = 1000;
+                tempCanvas.height = 1000;
+                const ctx = tempCanvas.getContext('2d');
+                
+                // Black background
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, 1000, 1000);
+                
+                // Create SVG image
+                const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -500 1000 1000" width="1000" height="1000">
+                    <rect x="-500" y="-500" width="1000" height="1000" fill="#000"/>
+                    ${frame.svg}
+                </svg>`;
+                
+                // Convert to PNG
+                await new Promise((resolve) => {
+                    const img = new Image();
+                    const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    img.onload = () => {
+                        ctx.drawImage(img, 0, 0, 1000, 1000);
+                        URL.revokeObjectURL(url);
+                        
+                        // Add M value overlay
+                        ctx.font = 'bold 32px Arial';
+                        ctx.fillStyle = '#fff';
+                        ctx.strokeStyle = '#000';
+                        ctx.lineWidth = 5;
+                        const text = `M = ${frame.M}`;
+                        ctx.strokeText(text, 20, 45);
+                        ctx.fillText(text, 20, 45);
+                        
+                        // Convert to blob and add to ZIP
+                        tempCanvas.toBlob((blob) => {
+                            const paddedIndex = String(i + 1).padStart(4, '0');
+                            folder.file(`frame_${paddedIndex}_M${frame.M}.png`, blob);
+                            
+                            const progress = ((i + 1) / frameCount) * 100;
+                            progressFill.style.width = progress + '%';
+                            progressText.textContent = `Processing frame ${i + 1}/${frameCount}`;
+                            
+                            resolve();
+                        }, 'image/png');
+                    };
+                    
+                    img.src = url;
+                });
+            }
+            
+            // Generate ZIP
+            progressText.textContent = 'Creating ZIP file...';
+            progressFill.style.width = '100%';
+            
+            zip.generateAsync({ type: 'blob' }).then((content) => {
+                // Download
+                const link = document.createElement('a');
+                link.download = `modular-animation-${frameCount}-frames.zip`;
+                link.href = URL.createObjectURL(content);
+                link.click();
+                
+                // Hide progress
+                setTimeout(() => {
+                    progressDiv.classList.remove('active');
+                }, 1000);
+            });
+        }
+
         function exportGIF() {
             if (recordedFrames.length === 0) {
                 alert('No frames recorded. Please:\n1. Enable "Record Frames" checkbox\n2. Click Play to record animation\n3. Click Stop when done\n4. Then export GIF');
@@ -3364,6 +3493,20 @@
         function setChandM(m) { chandelier.M = m; document.getElementById('chandMSlider').value = m; document.getElementById('chandMInput').value = m; document.getElementById('chandM').textContent = m; chandelier.ringRotations.clear(); renderChandelier(); }
         function resetChandRotation() { chandelier.xTilt = 45; chandelier.yRot = 0; chandelier.zSpin = 0; chandelier.autoRotateAngle = 0; ['chandXTiltSlider', 'chandYRotSlider', 'chandZSpinSlider'].forEach((id, i) => document.getElementById(id).value = [45, 0, 0][i]); ['chandXTiltVal', 'chandYRotVal', 'chandZSpinVal'].forEach((id, i) => document.getElementById(id).textContent = [45, 0, 0][i]); renderChandelier(); }
         function resetChandRings() { chandelier.ringRotations.clear(); renderChandelier(); }
+        
+        function playChandAnimation() {
+            chandelier.animate = true;
+            document.getElementById('chandAnimateCheck').checked = true;
+            document.getElementById('chandPlayBtn').style.display = 'none';
+            document.getElementById('chandStopBtn').style.display = 'block';
+        }
+        
+        function stopChandAnimation() {
+            chandelier.animate = false;
+            document.getElementById('chandAnimateCheck').checked = false;
+            document.getElementById('chandPlayBtn').style.display = 'block';
+            document.getElementById('chandStopBtn').style.display = 'none';
+        }
         function exportChandelier() {
             // Create temporary high-res canvas
             const exportCanvas = document.createElement('canvas');
@@ -3620,8 +3763,18 @@
             [['chandInnerSpeedSlider', 'chandInnerSpeedVal', 'innerSpeed'], ['chandOuterSpeedSlider', 'chandOuterSpeedVal', 'outerSpeed'], ['chandIndivSpeedSlider', 'chandIndivSpeedVal', 'indivSpeed']].forEach(([sid, vid, prop]) => {
                 document.getElementById(sid).oninput = e => { chandelier[prop] = parseInt(e.target.value); document.getElementById(vid).textContent = e.target.value; };
             });
-            ['chandAnimateCheck', 'chandShowChains', 'chandShowLabels', 'chandAutoRotate'].forEach((id, i) => {
-                document.getElementById(id).onchange = e => { chandelier[['animate', 'showChains', 'showLabels', 'autoRotate'][i]] = e.target.checked; if (i > 0 && i < 3) renderChandelier(); };
+            document.getElementById('chandAnimateCheck').onchange = e => {
+                chandelier.animate = e.target.checked;
+                if (e.target.checked) {
+                    document.getElementById('chandPlayBtn').style.display = 'none';
+                    document.getElementById('chandStopBtn').style.display = 'block';
+                } else {
+                    document.getElementById('chandPlayBtn').style.display = 'block';
+                    document.getElementById('chandStopBtn').style.display = 'none';
+                }
+            };
+            ['chandShowChains', 'chandShowLabels', 'chandAutoRotate'].forEach((id, i) => {
+                document.getElementById(id).onchange = e => { chandelier[['showChains', 'showLabels', 'autoRotate'][i]] = e.target.checked; if (i < 2) renderChandelier(); };
             });
             const c = chandelier.canvas;
             c.addEventListener('mousedown', e => { chandelier.isDragging = true; chandelier.lastMouseX = e.clientX; chandelier.lastMouseY = e.clientY; c.style.cursor = 'grabbing'; });
